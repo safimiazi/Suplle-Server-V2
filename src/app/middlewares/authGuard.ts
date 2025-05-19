@@ -11,7 +11,7 @@
 // import jwt, { JwtPayload } from "jsonwebtoken";
 // import AppError from "../errors/AppError";
 // import status from "http-status";
-// import { userModel } from "../modules/users/user/users.model";
+// import { UserModel } from "../modules/users/user/users.model";
 
 // export const authenticate = async (
 //   req: Request,
@@ -31,7 +31,7 @@
 //     if (!decoded) {
 //       throw new Error("Invalid token");
 //     }
-//     const user = await userModel.findById(decoded.userId);
+//     const user = await UserModel.findById(decoded.userId);
 //     if (!user || !user.isActive) {
 //       {
 //         throw new Error("User not found or inactive");

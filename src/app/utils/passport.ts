@@ -1,20 +1,17 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
-import dotenv from "dotenv";
-import { userModel } from "../modules/users/user/users.model";
 import { OwnerModel } from "../modules/users/owner/owner.model";
 import mongoose from "mongoose";
 import { OWNER_STATUS } from "../modules/users/owner/owner.constant";
 import config from "../config";
-
-dotenv.config();
+import { UserModel } from "../modules/users/user/users.model";
 
 // Google Strategy
 passport.use(
   new GoogleStrategy(
     {
-      clientID: config .GOOGLE_CLIENT_ID  || "",
+      clientID: config.GOOGLE_CLIENT_ID  || "",
       clientSecret: config.GOOGLE_CLIENT_SECRET || "",
       callbackURL: `${process.env.BASE_URL}/api/v1/auth/google/callback`,
     },
@@ -24,12 +21,11 @@ passport.use(
 
       try {
         const email = profile.emails?.[0]?.value;
-
         if (!email) {
           throw new Error("No email found in Google profile.");
         }
 
-        let user = await userModel.findOne({ email }).session(session);
+        let user = await UserModel.findOne({ email }).session(session);
 
         // ❌ Case: email/password already exists
         if (user && !user.provider) {
@@ -46,7 +42,7 @@ passport.use(
         // ✅ Case: First-time Google login — create user, restaurant, and owner
         if (!user) {
           // 1. Create user
-          let user = await userModel.create(
+          let user = await UserModel.create(
             [
               {
                 name: profile.displayName,

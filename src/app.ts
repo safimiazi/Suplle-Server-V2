@@ -7,8 +7,8 @@ import router from "./app/routes";
 import bcrypt from "bcryptjs";
 import path from "path";
 import fs from "fs";
-import "../src/app/utils/passport.ts";
-import { userModel } from "./app/modules/users/user/users.model";
+import "./app/utils/passport";
+import { UserModel } from "./app/modules/users/user/users.model";
 const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -46,7 +46,7 @@ app.use(globalErrorHandler);
 
 export const createAdmin = async () => {
   try {
-    const existingAdmin = await userModel.findOne({
+    const existingAdmin = await UserModel.findOne({
       role: "admin",
     });
 
@@ -87,7 +87,7 @@ export const createAdmin = async () => {
 
     const hashedPassword = await bcrypt.hash(SUPER_ADMIN_PASSWORD, 10);
 
-    await userModel.create({
+    await UserModel.create({
       name: SUPER_ADMIN_NAME,
       email: SUPER_ADMIN_EMAIL,
       phone: SUPER_ADMIN_PHONE,

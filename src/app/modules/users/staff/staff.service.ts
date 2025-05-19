@@ -2,7 +2,7 @@ import { StaffModel } from "./staff.model";
 import { IStaff } from "./staff.interface";
 import AppError from "../../../errors/AppError";
 import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
-import { userModel } from "../user/users.model";
+import { UserModel } from "../user/users.model";
 import mongoose, { startSession } from "mongoose";
 import bcrypt from "bcryptjs";
 import { validateData } from "../../../middlewares/validateData ";
@@ -37,7 +37,7 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
       image: staffData.image,
     };
 
-    const createUser = await userModel.create([userData], { session });
+    const createUser = await UserModel.create([userData], { session });
   
     
     // Prepare staff data
@@ -109,7 +109,7 @@ const updateStaff = async (
       throw new AppError(404, "Staff not found");
     }
     // Update the user
-    const updatedUser = await userModel.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
       staffData.user,
        userData,
       { new: true, session }

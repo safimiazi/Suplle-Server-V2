@@ -8,7 +8,7 @@ import generateToken from "../../utils/generateToken";
 import bcrypt from "bcryptjs";
 import config from "../../config";
 import { IUser } from "../users/user/users.interface";
-import { userModel } from "../users/user/users.model";
+import { UserModel } from "../users/user/users.model";
 import { authService } from "./auth.service";
 import { OwnerModel } from "../users/owner/owner.model";
 import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
@@ -101,7 +101,7 @@ const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
-    const user = await userModel.findOne({ email }).select("+password");
+    const user = await UserModel.findOne({ email }).select("+password");
 
     if (!user) {
       throw new AppError(
@@ -275,7 +275,7 @@ const Logout = catchAsync(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     const userId = req.userId; // Assuming you have middleware to set req.user
 
-//     const user: IUser | null = await userModel
+//     const user: IUser | null = await UserModel
 //       .findById(userId)
 //       .select("-password");
 
@@ -296,7 +296,7 @@ const Logout = catchAsync(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     const userId = req.userId; // Assuming you have middleware to set req.user
 
-//     const updatedUser: IUser | null = await userModel.findByIdAndUpdate(
+//     const updatedUser: IUser | null = await UserModel.findByIdAndUpdate(
 //       userId,
 //       req.body,
 //       { new: true }
@@ -319,7 +319,7 @@ const Logout = catchAsync(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     const userId = req.userId; // Assuming you have middleware to set req.user
 
-//     const deletedUser: IUser | null = await userModel.findByIdAndDelete(userId);
+//     const deletedUser: IUser | null = await UserModel.findByIdAndDelete(userId);
 
 //     if (!deletedUser) {
 //       throw new AppError(status.NOT_FOUND, "User not found");
@@ -341,7 +341,7 @@ const Logout = catchAsync(
 //     const { oldPassword, newPassword } = req.body;
 
 //     // Check if user exists
-//     const user: IUser | null = await userModel
+//     const user: IUser | null = await UserModel
 //       .findById(userId)
 //       .select("+password");
 
@@ -357,7 +357,7 @@ const Logout = catchAsync(
 
 //     // Update password
 //     user.user.password = newPassword;
-//     await userModel.updateOne({ _id: user._id }, { password: newPassword });
+//     await UserModel.updateOne({ _id: user._id }, { password: newPassword });
 
 //     sendResponse(res, {
 //       statusCode: status.OK,
@@ -375,7 +375,7 @@ const Logout = catchAsync(
 //     const { email } = req.body;
 
 //     // Check if user exists
-//     const user: IUser | null = await userModel.findOne({ email });
+//     const user: IUser | null = await UserModel.findOne({ email });
 
 //     if (!user) {
 //       throw new AppError(status.NOT_FOUND, "User not found");
@@ -398,7 +398,7 @@ const verifyPhoneNumber = catchAsync(
     const { phoneNumber } = req.body;
 
     // Check if user exists
-    const user: IUser | null = await userModel.findOne({ phoneNumber });
+    const user: IUser | null = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -420,7 +420,7 @@ const resendVerificationEmail = catchAsync(
     const { email } = req.body;
 
     // Check if user exists
-    const user: IUser | null = await userModel.findOne({ email });
+    const user: IUser | null = await UserModel.findOne({ email });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -442,7 +442,7 @@ const resendVerificationPhoneNumber = catchAsync(
     const { phoneNumber } = req.body;
 
     // Check if user exists
-    const user: IUser | null = await userModel.findOne({ phoneNumber });
+    const user: IUser | null = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -465,7 +465,7 @@ const verifyPhoneNumberOTP = catchAsync(
     const { phoneNumber, otp } = req.body;
 
     // Check if user exists
-    const user: IUser | null = await userModel.findOne({ phoneNumber });
+    const user: IUser | null = await UserModel.findOne({ phoneNumber });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");
@@ -487,7 +487,7 @@ const verifyEmailOTP = catchAsync(
     const { email, otp } = req.body;
 
     // Check if user exists
-    const user: IUser | null = await userModel.findOne({ email });
+    const user: IUser | null = await UserModel.findOne({ email });
 
     if (!user) {
       throw new AppError(status.NOT_FOUND, "User not found");

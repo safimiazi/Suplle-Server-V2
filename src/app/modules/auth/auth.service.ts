@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { userModel } from "../users/user/users.model";
+import { UserModel } from "../users/user/users.model";
 import { IRestaurantValidationRequest } from "./auth.validation";
 import { ROLE } from "../users/user/users.constant";
 import bcrypt from "bcryptjs";
@@ -16,7 +16,7 @@ export const authService = {
     session.startTransaction();
     try {
       // 1. Check if user already exists
-      const existingUser = await userModel
+      const existingUser = await UserModel
         .findOne({ email: data.businessEmail })
         .session(session);
 
@@ -30,7 +30,7 @@ export const authService = {
       const otp = generateOtp(4);
   
       // 2. Create new user
-      const newUser = await userModel.create(
+      const newUser = await UserModel.create(
         [
           {
             name: "New User",
@@ -105,7 +105,7 @@ export const authService = {
   
 
 
-      const findUnverifiedUser = await userModel
+      const findUnverifiedUser = await UserModel
         .findOne({ _id: findUnverifiedOwner?.user })
         .session(session);
 
@@ -121,7 +121,7 @@ export const authService = {
         throw new Error("The OTP you entered is incorrect. Please try again.");
       }
   
-      await userModel.updateOne(
+      await UserModel.updateOne(
         { email: userEmail },
         { $set: { otp: null, otpExpiresAt: null, } },
         { session }
@@ -157,7 +157,7 @@ export const authService = {
     session.startTransaction();
   
     try {
-      const user = await userModel.findOne({ email }).session(session);
+      const user = await UserModel.findOne({ email }).session(session);
       if (!user) {
         throw new Error("No account found with this email.");
       }
@@ -171,7 +171,7 @@ export const authService = {
       const otp = generateOtp(4);
   
       // Update user with new OTP
-      await userModel.updateOne(
+      await UserModel.updateOne(
         { _id: user._id },
         {
           $set: {
@@ -197,7 +197,7 @@ export const authService = {
   },
 
   async sendPasswordResetOtp(email: string) {
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
   
     if (!user) {
       throw new Error("No account found with this email.");
@@ -214,7 +214,7 @@ export const authService = {
   },
 
   async verifyPasswordResetOtp(email: string, otp: string) {
-    const user : any = await userModel.findOne({ email });
+    const user : any = await UserModel.findOne({ email });
   
     if (!user) throw new Error("User not found.");
     if (!user.otp || !user.otpExpiresAt) throw new Error("No OTP found. Please request again.");
@@ -232,7 +232,7 @@ export const authService = {
     await user.save();
   },
   async resetPassword(email: string, newPassword: string) {
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
   
     if (!user) throw new Error("User not found.");
   
@@ -250,7 +250,7 @@ export const authService = {
       session.startTransaction();
   
       // 1. Find the user
-      const findOwnerUser = await userModel.findOne({ email, role: "restaurant_owner" }).session(session);
+      const findOwnerUser = await UserModel.findOne({ email, role: "restaurant_owner" }).session(session);
   
       if (!findOwnerUser) {
         throw new AppError(400, "You are not a user");

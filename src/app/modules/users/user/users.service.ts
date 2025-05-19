@@ -1,4 +1,4 @@
-import { userModel } from "./users.model";
+import { UserModel } from "./users.model";
 import { IUser } from "./users.interface";
 import AppError from "../../../errors/AppError";
 import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
@@ -8,16 +8,16 @@ import { UpdateQuery } from "mongoose";
 
 
 const createUser = async (data: IUser) => {
-  const result = await userModel.create(data);
+  const result = await UserModel.create(data);
   return result;
 };
 
 const getAllUsers = async () => {
-  return userModel.find({ isDeleted: false });
+  return UserModel.find({ isDeleted: false });
 };
 
 const getSingleUser = async (id: string) => {
-  const result = await userModel.findById(id);
+  const result = await UserModel.findById(id);
   if (!result || result.isDeleted) {
     throw new AppError(404, "User not found");
   }
@@ -42,7 +42,7 @@ const updateUser = async (  id: string,
 
     const Data = await validateData(usersUpdateValidation, parsedData) as UpdateQuery<IUser>;
 
-  const result = await userModel.findByIdAndUpdate(id, Data, { new: true });
+  const result = await UserModel.findByIdAndUpdate(id, Data, { new: true });
   if (!result) {
     throw new AppError(404, "User not found");
   }
@@ -50,7 +50,7 @@ const updateUser = async (  id: string,
 };
 
 const deleteUser = async (id: string) => {
-  const result = await userModel.findByIdAndUpdate(
+  const result = await UserModel.findByIdAndUpdate(
     id,
     { isDeleted: true },
     { new: true }

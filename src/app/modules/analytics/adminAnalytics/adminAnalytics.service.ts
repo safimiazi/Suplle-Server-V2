@@ -5,13 +5,13 @@ import sendResponse from "../../../utils/sendResponse";
 
 import { OrderModel } from "../../order/order.model";
 import { RestaurantModel } from "../../restuarant/restuarant.model";
-import { userModel } from "../../users/user/users.model";
+import { UserModel } from "../../users/user/users.model";
 
 
 const allAdminAnalytic = async () => {
     const totalRestaurant = await RestaurantModel.find({});
     const totalOrder = await OrderModel.find({});
-    const totalUser = await userModel.find({});
+    const totalUser = await UserModel.find({});
   
     return {
       totalRestaurants: totalRestaurant?.length || 0,
