@@ -6,7 +6,7 @@ const SubscriptionPlanSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     maxRestaurants: { type: Number, required: true },
     features: [{ type: String }],
-    isDelete: {
+    isDeleted: {
       type: Boolean,
       default: false,
     },
