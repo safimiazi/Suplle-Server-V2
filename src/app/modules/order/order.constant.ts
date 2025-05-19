@@ -1,0 +1,1 @@
+export const ORDER_SEARCHABLE_FIELDS = [];

@@ -1,0 +1,1 @@
+export const FLOOR_SEARCHABLE_FIELDS = [];

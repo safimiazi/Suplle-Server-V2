@@ -1,0 +1,1 @@
+export const MENU_SEARCHABLE_FIELDS = [];
