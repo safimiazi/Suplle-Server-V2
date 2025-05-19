@@ -18,7 +18,9 @@ import { IMenu } from "./menu.interface";
     });
     
     const getSingleMenu = catchAsync(async (req: Request, res: Response) => {
-      const result = await menuService.getSingleMenuFromDB(req.params.id);
+      const{ id }= req.params;
+      const result = await menuService.getSingleMenuFromDB(id);
+      console.log(result)
       sendResponse(res, { statusCode: status.OK, success: true, message: "Single Menu Fetched successfully", data: result });
     });
     

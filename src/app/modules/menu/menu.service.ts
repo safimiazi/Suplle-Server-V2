@@ -77,7 +77,12 @@
       },
       async getSingleMenuFromDB(id: string) {
         try {
-        return await MenuModel.findById(id);
+       const result =  await MenuModel.findOne({_id:id});
+       if(!result) {
+        throw new AppError(400,"Menu does not exist")
+       }
+       return result;
+       
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
