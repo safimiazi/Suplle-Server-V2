@@ -74,7 +74,7 @@ passport.use(
         session.endSession();
 
         return done(null, user || undefined);
-      } catch (error: any) {
+      } catch (error) {
         await session.abortTransaction();
         session.endSession();
         return done(error, null!);
