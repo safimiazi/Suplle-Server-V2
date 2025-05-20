@@ -12,6 +12,7 @@ import { restuarantRoutes } from "../modules/restuarant/restuarant.routes";
 import { staffRoutes } from "../modules/users/staff/staff.routes";
 import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/analytic.route";
 import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminAnalytics.route";
+import { SubscriptionPlanRoutes } from "../modules/SubscriptionPlan/SubscriptionPlan.routes";
 
 
 const router = Router();
@@ -63,6 +64,10 @@ const moduleRoutes = [
   },{
     path:"/admin-analytics",
     route: AdminAnalyticsRoutes,
+  }
+  ,{
+    path:"/subscriptionPlan",
+    route: SubscriptionPlanRoutes,
   }
 ];
 
