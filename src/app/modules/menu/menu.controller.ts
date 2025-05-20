@@ -25,9 +25,10 @@ import { IMenu } from "./menu.interface";
     });
     
     const updateMenu = catchAsync(async (req: Request, res: Response) => {
-      const data = req.body;
+      const data = req.body.data;
+      const parseData = JSON.parse(data)
       const id = req.params.id;
-      const result = await menuService.updateMenuIntoDB(data,id);
+      const result = await menuService.updateMenuIntoDB(parseData,id);
       sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Updated successfully", data: result });
     });
     
