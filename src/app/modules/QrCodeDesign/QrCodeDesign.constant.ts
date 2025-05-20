@@ -1,0 +1,1 @@
+export const QRCODEDESIGN_SEARCHABLE_FIELDS = [];
