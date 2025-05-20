@@ -19,12 +19,12 @@ const postRestaurantLayout = async (payload: IRestaurantLayout) => {
   }
 
   const allRestaurantZone = (await RestaurantZone.find({}));
-  const floor = allRestaurantZone[0].floor;
+  // const floor = allRestaurantZone[0].floor;
 
   const tableNumber =  (await RestaurantZone.find({})).length;
     
     (payload as any).numberOfTables = tableNumber;
-    (payload as any).floor= floor;
+    // (payload as any).floor= floor;
   if(!allRestaurantZone){
     throw new AppError(400,"please create layout first");
   }
