@@ -3,9 +3,19 @@ import status from "http-status";
 import AppError from "../../errors/AppError";
 import { IRestaurantZone } from "./restaurantZone.interface";
 import { RestaurantZone } from "./restaurantZone.model";
+import { FloorModel } from "../floor/floor.model";
+import { RestaurantModel } from "../restuarant/restuarant.model";
     
     export const restaurantZoneTypeService = {
       async postRestaurantZoneTypeIntoDB(data:IRestaurantZone) {
+        const floor = await FloorModel.findById({_id:data.floor})
+        if(!floor){
+          throw new AppError(400,"the floor is not exists");
+        }
+        const  restaurant = await RestaurantModel.findById({_id:data.restaurant})
+        if(!restaurant){
+          throw new AppError(400,"the restaurant is not exists");
+        }
       try {
 
         const result  =  await RestaurantZone.create(data);
