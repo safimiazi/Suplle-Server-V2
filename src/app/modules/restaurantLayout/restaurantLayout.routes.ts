@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
   "/create-restaurant-layout",
-  validateRequest(restaurantLayoutPostValidation),
+  // validateRequest(restaurantLayoutPostValidation),
   restaurantLayoutController.postRestaurantLayout
 );
 

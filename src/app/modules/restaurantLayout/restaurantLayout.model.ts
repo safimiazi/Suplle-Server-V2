@@ -3,10 +3,14 @@ import { IRestaurantLayout } from "./restaurantLayout.interface";
 
 const RestaurantLayoutSchema = new Schema<IRestaurantLayout>(
   {
-    floor: { type: Schema.Types.ObjectId, ref: "Floor", required: true },
     restaurant: {
       type: Schema.Types.ObjectId,
       ref: "Restaurant",
+      required: true,
+    },
+    floor: {
+      type: Schema.Types.ObjectId,
+      ref: "Floor",
       required: true,
     },
     numberOfTables: { type: Number, required: true },
