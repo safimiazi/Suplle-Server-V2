@@ -5,12 +5,13 @@ import { userInputSchema, usersUpdateValidation } from "./users.validation";
 import { userController } from "./users.controller";
 import { upload } from "../../../utils/sendImageToCloudinary";
 import { authenticate } from "../../../middlewares/authGuard";
+import { ROLE } from "./users.constant";
 
 const router = express.Router();
 
 router.post(
   "/owner-create-sub-user",
-  authenticate,
+  authenticate(ROLE.RESTAURANT_OWNER),
   validateRequest(userInputSchema),
   userController.createUser
 );

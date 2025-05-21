@@ -9,6 +9,10 @@ import { sendUserLoginCredentials } from "../../../utils/subUserEmailTamplate";
 import { OwnerModel } from "../owner/owner.model";
 
 import bcrypt from "bcryptjs";
+import { USERS_SEARCHABLE_FIELDS } from "./users.constant";
+import QueryBuilder from "../../../builder/QueryBuilder";
+import path from "path";
+import { populate } from "dotenv";
 
 const createUser = async (data: IUser, owner: any) => {
   const session = await UserModel.startSession();
@@ -58,10 +62,36 @@ const createUser = async (data: IUser, owner: any) => {
   }
 };
 
-const getAllUsers = async () => {
-  return UserModel.find({ isDeleted: false });
-};
+const getAllUsers = async (query: any) => {
+  try {
+    const service_query = new QueryBuilder(UserModel.find(), query)
+      .search(USERS_SEARCHABLE_FIELDS)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
 
+    const result = await service_query.modelQuery
+      .select("-password")
+      .populate({
+        path: "restaurant",
+        populate: {
+          path: "owner",
+          populate: {
+            path: "user",
+            select: "name email phone role isDeleted",
+          }
+        }
+      });
+    const meta = await service_query.countTotal();
+    return {
+      result,
+      meta,
+    };
+  } catch (error: unknown) {
+    throw error;
+  }
+};
 const getSingleUser = async (id: string) => {
   const result = await UserModel.findById(id);
   if (!result || result.isDeleted) {

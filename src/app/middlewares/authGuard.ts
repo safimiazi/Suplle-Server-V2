@@ -14,13 +14,15 @@ import status from "http-status";
 import { UserModel } from "../modules/users/user/users.model";
 import config from "../config";
 
-export const authenticate = async (
+export const authenticate = (...allowedRoles: string[]) => async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const token =  req.headers.authorization;
-  console.log(token)
+
+  const token = req.headers.authorization;
+  console.log(token);
+
   if (!token) {
     throw new Error("No token provided");
   }
@@ -40,6 +42,15 @@ export const authenticate = async (
       }
     }
 
+
+    if(allowedRoles.length && !allowedRoles.includes(user.role)){
+        throw new AppError(
+            status.FORBIDDEN,
+            "You do not have permission to access this resource"
+        );
+    }
+
+  
     req.user = user as any;
     next();
   } catch (error) {

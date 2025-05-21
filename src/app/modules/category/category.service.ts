@@ -14,66 +14,64 @@ export const categoryService = {
     file: Express.Multer.File & { path?: string }
   ) {
     try {
-      const categorydata = JSON.parse(data);
+      let newData = data;
+      if (file) {
+        const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+        const path = file.path;
+        const { secure_url } = (await uploadImgToCloudinary(
+          imageName,
+          path
+        )) as {
+          secure_url: string;
+        };
 
-           const validatedData =  await validateData<ICategory>(categoryPostValidation, categorydata);
-       
-         
-        if (file) {
-          const imageName = `${Math.floor(100 + Math.random() * 900)}`;
-          const path = file.path;
-          const { secure_url } = (await uploadImgToCloudinary(imageName, path)) as {
-            secure_url: string;
-          };
-    
-          validatedData.image = secure_url as string;
-        } else {
-          validatedData.image = 'no image';
-        }
-      
-        const restaurant = await  RestaurantModel.findOne({_id: validatedData.restaurant});
- 
-        if(!restaurant){
-          throw new AppError(400,"restaurant doesn't found");
-        }
+        newData.image = secure_url as string;
+      } else {
+        newData.image = "no image";
+      }
 
-        
-        
-        return await CategoryModel.create(validatedData);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new  AppError(400,"Category Can not be created");
-          }
-        }
-      },
-      async getAllCategoryFromDB(query: any) {
-      try {
-    
-          const result= await CategoryModel.find({});
-       return result;
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("Categories can not found");
-          }
-        }
-      },
-      async getSingleCategoryFromDB(id: string) {
-        try {
-        return await CategoryModel.findById(id);
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("Category can not retrieved");
-          }
-        }
-      },
-      async updateCategoryIntoDB(id:string,data:ICategory) {
-      try {
+      const restaurant = await RestaurantModel.findOne({
+        _id: newData.restaurant,
+      });
+
+      if (!restaurant) {
+        throw new AppError(400, "restaurant doesn't found");
+      }
+
+      return await CategoryModel.create(newData);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new AppError(400, "Category Can not be created");
+      }
+    }
+  },
+  async getAllCategoryFromDB(query: any) {
+    try {
+      const result = await CategoryModel.find({});
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error("Categories can not found");
+      }
+    }
+  },
+  async getSingleCategoryFromDB(id: string) {
+    try {
+      return await CategoryModel.findById(id);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error("Category can not retrieved");
+      }
+    }
+  },
+  async updateCategoryIntoDB(id: string, data: ICategory) {
+    try {
       const isDeleted = await CategoryModel.findOne({ _id: id });
 
       if (!isDeleted) {
