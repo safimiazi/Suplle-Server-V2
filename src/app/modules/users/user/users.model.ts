@@ -16,21 +16,27 @@ const RoleEnum = [
 
 const UserSchema = new Schema<IUser>(
   {
+    restaurant: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      default: null,
+    },
     name: { type: String },
+
     email: { type: String },
-    providerId: { type: String , default: null},
-    provider: { type: String,  default: null},
+    providerId: { type: String, default: null },
+    provider: { type: String, default: null },
     phone: { type: String },
     password: { type: String },
 
     image: { type: String, nullable: true },
     otp: {
       type: String,
-      nullable: true
+      nullable: true,
     },
     otpExpiresAt: {
       type: Date,
-      nullable: true
+      nullable: true,
     },
     role: {
       type: String,
@@ -42,7 +48,7 @@ const UserSchema = new Schema<IUser>(
     },
   },
 
-  { timestamps: true ,versionKey:false}
+  { timestamps: true, versionKey: false }
 );
 
 export const UserModel = mongoose.model<IUser>("User", UserSchema);

@@ -35,13 +35,15 @@ const QrCodeDesignSchema = new mongoose.Schema(
       type: String,
       default: "Admin",
     },
-    isDelete: {
+    isDeleted: {
       type: Boolean,
       default: false,
     },
   },
   { timestamps: true }
 );
+
+QrCodeDesignSchema.index({name: 1, category: 1}, {unique: true})
 
 export const QrCodeDesignModel = mongoose.model(
   "QrCodeDesign",

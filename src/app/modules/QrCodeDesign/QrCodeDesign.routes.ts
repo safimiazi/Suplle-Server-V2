@@ -1,16 +1,13 @@
 import express from "express";
-import { validateRequest } from "../../middlewares/validateRequest";
 import { QrCodeDesignController } from "./QrCodeDesign.controller";
-import {
-  QrCodeDesignPostValidation,
-  QrCodeDesignUpdateValidation,
-} from "./QrCodeDesign.validation";
+
+import { upload } from "../../utils/sendImageToCloudinary";
 
 const router = express.Router();
 
 router.post(
   "/post-QrCodeDesign",
-  validateRequest(QrCodeDesignPostValidation),
+  upload.single("image"),
   QrCodeDesignController.postQrCodeDesign
 );
 router.get("/get-all-QrCodeDesign", QrCodeDesignController.getAllQrCodeDesign);
@@ -20,7 +17,8 @@ router.get(
 );
 router.put(
   "/update-QrCodeDesign/:id",
-  validateRequest(QrCodeDesignUpdateValidation),
+  upload.single("image"),
+
   QrCodeDesignController.updateQrCodeDesign
 );
 router.delete(

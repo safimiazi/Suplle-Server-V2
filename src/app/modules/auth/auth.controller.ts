@@ -36,7 +36,7 @@ const otpValidation = catchAsync(
     sendResponse(res, {
       statusCode: status.CREATED,
       success: true,
-      message: "OTP verified. Your account is now pending admin approval.",
+      message: "Verified! Log in to create your menu and layout.",
       data: null,
     });
   }
@@ -86,8 +86,8 @@ const verifyResetOtp = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const { email, newPassword } = req.body;
-  await authService.resetPassword(email, newPassword);
+  const { email, newPassword , oldPassword} = req.body;
+  await authService.resetPassword(email, newPassword, oldPassword);
 
   sendResponse(res, {
     statusCode: 200,
@@ -140,12 +140,12 @@ const Login = catchAsync(
         );
       }
 
-      if (owner.status === OWNER_STATUS.PENDING) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Your account is pending admin approval."
-        );
-      }
+      // if (owner.status === OWNER_STATUS.PENDING) {
+      //   throw new AppError(
+      //     status.UNAUTHORIZED,
+      //     "Your account is pending admin approval."
+      //   );
+      // }
 
       if (owner.status === OWNER_STATUS.REJECTED) {
         throw new AppError(
@@ -155,19 +155,19 @@ const Login = catchAsync(
       }
     }
      
-    console.log(user._id)
   
-    const restaurantData = await OwnerModel.findOne({user:user._id});
+
+
     const payload = {
       userId: user._id,
-      restaurantId: restaurantData?.user,
+      restaurantId: user.restaurant,
       role: user.role,
     };
 
     const accessToken = generateToken(
       payload,
       config.JWT_ACCESS_TOKEN_SECRET!,
-      config.JWT_ACCESS_TOKEN_EXPIRES_IN!
+      18000
     );
 
     const refreshToken = generateToken(
@@ -191,6 +191,7 @@ const Login = catchAsync(
         accessToken,
         user: {
           _id: user._id,
+          restuarant: user.restaurant || null,
           name: user.name,
           email: user.email,
           role: user.role,

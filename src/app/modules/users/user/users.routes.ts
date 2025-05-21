@@ -4,11 +4,13 @@ import { validateRequest } from "../../../middlewares/validateRequest";
 import { userInputSchema, usersUpdateValidation } from "./users.validation";
 import { userController } from "./users.controller";
 import { upload } from "../../../utils/sendImageToCloudinary";
+import { authenticate } from "../../../middlewares/authGuard";
 
 const router = express.Router();
 
 router.post(
-  "/create-user",
+  "/owner-create-sub-user",
+  authenticate,
   validateRequest(userInputSchema),
   userController.createUser
 );
