@@ -43,12 +43,19 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
-  const updateData = req.body;
-  const id = req.params.id;
+  const file = req.file;
+  const data = req.body.data;
+  const { restaurant } = req.user as { restaurant: string };
+  const parsedData = JSON.parse(data);
+  const { id } = req.params;
 
-  const result = await categoryService.updateCategoryIntoDB(id, updateData);
+  const result = await categoryService.updateCategoryIntoDB(
+    { ...parsedData, restaurant: restaurant } as ICategory,
+    file as Express.Multer.File,
+    id
+  );
+  // const result = await categoryService.(id, updateData);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -57,6 +64,7 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const deleteCategory = catchAsync(async (req: Request, res: Response) => {
   const data = await categoryService.deleteCategoryFromDB(req.params.id);
   sendResponse(res, {

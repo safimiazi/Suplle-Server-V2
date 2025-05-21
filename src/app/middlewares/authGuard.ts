@@ -50,7 +50,7 @@ export const authenticate = (...allowedRoles: string[]) => async (
         );
     }
 
-  
+
     req.user = user as any;
     next();
   } catch (error) {
