@@ -14,7 +14,6 @@ const MenuSchema = new Schema<IMenu>(
     price: { type: Number, required: true },
     size: {
       type: String,
-      enum: ["small", "medium", "large"],
       required: true,
     },
     availability: { type: String, required: true},

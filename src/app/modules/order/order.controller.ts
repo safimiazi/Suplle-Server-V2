@@ -5,6 +5,9 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 
 const createOrder = catchAsync(async (req, res) => {
+
+
+  const data= req.body;
   const result = await orderServices.createOrder(req.body);
   sendResponse(res, {
     success: true,

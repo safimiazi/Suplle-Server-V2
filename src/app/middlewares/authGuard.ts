@@ -21,7 +21,6 @@ export const authenticate = (...allowedRoles: string[]) => async (
 ) => {
 
   const token = req.headers.authorization;
-  console.log(token);
 
   if (!token) {
     throw new Error("No token provided");

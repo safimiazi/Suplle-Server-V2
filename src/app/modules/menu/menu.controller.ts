@@ -4,6 +4,11 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { IMenu } from "./menu.interface";
+import fs from "fs"
+import * as XLSX from "xlsx"
+import { CategoryModel } from "../category/category.model";
+import { MenuModel } from "./menu.model";
+import { RestaurantModel } from "../restuarant/restuarant.model";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
@@ -19,6 +24,69 @@ const postMenu = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const uploadMenuFileController = catchAsync(async (req: Request, res: Response) => {
+  const file = req.file;
+
+  if (!file?.path) {
+    throw new Error("File not found");
+  }
+
+  try {
+    const filePath = file.path;
+    const fileBuffer = await fs.readFileSync(filePath);
+    const workbook = XLSX.read(fileBuffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Step 1: Prepare data (and check for any errors upfront)
+    const modifiedData = await Promise.all(
+      data.map(async (item: any) => {
+        // Check restaurant
+        const isExistRestaurant = await RestaurantModel.findOne({ restaurantName: item.restaurant });
+        if (!isExistRestaurant) {
+          throw new Error(`Restaurant "${item.restaurant}" was not found`);
+        }
+
+        // Check category
+        let category = await CategoryModel.findOne({
+          categoryName: item.category,
+        });
+
+        if (!category) {
+          category = await CategoryModel.create({
+            restaurant: isExistRestaurant._id,
+            categoryName: item.category,
+          });
+        }
+
+        return {
+          ...item,
+          restaurant: isExistRestaurant._id,
+          category: category._id,
+        };
+      })
+    );
+
+    // Step 2: Insert all only if no error occurs
+    const bulkInsertInDB = await MenuModel.insertMany(modifiedData);
+
+    sendResponse(res, {
+      statusCode: status.CREATED,
+      success: true,
+      message: "Menu created successfully",
+      data: bulkInsertInDB,
+    });
+  } catch (error) {
+    // If anything fails, don't insert anything
+    sendResponse(res, {
+      statusCode: status.BAD_REQUEST,
+      success: false,
+      message: `Menu upload failed: ${(error as Error).message}`,
+      data: null,
+    });
+  }
+});
+
 
 const getAllMenu = catchAsync(async (req: Request, res: Response) => {
   const result = await menuService.getAllMenuFromDB(req.query);
@@ -47,7 +115,7 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const parseData = JSON.parse(data);
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData,file as Express.Multer.File, id);
+  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -80,6 +148,7 @@ const MenuWithRestaurant = catchAsync(async (req: Request, res: Response) => {
 
 export const menuController = {
   postMenu,
+  uploadMenuFileController,
   getAllMenu,
   getSingleMenu,
   updateMenu,

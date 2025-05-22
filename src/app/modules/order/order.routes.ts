@@ -1,10 +1,13 @@
 import express from "express";
 import { orderController } from "./order.controller";
 import { validateRequest } from "../../middlewares/validateRequest";
-import {
-  orderPostValidation,
-  orderUpdateValidation,
-} from "./order.validation";
+
+import { authenticate } from "../../middlewares/authGuard";
+import { ROLE } from "../../constant/role";
+import { orderPostValidation } from "./order.validation";
+
+
+
 
 const router = express.Router();
 
@@ -20,7 +23,7 @@ router.get("/single-order/:id", orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
-  validateRequest(orderUpdateValidation),
+  // validateRequest(orderUpdateValidationSchema),
   orderController.updateOrder
 );
 
