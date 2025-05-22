@@ -1,1 +1,1 @@
-export const MENU_SEARCHABLE_FIELDS = [];
+export const MENU_SEARCHABLE_FIELDS = ["itemName"];

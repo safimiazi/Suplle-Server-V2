@@ -44,9 +44,10 @@ const getSingleMenu = catchAsync(async (req: Request, res: Response) => {
 
 const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const data = req.body.data;
+  const file = req.file;
   const parseData = JSON.parse(data);
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData, id);
+  const result = await menuService.updateMenuIntoDB(parseData,file as Express.Multer.File, id);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

@@ -15,22 +15,20 @@ export const menuPostValidation = z.object({
 
   image: z
     .string()
-    .optional()
     .default(""),
 
   price: z.number({ required_error: "Price is required" }),
 
   size: sizeEnum,
 
-  availability: z.boolean().optional().default(true),
+  availability: z.string(),
 
-  description: z.string().optional().default(""),
+  description: z.string().default(""),
 
   rating: z.number().optional().default(0),
 
   like: z.number().optional().default(0),
 
-  isDeleted: z.boolean().optional().default(false),
 });
 
 // PATCH validation (partial update)

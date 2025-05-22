@@ -42,6 +42,10 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: RoleEnum,
     },
+    isTourCompleted: {
+      type: Boolean,
+      default: false
+    },
     isDeleted: {
       type: Boolean,
       default: false,

@@ -8,11 +8,7 @@ const RestaurantZoneSchema = new Schema<IRestaurantZone>(
       ref: "Restaurant",
       required: true,
     },
-    floor: {
-      type: Schema.Types.ObjectId,
-      ref: "Floor",
-      required: true,
-    },
+
     tableName: { type: String, required: true },
     tableSetting: { type: String, required: true },
     seatingCapacity: { type: Number, required: true },
@@ -25,7 +21,6 @@ const RestaurantZoneSchema = new Schema<IRestaurantZone>(
     versionKey: false,
   }
 );
-RestaurantZoneSchema.index({ restaurant: 1, tableName: 1 }, { unique: true });
 
 export const RestaurantZone = model<IRestaurantZone>(
   "RestaurantZone",
