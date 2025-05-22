@@ -14,6 +14,8 @@ import { OwnerModel } from "../users/owner/owner.model";
 import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
 import { RestaurantModel } from "../restuarant/restuarant.model";
+import { notifyAdmin } from "../../utils/notifyAdmin";
+import { NOTIFICATION_TYPE } from "../notification/notification.constant";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -182,6 +184,8 @@ const Login = catchAsync(
       sameSite: config.ENVIRONMENT === "production" ? "strict" : "lax",
       maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
     });
+          await notifyAdmin(NOTIFICATION_TYPE.TOUR_COMPLETED, 'A new user just registered');
+    
 
     sendResponse(res, {
       statusCode: status.OK,
