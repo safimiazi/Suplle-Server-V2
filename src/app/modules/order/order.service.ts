@@ -1,29 +1,89 @@
-import { OrderModel } from './order.model';
-import { IOrder } from './order.interface';
+import QueryBuilder from "../../builder/QueryBuilder";
+import AppError from "../../errors/AppError";
+import { MenuModel } from "../menu/menu.model";
+import { RestaurantZone } from "../restaurantZone/restaurantZone.model";
+import { RestaurantModel } from "../restuarant/restuarant.model";
+import { IOrder } from "./order.interface";
+import { OrderModel } from "./order.model";
 
-import AppError from '../../errors/AppError';
-import { RestaurantZone } from '../restaurantZone/restaurantZone.model';
-import { RestaurantModel } from '../restuarant/restuarant.model';
 
-const createOrder = async (payload: IOrder) => {
-  const zone = await  RestaurantZone.findOne({_id: payload.zone});
-  if(!zone){
-    throw new AppError(400,"zone doesn't found")
+export const createOrder = async (payload: Omit<IOrder, "total">) => {
+
+  const restaurant = await RestaurantModel.findById(payload.restaurant);
+  if (!restaurant) {
+    throw new AppError(400, "Restaurant not found");
   }
 
-  const restaurant = await  RestaurantModel.findOne({_id: payload.restaurant});
- 
-  if(!restaurant){
-    throw new AppError(400,"restaurant doesn't found");
+
+  const zone = await RestaurantZone.findById(payload.zone);
+  if (!zone) {
+    throw new AppError(400, "Zone not found");
   }
 
-  const result = await OrderModel.create(payload);
+  let total = 0;
+
+  const validatedMenus = await Promise.all(
+    payload.menus.map(async (item) => {
+      const menu = await MenuModel.findById(item.menu);
+      if (!menu) {
+        throw new AppError(400, `Menu item not found: ${item.menu}`);
+      }
+
+      total += menu.price * item.quantity;
+
+      return {
+        menu: item.menu,
+        quantity: item.quantity,
+      };
+    })
+  );
+
+  const orderData: IOrder = {
+    ...payload,
+    menus: validatedMenus,
+    total
+  };
+
+  const result = await OrderModel.create(orderData);
   return result;
 };
 
-const getAllOrders = async () => {
-  const orders = await OrderModel.find({ isDeleted: false })
-  return orders;
+
+const getAllOrders = async (query: any = {}) => {
+  try {
+    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status'];
+
+    const service_query = new QueryBuilder(OrderModel.find(), query)
+      .search(ORDER_SEARCHABLE_FIELDS)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+
+    const result = await service_query.modelQuery.populate([
+      {
+        path: "restaurant",
+        select: "name address contact",
+      },
+      {
+        path: "zone",
+        select: "name description",
+      },
+      {
+        path: "menus.menu",
+        select: "itemName price size",
+      }
+    ]);
+
+    const meta = await service_query.countTotal();
+
+    return {
+      result,
+      meta,
+    };
+  } catch (error) {
+    throw error;
+  }
 };
 
 const getSingleOrder = async (id: string) => {

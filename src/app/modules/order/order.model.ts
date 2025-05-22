@@ -9,7 +9,15 @@ const OrderSchema = new Schema<IOrder>(
       required: true,
     },
     zone : { type: Schema.Types.ObjectId, ref: "RestaurantZone" ,default:"" },
-    menus: [{ type: Types.ObjectId, ref: "Menu", required: true }],
+    menus: {
+      type: [
+        {
+          menu: { type: Schema.Types.ObjectId, ref: "Menu", required: true },
+          quantity: { type: Number, required: true },
+        },
+      ],
+       
+    },
     customerName: { type: String, required: true },
     customerPhone: { type: String, required: true },
     orderType: {
@@ -17,13 +25,26 @@ const OrderSchema = new Schema<IOrder>(
       enum: ["dine in", "takeaway"],
       required: true,
     },
+  
+    specialRequest: { type: String, default: "" },
+    total: { type: Number, default:0},
+    paymentMethod: {
+      type: {
+        type: String,
+        enum: ["cash", "card"],
+        required: true,
+      },
+      cardNumber: {
+        type: String,
+        default: null,
+      },
+    },
     status: {
       type: String,
       enum: ["pending", "inProgress", "delivered", "cancel"],
       default: "pending",
     },
-    specialRequest: { type: String, default: "" },
-    total: { type: Number, required: true },
+
     isDeleted: { type: Boolean, default: false },
   },
   {
