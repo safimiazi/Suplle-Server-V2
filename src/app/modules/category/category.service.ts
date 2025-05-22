@@ -28,9 +28,7 @@ export const categoryService = {
         };
 
         newData.image = secure_url as string;
-      } else {
-        newData.image = null;
-      }
+      } 
 
       const restaurant = await RestaurantModel.findOne({
         _id: newData.restaurant,
@@ -112,9 +110,7 @@ export const categoryService = {
         };
 
         newData.image = secure_url as string;
-      } else {
-        newData.image = null;
-      }
+      } 
 
       const restaurant = await RestaurantModel.findOne({
         _id: newData.restaurant,

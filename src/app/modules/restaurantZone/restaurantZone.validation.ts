@@ -13,11 +13,10 @@ export const restaurantZoneValidationSchema = z.object({
     .number({ required_error: "Seating capacity is required" })
     .int("Seating capacity must be an integer")
     .min(1, "Seating capacity must be at least 1"),
-  isDeleted: z.boolean().optional(),
   zoneName: z.string().min(1, "Zone name is required"),
   zoneType: z.string().min(1, "Zone type is required"),
 });
 
 
 
-  export const restaurantZoneUpdateValidation = restaurantZoneValidationSchema.partial();
+export const restaurantZoneUpdateValidation = restaurantZoneValidationSchema.partial();

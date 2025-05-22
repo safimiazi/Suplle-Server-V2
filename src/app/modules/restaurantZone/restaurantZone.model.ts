@@ -8,11 +8,7 @@ const RestaurantZoneSchema = new Schema<IRestaurantZone>(
       ref: "Restaurant",
       required: true,
     },
-    floor: {
-      type: Schema.Types.ObjectId,
-      ref: "Floor",
-      required: true,
-    },
+
     tableName: { type: String, required: true },
     tableSetting: { type: String, required: true },
     seatingCapacity: { type: Number, required: true },

@@ -22,10 +22,13 @@ router.get("/single-menu/:id", menuController.getSingleMenu);
 router.get("/restaurant-menu/:restaurantId", menuController.MenuWithRestaurant);
 router.put(
   "/update-menu/:id",
-  upload.fields([{ name: "images", maxCount: 1 }]),
+  authenticate(ROLE.RESTAURANT_OWNER),
+
+  upload.single("image"),
   validateRequest(menuUpdateValidation),
   menuController.updateMenu
 );
-router.delete("/delete-menu/:id", menuController.deleteMenu);
+router.delete("/delete-menu/:id", authenticate(ROLE.RESTAURANT_OWNER),
+  menuController.deleteMenu);
 
 export const menuRoutes = router;

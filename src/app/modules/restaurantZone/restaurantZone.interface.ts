@@ -2,7 +2,6 @@ import { Types } from "mongoose";
 
 export interface IRestaurantZone {
   restaurant: Types.ObjectId;
-  floor: Types.ObjectId,
   tableName: string;
   tableSetting: string;
   seatingCapacity: number;
