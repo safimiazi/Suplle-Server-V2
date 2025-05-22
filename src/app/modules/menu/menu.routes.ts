@@ -17,6 +17,15 @@ router.post(
   },
   menuController.postMenu
 );
+router.post(
+  "/upload-bulk",
+  authenticate(ROLE.RESTAURANT_OWNER),
+  upload.single("menuFile"),
+  (req: Request, res: Response, next: NextFunction) => {
+    next();
+  },
+  menuController.uploadMenuFileController
+);
 router.get("/all-menu", menuController.getAllMenu);
 router.get("/single-menu/:id", menuController.getSingleMenu);
 router.get("/restaurant-menu/:restaurantId", menuController.MenuWithRestaurant);
