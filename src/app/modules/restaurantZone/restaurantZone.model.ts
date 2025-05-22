@@ -21,7 +21,6 @@ const RestaurantZoneSchema = new Schema<IRestaurantZone>(
     versionKey: false,
   }
 );
-RestaurantZoneSchema.index({ restaurant: 1, tableName: 1 }, { unique: true });
 
 export const RestaurantZone = model<IRestaurantZone>(
   "RestaurantZone",

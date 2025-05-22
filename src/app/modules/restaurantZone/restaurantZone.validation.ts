@@ -2,11 +2,7 @@ import { z } from "zod";
 import mongoose from "mongoose";
 
 export const restaurantZoneValidationSchema = z.object({
-  restaurant: z
-    .string()
-    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-      message: "Invalid restaurant ID",
-    }),
+
   tableName: z.string().min(1, "Table name is required"),
   tableSetting: z.string().min(1, "Table setting is required"),
   seatingCapacity: z
