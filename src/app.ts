@@ -6,10 +6,38 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
 import bcrypt from "bcryptjs";
 import path from "path";
+import http from 'http'
 import fs from "fs";
+import {Server} from 'socket.io'
 import "./app/utils/passport";
 import { UserModel } from "./app/modules/users/user/users.model";
 const app: Application = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {origin: '*'}, // allow frontend to connect
+})
+
+let adminSocket : string | null = null;
+
+io.on('connection', (socket) => {
+  console.log('Someone connected:', socket.id)
+
+  //register admin so we know where to send notification
+  socket.on('register-admin', () => {
+    adminSocket= socket.id;
+    console.log('admin registered:', socket.id);
+  })
+
+  socket.on('disconnect', () => {
+    if(socket.id === adminSocket){
+      adminSocket= null;
+      console.log("Admin disconnected");
+    }
+  })
+})
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -105,3 +133,5 @@ export const createAdmin = async () => {
 createAdmin();
 
 export default app;
+
+export {io, adminSocket}

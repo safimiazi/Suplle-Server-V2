@@ -38,11 +38,9 @@ export const SubscriptionPlanService = {
         meta,
       };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async getSingleSubscriptionPlanFromDB(id: string) {
@@ -53,11 +51,9 @@ export const SubscriptionPlanService = {
       }
       return result;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async updateSubscriptionPlanIntoDB(data: any, id: string) {
@@ -104,11 +100,9 @@ export const SubscriptionPlanService = {
       await SubscriptionPlanModel.updateOne({ _id: id }, { isDeleted: true });
       return;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
 };

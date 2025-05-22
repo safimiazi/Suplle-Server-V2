@@ -29,22 +29,18 @@ export const floorService = {
         result,
       };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async getSingleFloorFromDB(id: string) {
     try {
       return await FloorModel.findById(id);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async updateFloorIntoDB(data: IFloor, id: string) {
@@ -62,11 +58,9 @@ export const floorService = {
       }
       return result;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async deleteFloorFromDB(id: string) {
@@ -79,11 +73,9 @@ export const floorService = {
       await FloorModel.findByIdAndDelete({ _id: id });
       return;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
 };

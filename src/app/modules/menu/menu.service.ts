@@ -97,11 +97,9 @@ export const menuService = {
         meta,
       };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async getSingleMenuFromDB(id: string) {
@@ -112,11 +110,9 @@ export const menuService = {
       }
       return result;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
 
@@ -124,11 +120,9 @@ export const menuService = {
     try {
       return await MenuModel.find({ restaurant: new Types.ObjectId(id) });
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
 
