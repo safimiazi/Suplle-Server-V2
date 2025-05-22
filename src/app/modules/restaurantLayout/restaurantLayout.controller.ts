@@ -13,8 +13,8 @@ const postRestaurantLayout = catchAsync(async (req, res) => {
   });
 });
 
-const getAllRestaurantLayout = catchAsync(async (_req, res) => {
-  const result = await restaurantLayoutService.getAllRestaurantLayout();
+const getAllRestaurantLayout = catchAsync(async (req, res) => {
+  const result = await restaurantLayoutService.getAllRestaurantLayoutFromDB(req.query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

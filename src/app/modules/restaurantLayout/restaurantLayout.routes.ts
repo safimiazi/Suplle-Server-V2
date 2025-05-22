@@ -6,10 +6,13 @@ import {
   restaurantLayoutUpdateValidation,
 } from "./restaurantLayout.validation";
 
+import { ROLE } from "../users/user/users.constant";
+import { authenticate } from "../../middlewares/authGuard";
+
 const router = express.Router();
 
 router.post(
-  "/create-restaurant-layout",
+  "/create-restaurant-layout",  authenticate(ROLE.RESTAURANT_OWNER),
   // validateRequest(restaurantLayoutPostValidation),
   restaurantLayoutController.postRestaurantLayout
 );
