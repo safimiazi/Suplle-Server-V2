@@ -8,7 +8,6 @@ import bcrypt from "bcryptjs";
 import { validateData } from "../../../middlewares/validateData ";
 import { staffPostValidation, staffUpdateValidation } from "./staff.validation";
 
-
 const createStaff = async (data: any, file: Express.Multer.File) => {
   const session = await startSession();
   session.startTransaction();
@@ -18,14 +17,17 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
     const staffData: any = { ...rest };
     if (file && file.path) {
       const imageName = `${Math.floor(100 + Math.random() * 900)}`;
-      const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
+      const { secure_url } = (await uploadImgToCloudinary(
+        imageName,
+        file.path
+      )) as {
         secure_url: string;
       };
       staffData.image = secure_url;
     } else {
-      staffData.image = "no image";
+      staffData.image = null;
     }
-    
+
     const hashedPassword = await bcrypt.hash("staff123", 10);
     // Create user
     const userData = {
@@ -38,18 +40,16 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
     };
 
     const createUser = await UserModel.create([userData], { session });
-  
-    
+
     // Prepare staff data
     const staffDoc = {
       user: createUser[0]._id,
       restaurant: staffData.restaurant,
       workDay: staffData.workDay,
       workTime: staffData.workTime,
-
     };
-  
-      // const validatedData = await validateData<IStaff>(staffPostValidation, staffDoc);
+
+    // const validatedData = await validateData<IStaff>(staffPostValidation, staffDoc);
 
     const createdStaff = await StaffModel.create([staffDoc], { session });
 
@@ -61,16 +61,23 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(500, "Failed to create staff: " + (error as Error).message);
+    throw new AppError(
+      500,
+      "Failed to create staff: " + (error as Error).message
+    );
   }
 };
 const getAllStaff = async () => {
-  const result = await StaffModel.find({ isDeleted: false }).populate("user").populate("restaurant");
+  const result = await StaffModel.find({ isDeleted: false })
+    .populate("user")
+    .populate("restaurant");
   return result;
 };
 
 const getSingleStaff = async (id: string) => {
-  const result = await StaffModel.findById(id).populate("user").populate("restaurant");
+  const result = await StaffModel.findById(id)
+    .populate("user")
+    .populate("restaurant");
   if (!result || result.isDeleted) {
     throw new AppError(404, "Staff not found");
   }
@@ -86,45 +93,48 @@ const updateStaff = async (
   session.startTransaction();
 
   try {
-
-    let imageUrl = data.image || "no image";
+    let imageUrl = data.image || null;
 
     // If a new image is uploaded
     if (file && file.path) {
       const imageName = `${Math.floor(100 + Math.random() * 900)}`;
-      const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
+      const { secure_url } = (await uploadImgToCloudinary(
+        imageName,
+        file.path
+      )) as {
         secure_url: string;
       };
       imageUrl = secure_url;
     }
 
-
-   const userData = {
-    name:data.name,
-    email:data.email,
-    phone:data.phone
-   }
-   const  staffData =  await StaffModel.findOne({_id:id});
+    const userData = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+    };
+    const staffData = await StaffModel.findOne({ _id: id });
     if (!staffData) {
       throw new AppError(404, "Staff not found");
     }
     // Update the user
     const updatedUser = await UserModel.findByIdAndUpdate(
       staffData.user,
-       userData,
+      userData,
       { new: true, session }
     );
 
     if (!updatedUser) {
       throw new AppError(404, "User not found");
     }
-    const validatedData = await validateData<IStaff>(staffUpdateValidation.unwrap(), data);
-
-    const updatedStaff = await StaffModel.findByIdAndUpdate(
-      id,
-      validatedData,
-      { new: true, session }
+    const validatedData = await validateData<IStaff>(
+      staffUpdateValidation.unwrap(),
+      data
     );
+
+    const updatedStaff = await StaffModel.findByIdAndUpdate(id, validatedData, {
+      new: true,
+      session,
+    });
 
     if (!updatedStaff) {
       throw new AppError(404, "Staff not found");
@@ -137,12 +147,19 @@ const updateStaff = async (
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(500, "Failed to update staff: " + (error as Error).message);
+    throw new AppError(
+      500,
+      "Failed to update staff: " + (error as Error).message
+    );
   }
 };
 
 const deleteStaff = async (id: string) => {
-  const result = await StaffModel.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+  const result = await StaffModel.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+  );
   if (!result) {
     throw new AppError(404, "Staff not found");
   }
