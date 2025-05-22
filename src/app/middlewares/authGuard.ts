@@ -1,55 +1,58 @@
-// import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
-// // Extend the Request interface to include the user property
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user?: any;
-//     }
-//   }
-// }
-// import jwt, { JwtPayload } from "jsonwebtoken";
-// import AppError from "../errors/AppError";
-// import status from "http-status";
-// import { UserModel } from "../modules/users/user/users.model";
+// Extend the Request interface to include the user property
+declare global {
+  namespace Express {
+    interface Request {
+      User?: any;
+    }
+  }
+}
+import jwt, { JwtPayload } from "jsonwebtoken";
+import AppError from "../errors/AppError";
+import status from "http-status";
+import { UserModel } from "../modules/users/user/users.model";
+import config from "../config";
 
-// export const authenticate = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-//   if (!token) {
-//     throw new Error("No token provided");
-//   }
-//   try {
-//     const decoded = (await jwt.verify(
-//       token,
-//       process.env.JWT_SECRET as string
-//     )) as JwtPayload;
+export const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token =  req.headers.authorization;
+  console.log(token)
+  if (!token) {
+    throw new Error("No token provided");
+  }
+  try {
+    const decoded = (await jwt.verify(
+      token,
+      config.JWT_ACCESS_TOKEN_SECRET as string
+    )) as JwtPayload;
 
-//     if (!decoded) {
-//       throw new Error("Invalid token");
-//     }
-//     const user = await UserModel.findById(decoded.userId);
-//     if (!user || !user.isActive) {
-//       {
-//         throw new Error("User not found or inactive");
-//       }
-//     }
+    if (!decoded) {
+      throw new Error("Invalid token");
+    }
+    const user = await UserModel.findById(decoded.userId);
+    if (!user) {
+      {
+        throw new Error("User not found");
+      }
+    }
 
-//     req.user = user as any;
-//     next();
-//   } catch (error) {
-//     if (error instanceof jwt.TokenExpiredError) {
-//       throw new AppError(
-//         status.FORBIDDEN,
-//         "Token expired. Please login again."
-//       );
-//     }
-//     next(error);
-//   }
-// };
+    req.user = user as any;
+    next();
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AppError(
+        status.FORBIDDEN,
+        "Token expired. Please login again."
+      );
+    }
+    next(error);
+  }
+};
+
 // export const authorize = (...roles: string[]): any => {
 //   return (req: Request, res: Response, next: NextFunction) => {
 //     if (!req.user || !roles.includes(req.user.role)) {

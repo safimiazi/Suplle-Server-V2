@@ -4,7 +4,7 @@
     import { MenuModel } from "./menu.model";
     import { validateData } from "../../middlewares/validateData ";
     import { IMenu } from "./menu.interface";
-    import { menuPostValidation } from "./menu.validation";
+    import { menuPostValidation, menuUpdateValidation } from "./menu.validation";
     import { uploadImgToCloudinary } from "../../utils/sendImageToCloudinary";
     import { RestaurantModel } from "../restuarant/restuarant.model";
     import mongoose, { Types } from "mongoose";
@@ -77,7 +77,12 @@
       },
       async getSingleMenuFromDB(id: string) {
         try {
-        return await MenuModel.findById(id);
+       const result =  await MenuModel.findOne({_id:id});
+       if(!result) {
+        throw new AppError(400,"Menu does not exist")
+       }
+       return result;
+       
          } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(`${error.message}`);
@@ -101,28 +106,21 @@ async getMenuWithRestaurantFromDB(id: string) {
 },
 
   async updateMenuIntoDB(data:IMenu,id: string) {
-      try {
+    const validatedData = await validateData(menuUpdateValidation, data) as mongoose.UpdateQuery<IMenu>;
 
-      const isDeleted = await MenuModel.findOne({ _id:id});
-        if (isDeleted?.isDeleted) {
-          throw new AppError(status.NOT_FOUND, "menu is already deleted");
-        }
-    
-        const result = await MenuModel.updateOne({ _id:id }, data, {
-          new: true,
-        });
-        if (!result) {
-          throw new Error("menu not found.");
-        }
-        return result;
   
-         } catch (error: unknown) {
-          if (error instanceof Error) {
-            throw new Error(`${error.message}`);
-          } else {
-            throw new Error("An unknown error occurred while fetching by ID.");
-          }
-        }
+    const existingMenu = await MenuModel.findById(id);
+    if (!existingMenu) {
+      throw new AppError(status.NOT_FOUND, "Menu not found");
+    }
+    if (existingMenu.isDeleted) {
+      throw new AppError(status.BAD_REQUEST, "Menu is already deleted");
+    }
+    const updatedMenu = await MenuModel.findByIdAndUpdate(id, validatedData, {
+      new: true,
+    });
+  
+    return updatedMenu;
       },
       async deleteMenuFromDB(id: string) {
         try {

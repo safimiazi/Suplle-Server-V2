@@ -18,14 +18,17 @@ import { IMenu } from "./menu.interface";
     });
     
     const getSingleMenu = catchAsync(async (req: Request, res: Response) => {
-      const result = await menuService.getSingleMenuFromDB(req.params.id);
+      const{ id }= req.params;
+      const result = await menuService.getSingleMenuFromDB(id);
+      console.log(result)
       sendResponse(res, { statusCode: status.OK, success: true, message: "Single Menu Fetched successfully", data: result });
     });
     
     const updateMenu = catchAsync(async (req: Request, res: Response) => {
-      const data = req.body;
+      const data = req.body.data;
+      const parseData = JSON.parse(data)
       const id = req.params.id;
-      const result = await menuService.updateMenuIntoDB(data,id);
+      const result = await menuService.updateMenuIntoDB(parseData,id);
       sendResponse(res, { statusCode: status.OK, success: true, message: "Menu Updated successfully", data: result });
     });
     

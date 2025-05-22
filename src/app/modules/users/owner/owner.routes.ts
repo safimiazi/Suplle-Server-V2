@@ -10,6 +10,7 @@ router.post(
   validateRequest(ownerPostValidation),
   ownerController.postOwner
 );
+
 router.get("/get_all_owner", ownerController.getAllOwner);
 router.get("/get_single_owner/:id", ownerController.getSingleOwner);
 router.put(

@@ -2,14 +2,60 @@ import { UserModel } from "./users.model";
 import { IUser } from "./users.interface";
 import AppError from "../../../errors/AppError";
 import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
-import { validateData} from "../../../middlewares/validateData ";
+import { validateData } from "../../../middlewares/validateData ";
 import { usersUpdateValidation } from "./users.validation";
 import { UpdateQuery } from "mongoose";
+import { sendUserLoginCredentials } from "../../../utils/subUserEmailTamplate";
+import { OwnerModel } from "../owner/owner.model";
 
+import bcrypt from "bcryptjs";
 
-const createUser = async (data: IUser) => {
-  const result = await UserModel.create(data);
-  return result;
+const createUser = async (data: IUser, owner: any) => {
+  const session = await UserModel.startSession();
+  session.startTransaction();
+
+  try {
+    // 1. Check if user already exists
+    const existingUser = await UserModel.findOne({ email: data.email }).session(
+      session
+    );
+    if (existingUser) {
+      throw new AppError(409, "User already exists");
+    }
+
+    let modifiedData: any = { ...data };
+
+    modifiedData.restaurant = owner.restaurant;
+
+    // 2. Create new user with session
+    const result = await UserModel.create([modifiedData], { session });
+    const user = result[0];
+
+    if (!user) {
+      throw new AppError(400, "Failed to create user");
+    }
+
+    // 3. Send credentials (optional: can be outside transaction)
+    await sendUserLoginCredentials(
+      user.email,
+      user.password,
+      user.name,
+      user.role,
+      user.phone
+    );
+
+    await session.commitTransaction();
+    return {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error; // Preserve original error
+  } finally {
+    session.endSession();
+  }
 };
 
 const getAllUsers = async () => {
@@ -24,23 +70,28 @@ const getSingleUser = async (id: string) => {
   return result;
 };
 
-const updateUser = async (  id: string,
+const updateUser = async (
+  id: string,
   data: any,
-  file?: Express.Multer.File) => {
+  file?: Express.Multer.File
+) => {
+  const parsedData = JSON.parse(data);
 
-    const parsedData = JSON.parse(data);
+  if (file && file.path) {
+    const imageName = `${Math.floor(100 + Math.random() * 900)}`;
+    const { secure_url } = (await uploadImgToCloudinary(
+      imageName,
+      file.path
+    )) as {
+      secure_url: string;
+    };
+    parsedData.image = secure_url;
+  }
 
-    
-    if (file && file.path) {
-      const imageName = `${Math.floor(100 + Math.random() * 900)}`;
-      const { secure_url } = await uploadImgToCloudinary(imageName, file.path) as {
-        secure_url: string;
-      };
-      parsedData.image = secure_url;
-    }
-
-
-    const Data = await validateData(usersUpdateValidation, parsedData) as UpdateQuery<IUser>;
+  const Data = (await validateData(
+    usersUpdateValidation,
+    parsedData
+  )) as UpdateQuery<IUser>;
 
   const result = await UserModel.findByIdAndUpdate(id, Data, { new: true });
   if (!result) {

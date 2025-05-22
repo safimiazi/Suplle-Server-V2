@@ -1,3 +1,5 @@
+import { ObjectId, Types } from "mongoose";
+
 export type IUserRole =
   | "admin"
   | "restaurant_owner"
@@ -12,6 +14,7 @@ export type IUserRole =
 
 export type IUser = {
   _id: string;
+  restaurant?: Types.ObjectId;
   name: string;
   otp: string;
   otpExpiresAt: Date;

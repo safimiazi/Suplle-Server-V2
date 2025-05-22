@@ -6,18 +6,30 @@ import { FloorModel } from '../floor/floor.model';
 import { OwnerModel } from '../users/owner/owner.model';
 import mongoose from 'mongoose';
 import { toObjectId } from '../../utils/ConvertObjectId';
+import { RestaurantZone } from '../restaurantZone/restaurantZone.model';
 
 
 const postRestaurantLayout = async (payload: IRestaurantLayout) => {
 
+
+ 
   const isRestaurantExists =  await RestaurantModel.findById({_id: payload.restaurant});
   if(!isRestaurantExists){
     throw new AppError(400,"the restaurant is not exist");
   }
-  const isFloorExists =  await FloorModel.findById({_id: payload.floor});
-  if(!isFloorExists){
-    throw new AppError(400,"the floor is not exist");
+
+  const allRestaurantZone = (await RestaurantZone.find({}));
+  // const floor = allRestaurantZone[0].floor;
+
+  const tableNumber =  (await RestaurantZone.find({})).length;
+    
+    (payload as any).numberOfTables = tableNumber;
+    // (payload as any).floor= floor;
+  if(!allRestaurantZone){
+    throw new AppError(400,"please create layout first");
   }
+  
+
   const result = await RestaurantLayoutModel.create(payload);
   return result;
 };
