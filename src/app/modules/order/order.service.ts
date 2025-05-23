@@ -85,23 +85,92 @@ const getAllOrders = async (query: any = {}) => {
     throw error;
   }
 };
+const getSingleOrder = async (id: string, query: any = {}) => {
 
-const getSingleOrder = async (id: string) => {
-  const order = await OrderModel.findById(id);
+  const existingOrder = await OrderModel.findById(id);
+  if (!existingOrder || existingOrder.isDeleted) {
+    throw new AppError(400, "the order is not exist");
+  }
+
+  const service_query = new QueryBuilder(OrderModel.find({_id:id}), query)
+    .fields();
+
+  const order = await service_query.modelQuery.populate([
+    {
+      path: "restaurant", 
+    },
+    {
+      path: "zone",
+      select: "name description",
+    },
+    {
+      path: "menus.menu",
+      select: "itemName price size",
+    }
+  ]);
+
   return order;
 };
 
-const updateOrder = async (id: string, payload: Partial<IOrder>) => {
-  const updated = await OrderModel.findByIdAndUpdate(id, payload, {
-    new: true,
-  });
 
-   const findOrder = await OrderModel.findOne({_id:id})
-  if(!findOrder){
-    throw new AppError(400,"order updated Failed");
+
+const updateOrder = async (id: string, payload: Partial<IOrder>) => {
+
+  const existingOrder = await OrderModel.findById(id);
+  if (!existingOrder || existingOrder.isDeleted) {
+    throw new AppError(400, "Cannot update a deleted order");
   }
-  return updated;
+
+
+  if (payload.restaurant) {
+    const restaurant = await RestaurantModel.findById(payload.restaurant);
+    if (!restaurant) {
+      throw new AppError(400, "Restaurant not found");
+    }
+  }
+
+  if (payload.zone) {
+    const zone = await RestaurantZone.findById(payload.zone);
+    if (!zone) {
+      throw new AppError(400, "Zone not found");
+    }
+  }
+  let total = existingOrder.total;
+  if (payload.menus) {
+    total = 0;
+
+    const validatedMenus = await Promise.all(
+      payload.menus.map(async (item) => {
+        const menu = await MenuModel.findById(item.menu);
+        if (!menu) {
+          throw new AppError(400, `Menu item not found: ${item.menu}`);
+        }
+
+        total += menu.price * item.quantity;
+
+        return {
+          menu: item.menu,
+          quantity: item.quantity,
+        };
+      })
+    );
+
+    payload.menus = validatedMenus;
+    payload.total = total;
+  }
+
+  const updatedOrder = await OrderModel.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  }).populate([
+    { path: "restaurant" },
+    { path: "zone", select: "name description" },
+    { path: "menus.menu", select: "itemName price size" },
+  ]);
+
+  return updatedOrder;
 };
+
 
 const deleteOrder = async (id: string) => {
   const deleted = await OrderModel.findByIdAndUpdate(

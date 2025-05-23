@@ -37,15 +37,17 @@ const getSingleOrder = catchAsync(async (req, res) => {
   });
 });
 
+
 const updateOrder = catchAsync(async (req, res) => {
   const result = await orderServices.updateOrder(req.params.id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Order updated successfully',
+    message: "Order updated successfully",
     data: result,
   });
 });
+
 
 const deleteOrder = catchAsync(async (req, res) => {
   const result = await orderServices.deleteOrder(req.params.id);
