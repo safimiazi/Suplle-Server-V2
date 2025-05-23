@@ -1,21 +1,41 @@
 import mongoose, { Schema, model, Document, Types } from "mongoose";
-import { IStaff } from "./staff.interface";
+import { DaysOfWeekEnum, IStaff } from "./staff.interface";
 
 
-const StaffSchema = new Schema<IStaff>(
+const StaffSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    restaurant: { type: Schema.Types.ObjectId,  ref: "Restaurant", required: true },
-    workDay: { type: String, required: true }, 
-    workTime: { type: String, required: true }, 
-    status:{
-      type:String,
-      enum: ['active','inactive'],
+    restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
+    workDays: {
+      type: [
+        {
+          type: String,
+          enum: DaysOfWeekEnum,
+        },
+      ],
+      required: false,
+      default: [],
+    }, 
+    workTime: {
+      type: {
+        start: {
+          type: String,
+          match: [/^\d{1,2}:\d{2} (AM|PM)$/i, "Invalid start time format"],
+        },
+        end: {
+          type: String,
+          match: [/^\d{1,2}:\d{2} (AM|PM)$/i, "Invalid end time format"],
+        },
+      },
+      required: false,
+    },
+    status: {
+      type: String,
       default: "active"
     },
     isDeleted: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false
     }
 
   },

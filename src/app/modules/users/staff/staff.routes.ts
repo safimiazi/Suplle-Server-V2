@@ -1,14 +1,18 @@
-import express from "express";
-import { validateRequest } from "../../../middlewares/validateRequest";
+import express, { NextFunction, Request, Response } from "express";
 import { staffController } from "./staff.controller";
-import { staffPostValidation, staffUpdateValidation } from "./staff.validation";
 import { upload } from "../../../utils/sendImageToCloudinary";
+import { authenticate } from "../../../middlewares/authGuard";
+import { ROLE } from "../user/users.constant";
 
 const router = express.Router();
 
 router.post(
   "/create-staff",
+  authenticate(ROLE.RESTAURANT_OWNER),
   upload.single("image"), 
+    (req: Request, res: Response, next: NextFunction) => {
+    next();
+  },
   staffController.createStaff
 );
 router.get("/all-staff", staffController.getAllStaff);

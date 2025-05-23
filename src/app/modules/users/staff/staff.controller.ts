@@ -7,9 +7,12 @@ import sendResponse from "../../../utils/sendResponse";
 const createStaff = catchAsync(async (req: Request, res: Response) => {
 
   const data = JSON.parse(req.body.data);
+  const user = req.user as any;
+  console.log("user", data);
   const uploadImage = req.file;
-  console.log("11",uploadImage)
-  const result = await staffService.createStaff(data,uploadImage as Express.Multer.File);
+
+
+  const result = await staffService.createStaff({...data, restaurant:user.restaurant },uploadImage as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,

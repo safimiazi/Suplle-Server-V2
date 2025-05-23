@@ -6,7 +6,7 @@ import { UserModel } from "../user/users.model";
 import mongoose, { startSession } from "mongoose";
 import bcrypt from "bcryptjs";
 import { validateData } from "../../../middlewares/validateData ";
-import { staffPostValidation, staffUpdateValidation } from "./staff.validation";
+import {  staffUpdateValidation } from "./staff.validation";
 
 const createStaff = async (data: any, file: Express.Multer.File) => {
   const session = await startSession();
@@ -15,6 +15,13 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
   try {
     const { image, ...rest } = data;
     const staffData: any = { ...rest };
+
+
+    // Check if user with the same email already exists
+    const existingUser = await UserModel.findOne({ email: staffData.email }).session(session);
+    if (existingUser) {
+      throw new AppError(409, "User with this email already exists.");
+    }
     if (file && file.path) {
       const imageName = `${Math.floor(100 + Math.random() * 900)}`;
       const { secure_url } = (await uploadImgToCloudinary(
@@ -24,17 +31,14 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
         secure_url: string;
       };
       staffData.image = secure_url;
-    } else {
-      staffData.image = null;
-    }
+    } 
 
-    const hashedPassword = await bcrypt.hash("staff123", 10);
     // Create user
     const userData = {
+      restaurant: staffData.restaurant,
       name: staffData.name,
       email: staffData.email,
       phone: staffData.phone,
-      password: hashedPassword,
       role: staffData.role,
       image: staffData.image,
     };
@@ -45,11 +49,11 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
     const staffDoc = {
       user: createUser[0]._id,
       restaurant: staffData.restaurant,
-      workDay: staffData.workDay,
+      workDays: staffData.workDays,
       workTime: staffData.workTime,
+      status: staffData.status
     };
 
-    // const validatedData = await validateData<IStaff>(staffPostValidation, staffDoc);
 
     const createdStaff = await StaffModel.create([staffDoc], { session });
 
@@ -61,10 +65,7 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(
-      500,
-      "Failed to create staff: " + (error as Error).message
-    );
+   throw error;
   }
 };
 const getAllStaff = async () => {
@@ -126,12 +127,9 @@ const updateStaff = async (
     if (!updatedUser) {
       throw new AppError(404, "User not found");
     }
-    const validatedData = await validateData<IStaff>(
-      staffUpdateValidation.unwrap(),
-      data
-    );
 
-    const updatedStaff = await StaffModel.findByIdAndUpdate(id, validatedData, {
+
+    const updatedStaff = await StaffModel.findByIdAndUpdate(id, data, {
       new: true,
       session,
     });

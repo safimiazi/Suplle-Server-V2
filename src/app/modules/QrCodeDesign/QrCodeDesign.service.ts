@@ -45,9 +45,7 @@ export const QrCodeDesignService = {
           secure_url: string;
         };
         data.image = secure_url;
-      } else {
-        data.image = null; // or null
-      }
+      } 
 
       // Validate with Zod
       const validatedData = await validateData<IQrCodeDesign>(

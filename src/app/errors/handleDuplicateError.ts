@@ -7,7 +7,6 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
 
   // The extracted value will be in the first capturing group
   const extractedMessage = match && match[1];
-
   const errorSource: TErrorSource[] = [
     {
       path: "",
