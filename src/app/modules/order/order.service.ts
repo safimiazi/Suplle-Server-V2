@@ -51,7 +51,7 @@ export const createOrder = async (payload: Omit<IOrder, "total">) => {
 
 const getAllOrders = async (query: any = {}) => {
   try {
-    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status'];
+    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status','isDeleted'];
 
     const service_query = new QueryBuilder(OrderModel.find(), query)
       .search(ORDER_SEARCHABLE_FIELDS)

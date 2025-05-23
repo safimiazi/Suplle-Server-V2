@@ -4,7 +4,8 @@ import { validateRequest } from "../../middlewares/validateRequest";
 
 
 import { ROLE } from "../../constant/role";
-import { orderPostValidation } from "./order.validation";
+import { orderPostValidation, orderUpdateValidation } from "./order.validation";
+import { authenticate } from "../../middlewares/authGuard";
 
 
 
@@ -13,8 +14,8 @@ const router = express.Router();
 
 router.post(
   "/create-order",
-// authenticate(ROLE.STAFF),
-  validateRequest(orderPostValidation),
+authenticate(ROLE.STAFF),
+validateRequest(orderPostValidation),
   orderController.createOrder
 );
 
@@ -24,11 +25,12 @@ router.get("/single-order/:id", orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
-  // validateRequest(orderUpdateValidationSchema),
-  // authenticate(ROLE.STAFF),
+ authenticate(ROLE.STAFF),
+  validateRequest(orderUpdateValidation),
+ 
   orderController.updateOrder
 );
 
-router.delete("/delete-order/:id", orderController.deleteOrder);
+router.delete("/delete-order/:id", authenticate(ROLE.STAFF), orderController.deleteOrder);
 
 export const orderRoutes = router;

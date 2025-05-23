@@ -49,12 +49,50 @@ export const orderPostValidation = z.object({
   isDeleted: z.boolean().optional().default(false),
 });
 
-// PATCH validation (partial update)
-// export const orderUpdateValidation = orderPostValidation.partial().refine(
-//   (data) =>
-//     !data.paymentMethod || data.paymentMethod.type !== "card" || !!data.paymentMethod.cardNumber,
-//   {
-//     message: "Card number is required when payment method is 'card'",
-//     path: ["paymentMethod", "cardNumber"],
-//   }
-// );
+
+export const orderUpdateValidation = z.object({
+  restaurant: z
+    .string()
+    .regex(objectIdRegex, { message: "Invalid Restaurant ID" })
+    .optional(),
+
+  zone: z
+    .string()
+    .regex(objectIdRegex, { message: "Invalid Zone ID" })
+    .optional(),
+
+  menus: z
+    .array(
+      z.object({
+        menu: z
+          .string()
+          .regex(objectIdRegex, { message: "Invalid Menu ID" }),
+        quantity: z
+          .number()
+          .min(1, { message: "Quantity must be at least 1" }),
+      })
+    )
+    .nonempty({ message: "At least one menu item is required" })
+    .optional(),
+
+  customerName: z.string().min(1, { message: "Customer name is required" }).optional(),
+
+  customerPhone: z.string().min(7, { message: "Customer phone must be at least 7 digits" }).optional(),
+
+  orderType: orderTypeEnum.optional(),
+
+  specialRequest: z.string().optional(),
+
+  total: z.number().min(0).optional(),
+
+  paymentMethod: z
+    .object({
+      type: paymentTypeEnum,
+      cardNumber: z.string().nullable().optional(),
+    })
+    .optional(),
+
+  status: statusEnum.optional(),
+
+  isDeleted: z.boolean().optional(),
+});

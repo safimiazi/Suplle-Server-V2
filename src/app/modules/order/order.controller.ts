@@ -4,10 +4,10 @@ import { orderServices } from './order.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 
+
 const createOrder = catchAsync(async (req, res) => {
-  // const user = req.user;;
-  // console.log(user)
-  const result = await orderServices.createOrder(req.body);
+  const data = req.body;
+  const result = await orderServices.createOrder(data);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -16,14 +16,11 @@ const createOrder = catchAsync(async (req, res) => {
   });
 });
 
-declare namespace Express {
-  export interface User {
-    restaurant?: string | null;
-  }
-}
 
-const getAllOrders = catchAsync(async (_req, res) => {
-  const result = await orderServices.getAllOrders();
+
+const getAllOrders = catchAsync(async (req, res) => {
+  const query = req.query;
+  const result = await orderServices.getAllOrders(query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

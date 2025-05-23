@@ -5,7 +5,7 @@ declare global {
   namespace Express {
     interface Request {
       User?: any;
-   
+      restaurant?: string | null;
     }
   }
 }
@@ -34,7 +34,7 @@ export const authenticate = (...allowedRoles: string[]) => async (
       config.JWT_ACCESS_TOKEN_SECRET as string
     )) as JwtPayload;
 
-    console.log(decoded)
+    // console.log(decoded)
 
     if (!decoded) {
       throw new Error("Invalid token");
