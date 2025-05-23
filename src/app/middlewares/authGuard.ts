@@ -5,9 +5,12 @@ declare global {
   namespace Express {
     interface Request {
       User?: any;
+   
     }
   }
 }
+
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../errors/AppError";
 import status from "http-status";
@@ -30,6 +33,8 @@ export const authenticate = (...allowedRoles: string[]) => async (
       token,
       config.JWT_ACCESS_TOKEN_SECRET as string
     )) as JwtPayload;
+
+    console.log(decoded)
 
     if (!decoded) {
       throw new Error("Invalid token");

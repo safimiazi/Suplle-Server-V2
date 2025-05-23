@@ -5,9 +5,8 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 
 const createOrder = catchAsync(async (req, res) => {
-
-
-  const data= req.body;
+  // const user = req.user;;
+  // console.log(user)
   const result = await orderServices.createOrder(req.body);
   sendResponse(res, {
     success: true,
@@ -16,6 +15,12 @@ const createOrder = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+declare namespace Express {
+  export interface User {
+    restaurant?: string | null;
+  }
+}
 
 const getAllOrders = catchAsync(async (_req, res) => {
   const result = await orderServices.getAllOrders();

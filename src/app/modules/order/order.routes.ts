@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post(
   "/create-order",
-  validateRequest(orderPostValidation),
+// authenticate(ROLE.STAFF),
   orderController.createOrder
 );
 
@@ -24,6 +24,7 @@ router.get("/single-order/:id", orderController.getSingleOrder);
 router.put(
   "/update-order/:id",
   // validateRequest(orderUpdateValidationSchema),
+  // authenticate(ROLE.STAFF),
   orderController.updateOrder
 );
 
