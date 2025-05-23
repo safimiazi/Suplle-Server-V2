@@ -30,6 +30,8 @@ const createUser = async (data: IUser, owner: any) => {
     let modifiedData: any = { ...data };
 
     modifiedData.restaurant = owner.restaurant;
+    // 3. Hash the password before saving to the database
+      modifiedData.password = await bcrypt.hash(modifiedData.password, 10); // 10 is salt rounds
 
     // 2. Create new user with session
     const result = await UserModel.create([modifiedData], { session });
@@ -42,7 +44,7 @@ const createUser = async (data: IUser, owner: any) => {
     // 3. Send credentials (optional: can be outside transaction)
     await sendUserLoginCredentials(
       user.email,
-      user.password,
+      data.password,
       user.name,
       user.role,
       user.phone
