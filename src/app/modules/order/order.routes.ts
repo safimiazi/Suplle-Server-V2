@@ -2,7 +2,7 @@ import express from "express";
 import { orderController } from "./order.controller";
 import { validateRequest } from "../../middlewares/validateRequest";
 
-import { authenticate } from "../../middlewares/authGuard";
+
 import { ROLE } from "../../constant/role";
 import { orderPostValidation } from "./order.validation";
 
@@ -14,6 +14,7 @@ const router = express.Router();
 router.post(
   "/create-order",
 // authenticate(ROLE.STAFF),
+  validateRequest(orderPostValidation),
   orderController.createOrder
 );
 
