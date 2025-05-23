@@ -9,8 +9,6 @@ import { sendOtpToEmail } from "../../utils/sendOtpToEmail";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import AppError from "../../errors/AppError";
-import { notifyAdmin } from "../../utils/notifyAdmin";
-import { NOTIFICATION_TYPE } from "../notification/notification.constant";
 
 export const authService = {
   async restuarantRegisterRequestIntoDB(data: IRestaurantValidationRequest) {
@@ -154,7 +152,6 @@ export const authService = {
         { session }
       );
 
-      await notifyAdmin(NOTIFICATION_TYPE.USER_REGISTERED, 'A new user just registered');
 
       await session.commitTransaction();
       session.endSession();
