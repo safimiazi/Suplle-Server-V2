@@ -3,4 +3,6 @@ export interface ISubscriptionPlan {
     price: number;
     maxRestaurants: number;
     features: string[];
+    mostPopular: boolean;
+    billingCycle: 'monthly'| 'yearly'
 }

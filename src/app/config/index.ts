@@ -16,6 +16,7 @@ export default {
   API_KEY:process.env.API_KEY,
   API_SECRATE:process.env.API_SECRATE,
   GOOGLE_CLIENT_ID:  process.env.GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET:  process.env.GOOGLE_CLIENT_SECRET
+  GOOGLE_CLIENT_SECRET:  process.env.GOOGLE_CLIENT_SECRET,
+  STRIPE_SECRET_KEY:  process.env.STRIPE_SECRET_KEY
 
 };

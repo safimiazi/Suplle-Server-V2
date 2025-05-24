@@ -6,10 +6,19 @@ const SubscriptionPlanSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     maxRestaurants: { type: Number, required: true },
     features: [{ type: String }],
+    billingCycle: {
+      type: String,
+      enum: ['monthly', 'yearly'],
+      default: 'monthly',
+    },
     isDeleted: {
       type: Boolean,
       default: false,
     },
+    mostPopular: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
