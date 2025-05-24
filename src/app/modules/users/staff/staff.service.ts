@@ -1,12 +1,14 @@
 import { StaffModel } from "./staff.model";
-import { IStaff } from "./staff.interface";
+import { DaysOfWeekEnum, IStaff } from "./staff.interface";
 import AppError from "../../../errors/AppError";
 import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
 import { UserModel } from "../user/users.model";
 import mongoose, { startSession } from "mongoose";
 import bcrypt from "bcryptjs";
 import { validateData } from "../../../middlewares/validateData ";
-import {  staffUpdateValidation } from "./staff.validation";
+import { staffUpdateValidation } from "./staff.validation";
+import QueryBuilder from "../../../builder/QueryBuilder";
+import { STAFF_SEARCHABLE_FIELDS } from "./staff.constant";
 
 const createStaff = async (data: any, file: Express.Multer.File) => {
   const session = await startSession();
@@ -31,7 +33,7 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
         secure_url: string;
       };
       staffData.image = secure_url;
-    } 
+    }
 
     // Create user
     const userData = {
@@ -65,24 +67,44 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-   throw error;
+    throw error;
   }
 };
-const getAllStaff = async () => {
-  const result = await StaffModel.find({ isDeleted: false })
-    .populate("user")
-    .populate("restaurant");
-  return result;
+const getAllStaff = async (query: any) => {
+  try {
+    const service_query = new QueryBuilder(StaffModel.find(), query)
+      .search(STAFF_SEARCHABLE_FIELDS)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+
+    const result = await service_query.modelQuery.populate("user")
+      .populate("restaurant");;
+    const meta = await service_query.countTotal();
+    return {
+      result,
+      meta,
+    };
+  } catch (error: unknown) {
+    throw error;
+
+
+  }
 };
 
 const getSingleStaff = async (id: string) => {
-  const result = await StaffModel.findById(id)
-    .populate("user")
-    .populate("restaurant");
-  if (!result || result.isDeleted) {
-    throw new AppError(404, "Staff not found");
+  try {
+    const result = await StaffModel.findById(id)
+      .populate("user")
+      .populate("restaurant");
+    if (!result || result.isDeleted) {
+      throw new AppError(404, "Staff not found");
+    }
+    return result;
+  } catch (error) {
+    throw error
   }
-  return result;
 };
 
 const updateStaff = async (
@@ -94,75 +116,148 @@ const updateStaff = async (
   session.startTransaction();
 
   try {
-    let imageUrl = data.image || null;
+    //1 get existing staff:
 
-    // If a new image is uploaded
+    const staffDoc = await StaffModel.findById(id);
+
+    if (!staffDoc) {
+      throw new Error("Staff not found.")
+    }
+
+    //2. get linked user:
+
+    const userId = staffDoc.user;
+
+    const userDoc = await UserModel.findById(userId);
+    if (!userDoc) {
+      throw new Error("Linked user not found")
+    }
+
+
+
+    // 3. Handle image upload if provided
     if (file && file.path) {
       const imageName = `${Math.floor(100 + Math.random() * 900)}`;
       const { secure_url } = (await uploadImgToCloudinary(
         imageName,
         file.path
-      )) as {
-        secure_url: string;
-      };
-      imageUrl = secure_url;
-    }
-
-    const userData = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-    };
-    const staffData = await StaffModel.findOne({ _id: id });
-    if (!staffData) {
-      throw new AppError(404, "Staff not found");
-    }
-    // Update the user
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      staffData.user,
-      userData,
-      { new: true, session }
-    );
-
-    if (!updatedUser) {
-      throw new AppError(404, "User not found");
+      )) as { secure_url: string };
+      data.image = secure_url; // override image in data
     }
 
 
-    const updatedStaff = await StaffModel.findByIdAndUpdate(id, data, {
-      new: true,
-      session,
-    });
 
-    if (!updatedStaff) {
-      throw new AppError(404, "Staff not found");
+    // Enum validation for workDays
+    if (data.workDays) {
+      const allowedDays = Object.values(DaysOfWeekEnum) as string[];
+      const invalidDays = data.workDays.filter(
+        (day: string) => !allowedDays.includes(day)
+      );
+      if (invalidDays.length > 0) {
+        throw new AppError(
+          400,
+          `Invalid workDays: ${invalidDays.join(", ")}`
+        );
+      }
     }
+
+
+    //4. split data into userFields and staff fields:
+
+    const userFields = [
+      "name", "email", "phone", "image",
+      "role", "restaurant",
+
+    ];
+
+    const staffFields = ["workDays", "workTime", "status", "restaurant"]
+
+    const userUpdateData: any = {};
+    const staffUpdateData: any = {};
+
+
+    for (const key in data) {
+      if (userFields.includes(key)) {
+        userUpdateData[key] = data[key]
+      }
+      if (staffFields.includes(key)) {
+        staffUpdateData[key] = data[key];
+      }
+    }
+
+
+    //5. update user:
+    if (Object.keys(userUpdateData).length > 0) {
+      await UserModel.findByIdAndUpdate(userId, userUpdateData, { new: true, session })
+    }
+
+    // 6. update staff:
+
+    let updatedStaff: any = staffDoc;
+
+    if (Object.keys(staffUpdateData).length > 0) {
+      updatedStaff = await StaffModel.findByIdAndUpdate(id, staffUpdateData, { new: true, session })
+    }
+
+    // 7. commit transaction:
 
     await session.commitTransaction();
     session.endSession();
 
     return updatedStaff;
+
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(
-      500,
-      "Failed to update staff: " + (error as Error).message
-    );
+    throw error;
   }
 };
 
 const deleteStaff = async (id: string) => {
-  const result = await StaffModel.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true }
-  );
-  if (!result) {
-    throw new AppError(404, "Staff not found");
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // 1. Find staff
+    const staff = await StaffModel.findById(id).session(session);
+    if (!staff) {
+      throw new AppError(404, "Staff not found");
+    }
+
+    if (staff.isDeleted) {
+      throw new AppError(400, "Staff already deleted");
+    }
+
+    // 2. Soft delete staff
+    const updatedStaff = await StaffModel.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true, session }
+    );
+
+    // 3. Soft delete linked user
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      staff.user,
+      { isDeleted: true },
+      { new: true, session }
+    );
+
+    // 4. Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      message: "Staff and linked user deleted successfully",
+      staff: updatedStaff,
+      user: updatedUser,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
   }
-  return result;
 };
+
 
 export const staffService = {
   createStaff,

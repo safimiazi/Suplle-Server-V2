@@ -9,16 +9,20 @@ const router = express.Router();
 router.post(
   "/create-staff",
   authenticate(ROLE.RESTAURANT_OWNER),
-  upload.single("image"), 
-    (req: Request, res: Response, next: NextFunction) => {
+  upload.single("image"),
+  (req: Request, res: Response, next: NextFunction) => {
     next();
   },
   staffController.createStaff
 );
-router.get("/all-staff", staffController.getAllStaff);
+router.get("/all-staff", authenticate(ROLE.RESTAURANT_OWNER),
+  staffController.getAllStaff);
 router.get("/single-staff/:id", staffController.getSingleStaff);
 router.put(
-  "/update-staff/:id",upload.single('image'),
+  "/update-staff/:id", upload.single("image"),
+  (req: Request, res: Response, next: NextFunction) => {
+    next();
+  },
   staffController.updateStaff
 );
 
