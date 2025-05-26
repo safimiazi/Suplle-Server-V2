@@ -8,7 +8,7 @@ import express, {
   Response,
 } from "express";
 import status from "http-status";
-import { TErrorSource } from "../interfaces/error";
+import { TErrorSource } from "../interface/error";
 import { ZodError } from "zod";
 import config from "../config";
 import handleZodError from "../errors/handleZodError";

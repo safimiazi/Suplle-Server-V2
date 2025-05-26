@@ -31,6 +31,7 @@
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
+    "qrcode": "^1.5.4",
     "sharp": "^0.34.1",
     "socket.io": "^4.8.1",
     "stripe": "^18.1.1",
@@ -49,6 +50,7 @@
     "@types/passport": "^1.0.17",
     "@types/passport-facebook": "^3.0.3",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/qrcode": "^1.5.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   }

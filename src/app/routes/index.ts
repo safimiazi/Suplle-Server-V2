@@ -14,6 +14,7 @@ import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminA
 import { SubscriptionPlanRoutes } from "../modules/SubscriptionPlan/SubscriptionPlan.routes";
 import { QrCodeDesignRoutes } from "../modules/QrCodeDesign/QrCodeDesign.routes";
 import { subscriptionRoutes } from "../modules/subscription/subscription.routes";
+import { tableRoutes } from "../modules/table/table.routes";
 
 
 const router = Router();
@@ -74,6 +75,10 @@ const moduleRoutes = [
   ,{
     path:"/QrCodeDesign",
     route: QrCodeDesignRoutes,
+  }
+  ,{
+    path:"/table",
+    route: tableRoutes,
   }
 ];
 

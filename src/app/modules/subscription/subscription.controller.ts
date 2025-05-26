@@ -76,7 +76,6 @@ const activateSubscription = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: status.OK, success: true, message: `Existing subscription extended by ${months} month(s).`, data: {
         newEndDate: existing.endDate,
-
       }
     });
   }
