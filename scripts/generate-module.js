@@ -175,7 +175,7 @@ const files = {
     
     
       const isDeleted = await ${moduleName}Model.findOne({ _id: data.id });
-        if (isDeleted?.isDelete) {
+        if (isDeleted?.isDeleted) {
           throw new AppError(status.NOT_FOUND, "${moduleName} is already deleted");
         }
     
@@ -208,7 +208,7 @@ const files = {
         }
     
         // Step 4: Delete the home ${moduleName} from the database
-        await ${moduleName}Model.updateOne({ _id: id }, { isDelete: true });
+        await ${moduleName}Model.updateOne({ _id: id }, { isDeleted: true });
         return;
     
          } catch (error: unknown) {
@@ -225,7 +225,7 @@ const files = {
     
     const ${moduleName}Schema = new mongoose.Schema({
     
-     isDelete: {
+     isDeleted: {
             type: Boolean,
             default: false,
         }}, { timestamps: true });
