@@ -9,6 +9,8 @@ function formatMonthName(monthKey: string) {
   return date.toLocaleString("en-US", { month: "long", year: "numeric" });
 }
 
+console.log("tweui")
+
 export const allAnalytic = async (restaurantId: string) => {
   const orders = await OrderModel.find({
     restaurant: restaurantId,
