@@ -2,16 +2,19 @@ import { Request, Response } from "express";
 
 import httpStatus from "http-status";
 import catchAsync from "../../../utils/catchAsync";
-import { analyticService } from "./analytic.service";
 import sendResponse from "../../../utils/sendResponse";
+import { allAnalytic } from "./analytic.service";
 
 
 
 const analytics = catchAsync(async (req: Request, res: Response) => {
 
-    const id = req.params.id;
+    const user:any = req.user;
+    const restaurantId = user.restaurant;
 
-    const result = await analyticService.allAnalytic(id)
+
+
+    const result = await allAnalytic(restaurantId)
 
     sendResponse(res, {
         success: true,
