@@ -8,7 +8,18 @@ const OrderSchema = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
-    zone : { type: Schema.Types.ObjectId, ref: "RestaurantZone" ,default:"" },
+    // table: { type: Schema.Types.ObjectId, ref: "Table" ,default:"" },
+    table: {
+      type: String,
+      default: null,
+    },
+    orderId:{
+      type: String,
+      required: true,
+      unique: true,
+      default: () => `ORD-${Date.now().toString(36)}`
+    },
+
     menus: {
       type: [
         {
@@ -18,8 +29,8 @@ const OrderSchema = new Schema<IOrder>(
       ],
        
     },
-    customerName: { type: String, required: true },
-    customerPhone: { type: String, required: true },
+    customerName: { type: String, default:null },
+    customerPhone: { type: String, default:null},
     orderType: {
       type: String,
       enum: ["dine in", "takeaway"],

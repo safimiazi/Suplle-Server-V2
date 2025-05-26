@@ -21,7 +21,7 @@ validateRequest(orderPostValidation),
 
 router.get("/all-order", orderController.getAllOrders);
 
-router.get("/single-order/:id", orderController.getSingleOrder);
+router.get("/single-order/:id",authenticate(ROLE.STAFF), orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
@@ -31,6 +31,6 @@ router.put(
   orderController.updateOrder
 );
 
-router.delete("/delete-order/:id", authenticate(ROLE.STAFF), orderController.deleteOrder);
+router.delete("/delete-order/:id",authenticate(ROLE.STAFF), orderController.deleteOrder);
 
 export const orderRoutes = router;

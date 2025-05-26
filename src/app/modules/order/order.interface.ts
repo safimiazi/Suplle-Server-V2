@@ -3,7 +3,8 @@ import { Types } from "mongoose";
 export interface IOrder {
   _id?: Types.ObjectId; 
   restaurant: Types.ObjectId;
-  zone?: Types.ObjectId | string; 
+  table?: Types.ObjectId | string; 
+  orderId: string;
   menus: {
     menu: Types.ObjectId;
     quantity: number;

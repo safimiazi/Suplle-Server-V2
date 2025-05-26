@@ -6,8 +6,10 @@ import sendResponse from '../../utils/sendResponse';
 
 
 const createOrder = catchAsync(async (req, res) => {
+  
+  const user:any =  req.user;
   const data = req.body;
-  const result = await orderServices.createOrder(data);
+  const result = await orderServices.createOrder({ ...data, restaurant: user.restaurant });
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -15,7 +17,6 @@ const createOrder = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
 
 
 const getAllOrders = catchAsync(async (req, res) => {
@@ -41,7 +42,11 @@ const getSingleOrder = catchAsync(async (req, res) => {
 
 
 const updateOrder = catchAsync(async (req, res) => {
-  const result = await orderServices.updateOrder(req.params.id, req.body);
+  const user:any =  req.user;
+  const data = req.body;
+
+  const result = await orderServices.updateOrder(req.params.id,{ ...data,restaurant: user.restaurant});
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -52,7 +57,10 @@ const updateOrder = catchAsync(async (req, res) => {
 
 
 const deleteOrder = catchAsync(async (req, res) => {
-  const result = await orderServices.deleteOrder(req.params.id);
+  const user :any =  req.user;
+  const restaurant = user.restaurant;
+   
+  const result = await orderServices.deleteOrder(req.params.id,restaurant);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
