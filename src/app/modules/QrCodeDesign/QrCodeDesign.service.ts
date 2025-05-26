@@ -44,8 +44,11 @@ export const QrCodeDesignService = {
         )) as {
           secure_url: string;
         };
+
         data.image = secure_url;
-      } 
+      }
+
+
 
       // Validate with Zod
       const validatedData = await validateData<IQrCodeDesign>(
@@ -67,6 +70,8 @@ export const QrCodeDesignService = {
       session.endSession();
     }
   },
+
+
   async getAllQrCodeDesignFromDB(query: any) {
     try {
       const service_query = new QueryBuilder(QrCodeDesignModel.find(), query)
@@ -185,7 +190,7 @@ export const QrCodeDesignService = {
       await QrCodeDesignModel.updateOne({ _id: id }, { isDeleted: true });
       return;
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }

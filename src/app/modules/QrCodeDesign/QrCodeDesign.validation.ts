@@ -17,17 +17,12 @@ import { z } from 'zod';
         })
 ,    
       price: z
-        .number({
-          required_error: 'Price is required',
-          invalid_type_error: 'Price must be a number',
-        })
-        .min(0, 'Price cannot be negative'),
+        .number().optional(),
     
       image: z
         .string({
           required_error: 'Image URL is required',
-        })
-        .url('Invalid image URL'),
+        }),
     
       status: z
         .enum(['Available', 'ComingSoon', 'Unavailable'])

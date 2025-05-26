@@ -29,19 +29,19 @@ const files = {
 
     const router = express.Router();
     
-    router.post("/post_${moduleName}", validateRequest(${moduleName}PostValidation), ${moduleName}Controller.post${capitalizeFirstLetter(
+    router.post("/post-${moduleName}", validateRequest(${moduleName}PostValidation), ${moduleName}Controller.post${capitalizeFirstLetter(
     moduleName
   )});
-    router.get("/get_all_${moduleName}", ${moduleName}Controller.getAll${capitalizeFirstLetter(
+    router.get("/get-all-${moduleName}", ${moduleName}Controller.getAll${capitalizeFirstLetter(
     moduleName
   )});
-    router.get("/get_single_${moduleName}/:id", ${moduleName}Controller.getSingle${capitalizeFirstLetter(
+    router.get("/get-single-${moduleName}/:id", ${moduleName}Controller.getSingle${capitalizeFirstLetter(
     moduleName
   )});
-    router.put("/update_${moduleName}/:id", validateRequest(${moduleName}UpdateValidation), ${moduleName}Controller.update${capitalizeFirstLetter(
+    router.put("/update-${moduleName}/:id", validateRequest(${moduleName}UpdateValidation), ${moduleName}Controller.update${capitalizeFirstLetter(
     moduleName
   )});
-    router.delete("/delete_${moduleName}/:id", ${moduleName}Controller.delete${capitalizeFirstLetter(
+    router.delete("/delete-${moduleName}/:id", ${moduleName}Controller.delete${capitalizeFirstLetter(
     moduleName
   )});
     

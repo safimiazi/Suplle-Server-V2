@@ -3,11 +3,12 @@ import { QrCodeDesignService } from "./QrCodeDesign.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-import { Console } from "console";
 
 const postQrCodeDesign = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
+
+
   const result = await QrCodeDesignService.postQrCodeDesignIntoDB(data, file);
   sendResponse(res, {
     statusCode: status.CREATED,
