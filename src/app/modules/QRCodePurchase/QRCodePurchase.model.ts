@@ -8,9 +8,18 @@ const QRCodePurchaseSchema = new mongoose.Schema({
     tableQuantity: { type: Number, required: true },
     status: {
         type: String,
-        enum: ['pending', 'processing', 'completed', 'cancel'],
+        enum: ['pending', 'approved',  'processing',  'completed', 'cancel'],
         default: 'pending',
     },
+    isPaid: {
+        type: Boolean,
+        default: false,
+    },
+    paymentIntentId: {
+        type: String,
+        required: false,
+    },
+   
     isDeleted: {
         type: Boolean,
         default: false,
