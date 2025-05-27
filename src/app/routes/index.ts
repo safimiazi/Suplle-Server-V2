@@ -9,7 +9,7 @@ import { restaurantZoneRoutes } from "../modules/restaurantZone/restaurantZone.r
 import { restaurantLayoutRoutes } from "../modules/restaurantLayout/restaurantLayout.routes";
 import { restuarantRoutes } from "../modules/restuarant/restuarant.routes";
 import { staffRoutes } from "../modules/users/staff/staff.routes";
-import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/analytic.route";
+import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/dashboard/analytic.route";
 import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminAnalytics.route";
 import { SubscriptionPlanRoutes } from "../modules/SubscriptionPlan/SubscriptionPlan.routes";
 import { QrCodeDesignRoutes } from "../modules/QrCodeDesign/QrCodeDesign.routes";

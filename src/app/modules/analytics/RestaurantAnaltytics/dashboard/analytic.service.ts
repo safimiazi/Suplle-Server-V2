@@ -1,4 +1,4 @@
-import { OrderModel } from "../../order/order.model";
+import { OrderModel } from "../../../order/order.model";
 import { DailyRevenueModel } from "./DailyRevenueModel";
 import { MonthlyRevenueModel } from "./MonthlyRevenueModel"; 
 
@@ -143,6 +143,9 @@ export const allAnalytic = async (restaurantId: string) => {
   });
 
   const totalRevenue = SuccessfulOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+  const averageOrderValue = SuccessfulOrders.length > 0
+  ? Number((totalRevenue / SuccessfulOrders.length).toFixed(2))
+  : 0;
 
   return {
     totalOrders: orders.length,
@@ -150,7 +153,8 @@ export const allAnalytic = async (restaurantId: string) => {
     deliveredOrders: SuccessfulOrders.length,
     totalCustomers: orders.length,
     revenue: {
-      total: Number(totalRevenue.toFixed(2)),
+      totalRevenue: Number(totalRevenue.toFixed(2)),
+      averageOrderValue,
       daily: dailyRevenue,
       weekly: Number(currentWeekRevenue.toFixed(2)),
       monthly: Number(currentMonthRevenue.toFixed(2)),

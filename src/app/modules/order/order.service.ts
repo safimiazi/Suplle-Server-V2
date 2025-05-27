@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { MenuModel } from "../menu/menu.model";
@@ -35,6 +36,8 @@ const orderId = await generateOrderId();
     })
   );
 
+  total = Number(total.toFixed(2));
+
   const orderData: IOrder = {
     ...payload,
     orderId,
@@ -46,9 +49,9 @@ const orderId = await generateOrderId();
 };
 
 
-const getAllOrders = async (query: any = {}) => {
+export const getAllOrders = async (query: any = {}) => {
   try {
-    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status','isDeleted'];
+    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status', 'isDeleted'];
 
     const service_query = new QueryBuilder(OrderModel.find(), query)
       .search(ORDER_SEARCHABLE_FIELDS)
@@ -57,7 +60,7 @@ const getAllOrders = async (query: any = {}) => {
       .paginate()
       .fields();
 
-    const result = await service_query.modelQuery.populate([
+    const rawOrders = await service_query.modelQuery.populate([
       {
         path: "restaurant",
         select: "name address contact",
@@ -67,6 +70,13 @@ const getAllOrders = async (query: any = {}) => {
         select: "itemName price size",
       }
     ]);
+
+    // Format timestamps
+    const result = rawOrders.map((order: any) => ({
+      ...order.toObject(),
+      createdAtFormatted: format(new Date(order.createdAt), "hh:mm a"), // Example: 02:15 AM
+      updatedAtFormatted: format(new Date(order.updatedAt), "hh:mm a"),
+    }));
 
     const meta = await service_query.countTotal();
 
