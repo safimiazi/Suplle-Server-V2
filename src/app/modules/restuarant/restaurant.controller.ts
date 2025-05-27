@@ -13,14 +13,15 @@ import AppError from "../../errors/AppError";
 const postRestuarant = catchAsync(async (req: Request, res: Response) => {
 
   const data = JSON.parse(req.body.data);
+  const owner : any= req.user;
 
   const files = (req.files as any)?.images?.map((file: Express.Multer.File) => file.path);
   const uploadLogo = (req.files as any)?.logo?.[0]?.path;
 
   const {  secure_url} = await uploadImgToCloudinary("logo",uploadLogo)
   const uploadedImages = await uploadMultipleImages(files);
-  const {images,coverPhoto,logo,...rest} =  data;
-  const restaurantData = {images:uploadedImages,logo:secure_url,coverPhoto:uploadedImages[0],...rest}
+  const {images,coverPhoto,logo, ...rest} =  data;
+  const restaurantData = {images:uploadedImages,logo:secure_url,coverPhoto:uploadedImages[0], owner: owner._id, ...rest}
   
   const result = await restaurantService.postRestaurant(restaurantData);
   sendResponse(res, {

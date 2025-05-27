@@ -5,11 +5,9 @@ import status from "http-status";
 import Stripe from "stripe";
 import { subscriptionModel } from "./subscription.model";
 import { SubscriptionPlanModel } from "../SubscriptionPlan/SubscriptionPlan.model";
-import config from "../../config";
+import { stripe } from "../../utils/stripe";
 
-const stripe = new Stripe(config.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-04-30.basil",
-});
+
 
 const createSubscriptionIntent = catchAsync(async (req: Request, res: Response) => {
   const { planId, months = 1 } = req.body;
@@ -76,7 +74,6 @@ const activateSubscription = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: status.OK, success: true, message: `Existing subscription extended by ${months} month(s).`, data: {
         newEndDate: existing.endDate,
-
       }
     });
   }

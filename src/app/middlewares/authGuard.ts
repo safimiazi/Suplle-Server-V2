@@ -1,14 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-// Extend the Request interface to include the user property
-declare global {
-  namespace Express {
-    interface Request {
-      User?: any;
-      restaurant?: string | null;
-    }
-  }
-}
+
+
 
 
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -55,7 +48,7 @@ export const authenticate = (...allowedRoles: string[]) => async (
     }
 
 
-    req.user = user as any;
+    req.user = user as jwt.JwtPayload;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

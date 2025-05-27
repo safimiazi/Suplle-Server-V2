@@ -17,7 +17,6 @@ const FloorSchema = new Schema<IFloor>(
   }
 );
 
-FloorSchema.index({ restaurant: 1, floorName: 1 }, { unique: true });
 
 
 

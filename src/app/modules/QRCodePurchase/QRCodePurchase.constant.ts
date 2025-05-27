@@ -1,0 +1,1 @@
+export const QRCODEPURCHASE_SEARCHABLE_FIELDS = [];
