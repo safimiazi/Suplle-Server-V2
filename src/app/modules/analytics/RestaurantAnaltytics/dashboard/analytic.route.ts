@@ -1,8 +1,8 @@
 
     import express from "express";
 import { analyticController } from "./analytic.controller";
-import { authenticate } from "../../../middlewares/authGuard";
-import { ROLE } from "../../users/user/users.constant";
+import { authenticate } from "../../../../middlewares/authGuard";
+import { ROLE } from "../../../users/user/users.constant";
 
   
     const router = express.Router();
