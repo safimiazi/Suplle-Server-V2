@@ -24,6 +24,8 @@ export const QRCodePurchaseService = {
         restaurant: data.restaurant,
         qrCodeDesign: data.qrCodeDesign,
         tableQuantity: data.tableQuantity,
+        status: "pending", // default status
+        isPaid: false, // default payment status
         price: design.price * data.tableQuantity,
       });
       if (!purchase) {

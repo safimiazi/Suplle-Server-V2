@@ -15,6 +15,7 @@ import { SubscriptionPlanRoutes } from "../modules/SubscriptionPlan/Subscription
 import { QrCodeDesignRoutes } from "../modules/QrCodeDesign/QrCodeDesign.routes";
 import { subscriptionRoutes } from "../modules/subscription/subscription.routes";
 import { tableRoutes } from "../modules/table/table.routes";
+import { QRCodePurchaseRoutes } from "../modules/QRCodePurchase/QRCodePurchase.routes";
 
 
 const router = Router();
@@ -79,6 +80,10 @@ const moduleRoutes = [
   ,{
     path:"/table",
     route: tableRoutes,
+  }
+  ,{
+    path:"/qr-code-purchase",
+    route: QRCodePurchaseRoutes,
   }
 ];
 

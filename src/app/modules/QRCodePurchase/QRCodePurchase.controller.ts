@@ -9,34 +9,41 @@ import { stripe } from "../../utils/stripe";
 const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
   const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({ ...req.body, user: user._id, restaurant: user.restaurant });
-  sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
+  sendResponse(res, { statusCode: status.CREATED, success: true, message: "QR Code Apply Successfully.", data: result });
 });
 
 
 const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Response) => {
   const { id, status } = req.body;
 
-  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id, status: "pending" });
+
+
+  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id});
   if (!isExistingPurchase) {
-    throw new Error("QR code purchase not found or not in pending state.");
+    throw new Error("QR code purchase not found.");
   }
+  console.log("isExistingPurchase", isExistingPurchase);
+  if( isExistingPurchase.status !== "pending") {
+    throw new Error("QR code purchase is already processed.");
+  }
+   
 
 
   const updatedPurchase = await QRCodePurchaseModel.findByIdAndUpdate(
     isExistingPurchase._id,
-    { status },
+    { status  },
     { new: true }
   );
   if (!updatedPurchase) {
-    throw new Error("QR code purchase not found or already processed.");
+    throw new Error("Failed to update QR code purchase status.");
   }
 
-  sendResponse(res, { statusCode: status.OK, success: true, message: `${updatedPurchase.status} successfully` , data: updatedPurchase });
+  sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully` , data: updatedPurchase });
 });
 
 
 const createQrCodePurchaseIntent = catchAsync(async (req: Request, res: Response) => {
-  const qrCodeDesignPurchaseId = req.body.qrCodeDesignId;
+  const qrCodeDesignPurchaseId = req.body.qrCodeDesignPurchaseId;
   const user: any = req.user;
 
   const getProcesingDesign = await QRCodePurchaseModel.findOne({
