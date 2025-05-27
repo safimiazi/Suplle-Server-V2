@@ -12,9 +12,9 @@ router.post("/qr-purchase-decision-by-admin", authenticate(ROLE.ADMIN), QRCodePu
 router.post("/create-qr-code-intent", authenticate(ROLE.RESTAURANT_OWNER), QRCodePurchaseController.createQrCodePurchaseIntent);
 router.post("/qr-code-payment", authenticate(ROLE.RESTAURANT_OWNER), QRCodePurchaseController.qrCodePayment);
 
-router.get("/get-all-QRCodePurchase", QRCodePurchaseController.getAllQRCodePurchase);
-router.get("/get-single-QRCodePurchase/:id", QRCodePurchaseController.getSingleQRCodePurchase);
-router.put("/update-QRCodePurchase/:id", QRCodePurchaseController.updateQRCodePurchase);
-router.delete("/delete-QRCodePurchase/:id", QRCodePurchaseController.deleteQRCodePurchase);
+router.get("/get-all-qr-purchase", QRCodePurchaseController.getAllQRCodePurchase);
+router.get("/get-single-qr-purchase/:id", QRCodePurchaseController.getSingleQRCodePurchase);
+router.put("/update-qr-purchase-by-admin/:id", QRCodePurchaseController.updateQRCodePurchase);
+router.delete("/delete-qr-purchase/:id", QRCodePurchaseController.deleteQRCodePurchase);
 
 export const QRCodePurchaseRoutes = router;

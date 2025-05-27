@@ -77,24 +77,20 @@ export const QRCodePurchaseService = {
 
       const isDeleted = await QRCodePurchaseModel.findOne({ _id: data.id });
       if (isDeleted?.isDeleted) {
-        throw new AppError(status.NOT_FOUND, "QRCodePurchase is already deleted");
+        throw new AppError(status.NOT_FOUND, "QR Code Purchase is already deleted");
       }
 
-      const result = await QRCodePurchaseModel.updateOne({ _id: data.id }, data, {
+      const result = await QRCodePurchaseModel.updateOne({ _id: data.id }, { status: data.status }, {
         new: true,
       });
       if (!result) {
-        throw new Error("QRCodePurchase not found.");
+        throw new Error("QR Code Purchase not found.");
       }
       return result;
 
 
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+      throw error;
     }
   },
   async deleteQRCodePurchaseFromDB(id: string) {

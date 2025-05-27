@@ -31,7 +31,7 @@ const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Respo
     throw new Error("QR code purchase not found or already processed.");
   }
 
-  sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: updatedPurchase });
+  sendResponse(res, { statusCode: status.OK, success: true, message: `${updatedPurchase.status} successfully` , data: updatedPurchase });
 });
 
 
@@ -104,7 +104,8 @@ const getSingleQRCodePurchase = catchAsync(async (req: Request, res: Response) =
 });
 
 const updateQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
-  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB(req.body);
+  const id = req.params.id;
+  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB({...req.body, id});
   sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
 });
 
