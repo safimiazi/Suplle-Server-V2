@@ -100,7 +100,6 @@ export const QRCodePurchaseService = {
   async deleteQRCodePurchaseFromDB(id: string) {
     try {
 
-
       // Step 1: Check if the QRCodePurchase exists in the database
       const isExist = await QRCodePurchaseModel.findOne({ _id: id });
 
