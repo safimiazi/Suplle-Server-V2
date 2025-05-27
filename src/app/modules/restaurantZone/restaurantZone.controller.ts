@@ -8,8 +8,6 @@ const postRestaurantZoneType = catchAsync(async (req: Request, res: Response) =>
   const data = req.body;
   const user = req.user as any;
 
-
-
   const result = await restaurantZoneTypeService.postRestaurantZoneTypeIntoDB({...data, restaurant: user.restaurant});
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "Restaurant zone Created successfully", data: result });
 });

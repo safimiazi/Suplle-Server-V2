@@ -19,13 +19,13 @@ validateRequest(orderPostValidation),
   orderController.createOrder
 );
 
-router.get("/all-order", orderController.getAllOrders);
+router.get("/all-order",authenticate(ROLE.ADMIN,ROLE.STAFF), orderController.getAllOrders);
 
-router.get("/single-order/:id",authenticate(ROLE.STAFF), orderController.getSingleOrder);
+router.get("/single-order/:id",authenticate(ROLE.ADMIN,ROLE.STAFF), orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
- authenticate(ROLE.STAFF),
+  authenticate(ROLE.ADMIN,ROLE.STAFF),
   validateRequest(orderUpdateValidation),
  
   orderController.updateOrder

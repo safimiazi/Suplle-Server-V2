@@ -98,7 +98,7 @@ async getSingleFloorFromDB(id: string) {
       if (!isExist) {
         throw new AppError(status.NOT_FOUND, "floor not found");
       }
-      await FloorModel.findByIdAndDelete({ _id: id });
+      await FloorModel.findByIdAndUpdate({_id: id},{ isDeleted:true });
       return;
     } catch (error: unknown) {
       throw error;

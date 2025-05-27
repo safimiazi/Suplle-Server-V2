@@ -13,18 +13,16 @@ import { MENU_SEARCHABLE_FIELDS } from "./menu.constant";
 export const menuService = {
   async postMenuIntoDB(
     data: any,
-    file: Express.Multer.File & { path?: string }
+    restaurant: string,
+    file: Express.Multer.File & { path?: string; }
   ) {
     const session = await mongoose.startSession();
-
+    const parsedData = JSON.parse(data); // parse JSON string into object
+  
     try {
       session.startTransaction();
-
-
-      const menudata = JSON.parse(data);
-
-
-
+  
+      // Upload image to Cloudinary if file is provided
       if (file && file.path) {
         const imageName = `${Math.floor(100 + Math.random() * 900)}`;
         const { secure_url } = (await uploadImgToCloudinary(
@@ -33,45 +31,51 @@ export const menuService = {
         )) as {
           secure_url: string;
         };
-        menudata.image = secure_url;
+        parsedData.image = secure_url;
       } else {
-        menudata.image = null;
+        parsedData.image = null;
       }
-
+  
+      // Inject restaurant ID
+      parsedData.restaurant = restaurant;
+  
+      console.log("Parsed Data with Restaurant:", parsedData); // Debug log
+  
+      // Validate data
       const validatedData = await validateData<IMenu>(
         menuPostValidation,
-        menudata
+        parsedData
       );
-
-
-      const restaurant = await RestaurantModel.findById(
-        validatedData.restaurant
-      ).session(session);
-      if (!restaurant) {
+  
+      // Ensure restaurant exists
+      const restaurantData = await RestaurantModel.findById(restaurant).session(session);
+      if (!restaurantData) {
         throw new AppError(400, "Restaurant doesn't exist");
       }
-
-      const menu = await MenuModel.create([validatedData], { session });
+  
+      // Create menu
+      const menu = await MenuModel.create([parsedData], { session });
       const createdMenu = menu[0];
-
+  
+      // Link to restaurant
       await RestaurantModel.findByIdAndUpdate(
-        validatedData.restaurant,
+        restaurant,
         { $push: { menus: createdMenu._id } },
         { session }
       );
-
+  
       await session.commitTransaction();
       session.endSession();
-
+  
       return createdMenu;
     } catch (error: unknown) {
-      // Rollback in case of any failure
       await session.abortTransaction();
       session.endSession();
-
       throw error;
     }
   },
+  
+  
   async getAllMenuFromDB(query: any) {
     try {
       const service_query = new QueryBuilder(MenuModel.find(), query)

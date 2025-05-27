@@ -12,11 +12,15 @@ import { RestaurantModel } from "../restuarant/restuarant.model";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
+  const user: any = req.user;
   const data = req.body.data;
+
   const result = await menuService.postMenuIntoDB(
-    data as IMenu,
+    data, // still JSON string here
+    user.restaurant, // restaurant ID (assumed to be in user object)
     file as Express.Multer.File
   );
+
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,
@@ -24,6 +28,7 @@ const postMenu = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const uploadMenuFileController = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
 

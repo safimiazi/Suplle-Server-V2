@@ -15,6 +15,7 @@ import path from "path";
 import { populate } from "dotenv";
 
 const createUser = async (data: IUser, owner: any) => {
+  console.log(data)
   const session = await UserModel.startSession();
   session.startTransaction();
 

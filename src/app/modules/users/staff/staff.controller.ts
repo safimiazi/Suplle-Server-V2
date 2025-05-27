@@ -8,7 +8,6 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
 
   const data = JSON.parse(req.body.data);
   const user = req.user as any;
-  console.log("user", data);
   const uploadImage = req.file;
 
 

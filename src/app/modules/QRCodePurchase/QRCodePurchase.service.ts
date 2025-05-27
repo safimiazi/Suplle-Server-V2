@@ -39,8 +39,6 @@ export const QRCodePurchaseService = {
   },
   async getAllQRCodePurchaseFromDB(query: any) {
     try {
-
-
       const service_query = new QueryBuilder(QRCodePurchaseModel.find(), query)
         .search(QRCODEPURCHASE_SEARCHABLE_FIELDS)
         .filter()

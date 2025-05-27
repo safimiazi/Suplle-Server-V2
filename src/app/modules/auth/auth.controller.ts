@@ -505,7 +505,8 @@ const verifyEmailOTP = catchAsync(
 );
 
 const approveRestaurantByAdmin = catchAsync(async (req, res) => {
-
+    
+  console.log(req.body)
 
   const email = req.body.email;
 
