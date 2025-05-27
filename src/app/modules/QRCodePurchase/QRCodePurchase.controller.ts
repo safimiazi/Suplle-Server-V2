@@ -6,7 +6,7 @@ import status from "http-status";
 
 const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const user : any = req.user;
-  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({...req.body, user: user._id});
+  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({...req.body, user: user._id, restaurant: user.restaurant});
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
 });
 

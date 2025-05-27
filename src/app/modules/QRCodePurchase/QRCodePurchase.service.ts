@@ -3,6 +3,7 @@ import { QRCODEPURCHASE_SEARCHABLE_FIELDS } from "./QRCodePurchase.constant";
 import QueryBuilder from "../../builder/QueryBuilder";
 import status from "http-status";
 import AppError from "../../errors/AppError";
+import { QrCodeDesignModel } from "../QrCodeDesign/QrCodeDesign.model";
 
 
 
@@ -11,13 +12,27 @@ import AppError from "../../errors/AppError";
 export const QRCodePurchaseService = {
   async postQRCodePurchaseIntoDB(data: any) {
     try {
-      return await QRCodePurchaseModel.create(data);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
+      // step 1: 
+      const design: any = await QrCodeDesignModel.findById(data.qrCodeDesign);
+      if (!design) {
+        throw new AppError(status.NOT_FOUND, "QR code design not found");
       }
+
+      // step 2: Validate the table quantity
+      const purchase = await QRCodePurchaseModel.create({
+        user: data.user,
+        restaurant: data.restaurant,
+        qrCodeDesign: data.qrCodeDesign,
+        tableQuantity: data.tableQuantity,
+        price: design.price * data.tableQuantity,
+      });
+      if (!purchase) {
+        throw new AppError(status.BAD_REQUEST, "Failed to create QR code purchase");
+      }
+
+      return purchase;
+    } catch (error: unknown) {
+      throw error;
     }
   },
   async getAllQRCodePurchaseFromDB(query: any) {
@@ -39,29 +54,26 @@ export const QRCodePurchaseService = {
       };
 
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+      throw error;
     }
   },
   async getSingleQRCodePurchaseFromDB(id: string) {
     try {
-      return await QRCodePurchaseModel.findById(id);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
+      const qrcodeDesing = await QRCodePurchaseModel.findById(id);
+      if (!qrcodeDesing) {
+        throw new AppError(status.NOT_FOUND, "QRCodePurchase not found");
       }
+      if (qrcodeDesing.isDeleted) {
+        throw new AppError(status.NOT_FOUND, "QRCodePurchase is already deleted");
+      }
+      return qrcodeDesing;
+    } catch (error: unknown) {
+      throw error;
     }
   },
   async updateQRCodePurchaseIntoDB(data: any) {
     try {
 
-
-      
 
       const isDeleted = await QRCodePurchaseModel.findOne({ _id: data.id });
       if (isDeleted?.isDeleted) {
@@ -97,7 +109,7 @@ export const QRCodePurchaseService = {
       }
 
       // Step 4: Delete the home QRCodePurchase from the database
-      await QRCodePurchaseModel.updateOne({ _id: id }, { isDelete: true });
+      await QRCodePurchaseModel.updateOne({ _id: id }, { isDeleted: true });
       return;
 
     } catch (error: unknown) {

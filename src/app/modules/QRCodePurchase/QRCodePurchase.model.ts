@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const QRCodePurchaseSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: true },
     qrCodeDesign: { type: mongoose.Schema.Types.ObjectId, ref: 'QrCodeDesign', required: true },
     price: { type: Number, required: true },
     tableQuantity: { type: Number, required: true },
