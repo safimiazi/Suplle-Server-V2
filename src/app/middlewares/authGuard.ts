@@ -1,26 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 
-// Extend the Request interface to include the user property
-declare global {
-  namespace Express {
-    interface Request {
-      User?: any;
-    }
-  }
-}
+
+
+
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../errors/AppError";
 import status from "http-status";
 import { UserModel } from "../modules/users/user/users.model";
 import config from "../config";
 
-export const authenticate = async (
+export const authenticate = (...allowedRoles: string[]) => async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const token =  req.headers.authorization;
-  console.log(token)
+
+  const token = req.headers.authorization;
+
   if (!token) {
     throw new Error("No token provided");
   }
@@ -29,6 +26,8 @@ export const authenticate = async (
       token,
       config.JWT_ACCESS_TOKEN_SECRET as string
     )) as JwtPayload;
+
+    // console.log(decoded)
 
     if (!decoded) {
       throw new Error("Invalid token");
@@ -40,7 +39,16 @@ export const authenticate = async (
       }
     }
 
-    req.user = user as any;
+
+    if(allowedRoles.length && !allowedRoles.includes(user.role)){
+        throw new AppError(
+            status.FORBIDDEN,
+            "You do not have permission to access this resource"
+        );
+    }
+
+
+    req.user = user as jwt.JwtPayload;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

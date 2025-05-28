@@ -1,14 +1,25 @@
 import { Types } from "mongoose";
 
 export interface IOrder {
+  _id?: Types.ObjectId; 
   restaurant: Types.ObjectId;
-  zone: Types.ObjectId;
-  menus: Types.ObjectId[]; // Array of Menu IDs
+  table?: Types.ObjectId | string; 
+  orderId: string;
+  menus: {
+    menu: Types.ObjectId;
+    quantity: number;
+  }[];
   customerName: string;
   customerPhone: string;
   orderType: "dine in" | "takeaway";
-  status: "pending" | "inProgress" | "delivered" | "cancel";
-  specialRequest: string;
+  specialRequest?: string;
   total: number;
-  isDeleted: boolean;
+  paymentMethod: {
+    type: "cash" | "card";
+    cardNumber?: string | null
+  };
+  status?: "pending" | "inProgress" | "delivered" | "cancel";
+  isDeleted?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

@@ -6,6 +6,7 @@ import { userService } from "./users.service";
 import sendResponse from "../../../utils/sendResponse";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
+
   const owner = req.user;
 
   const result = await userService.createUser(req.body , owner);
@@ -18,7 +19,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
-  const result = await userService.getAllUsers();
+  const result = await userService.getAllUsers(_req.query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -38,6 +39,8 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
+
+
     const id = req.params.id;
     const file = req.file;
     const data = req.body.data;

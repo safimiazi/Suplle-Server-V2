@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-
 import AppError from "../../errors/AppError";
 import generateToken from "../../utils/generateToken";
 import bcrypt from "bcryptjs";
@@ -11,9 +10,8 @@ import { IUser } from "../users/user/users.interface";
 import { UserModel } from "../users/user/users.model";
 import { authService } from "./auth.service";
 import { OwnerModel } from "../users/owner/owner.model";
-import { RESTAURANT_STATUS } from "../restuarant/restuarant.constant";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
-import { RestaurantModel } from "../restuarant/restuarant.model";
+
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -45,7 +43,7 @@ const otpValidation = catchAsync(
 const resendOtp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const email = req.query.email as string;
-    
+
     if (!email) {
       throw new Error("Email is required to resend OTP.");
     }
@@ -86,7 +84,7 @@ const verifyResetOtp = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const { email, newPassword , oldPassword} = req.body;
+  const { email, newPassword, oldPassword } = req.body;
   await authService.resetPassword(email, newPassword, oldPassword);
 
   sendResponse(res, {
@@ -154,8 +152,8 @@ const Login = catchAsync(
         );
       }
     }
-     
-  
+
+
 
 
     const payload = {
@@ -182,6 +180,7 @@ const Login = catchAsync(
       sameSite: config.ENVIRONMENT === "production" ? "strict" : "lax",
       maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
     });
+
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -505,14 +504,15 @@ const verifyEmailOTP = catchAsync(
   }
 );
 
-const approveRestaurantByAdmin = catchAsync(async(req,res)=>{
-  
+const approveRestaurantByAdmin = catchAsync(async (req, res) => {
+    
+  console.log(req.body)
 
   const email = req.body.email;
 
   const result = await authService.approveRestaurantByAdmin(email);
 
-  
+
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

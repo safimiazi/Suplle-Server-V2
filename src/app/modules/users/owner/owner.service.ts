@@ -10,11 +10,9 @@ export const ownerService = {
     try {
       return await OwnerModel.create(data);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async getAllOwnerFromDB(query: any) {
@@ -33,22 +31,18 @@ export const ownerService = {
         meta,
       };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async getSingleOwnerFromDB(id: string) {
     try {
       return await OwnerModel.findById(id);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async updateOwnerIntoDB(data: any) {
@@ -66,11 +60,9 @@ export const ownerService = {
       }
       return result;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
   async deleteOwnerFromDB(id: string) {
@@ -86,11 +78,9 @@ export const ownerService = {
       await OwnerModel.updateOne({ _id: id }, { isDelete: true });
       return;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`${error.message}`);
-      } else {
-        throw new Error("An unknown error occurred while fetching by ID.");
-      }
+               throw error;
+
+
     }
   },
 };

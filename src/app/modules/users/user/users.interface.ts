@@ -26,4 +26,5 @@ export type IUser = {
   image: string;
   password: string;
   isDeleted: boolean;
+  isTourCompleted: boolean;
 };

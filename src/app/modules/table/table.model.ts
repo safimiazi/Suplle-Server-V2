@@ -1,19 +1,31 @@
-import mongoose, { Schema, model, Document, Types } from "mongoose";
-import { ITable } from "./table.interface";
+import mongoose from "mongoose";
 
+const tableSchema = new mongoose.Schema({
+    name: {
+        type: String, requireed: true
+    },
+    capacity: {
+        type: Number,
+        required: true,
+    },
+    floor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Floor",
+        required: true,
+    },
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Restaurant",
+        required: true,
+    },
+    qrCodeUrl: {
+        type: String
+    },
 
-const TableSchema = new Schema<ITable>(
-  {
-    restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
-    tableName: { type: String, required: true },
-    tableSetting: { type: String, required: true }, 
-    seatingCapacity: { type: Number, required: true },
-    isDeleted: { type: Boolean, default: false },
-  },
-  {
-    timestamps: true,
-    versionKey:false
-  }
-);
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    }
+}, { timestamps: true });
 
-export const TableModel = model<ITable>("Table", TableSchema);
+export const tableModel = mongoose.model("table", tableSchema);

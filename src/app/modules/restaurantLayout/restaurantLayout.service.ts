@@ -7,6 +7,9 @@ import { OwnerModel } from '../users/owner/owner.model';
 import mongoose from 'mongoose';
 import { toObjectId } from '../../utils/ConvertObjectId';
 import { RestaurantZone } from '../restaurantZone/restaurantZone.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { CATEGORY_SEARCHABLE_FIELDS } from '../category/category.constant';
+import { RESTAURANTLAYOUT_SEARCHABLE_FIELDS } from './restaurantLayout.constant';
 
 
 const postRestaurantLayout = async (payload: IRestaurantLayout) => {
@@ -33,20 +36,33 @@ const postRestaurantLayout = async (payload: IRestaurantLayout) => {
   const result = await RestaurantLayoutModel.create(payload);
   return result;
 };
+const getAllRestaurantLayoutFromDB = async (query: any) => {
+  const service_query = new QueryBuilder(RestaurantLayoutModel.find({ isDeleted: false }), query)
+    .search( RESTAURANTLAYOUT_SEARCHABLE_FIELDS) // Use fields relevant to RestaurantLayoutModel
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-const getAllRestaurantLayout = async () => {
-  const result = await RestaurantLayoutModel.find({ isDeleted: false })
+  const result = await service_query.modelQuery
     .populate({
       path: 'restaurant',
       populate: {
         path: 'menus',
-        model: 'Menu'  
-      }
+        model: 'Menu',
+      },
     })
-    .populate('floor');
+    .populate('Floor'); 
 
-  return result;
+  const meta = await service_query.countTotal();
+
+  return {
+    result,
+    meta,
+  };
 };
+
+
 
 
 const getSingleRestaurantLayout = async (id: string) => {
@@ -55,7 +71,7 @@ const getSingleRestaurantLayout = async (id: string) => {
     .populate({
       path: 'restaurant',
       populate: {
-        path: 'menus', // this will now populate the menu documents
+        path: 'menus', 
       },
     });
 
@@ -125,7 +141,7 @@ const deleteRestaurantLayout = async (id: string) => {
 
 export const restaurantLayoutService = {
   postRestaurantLayout,
-  getAllRestaurantLayout,
+  getAllRestaurantLayoutFromDB,
   getSingleRestaurantLayout,
   updateRestaurantLayout,
   deleteRestaurantLayout,

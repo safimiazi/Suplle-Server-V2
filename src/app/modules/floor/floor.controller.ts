@@ -5,7 +5,9 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 
 const postFloor = catchAsync(async (req: Request, res: Response) => {
-  const result = await floorService.postFloorIntoDB(req.body);
+  const user : any = req.user;
+
+  const result = await floorService.postFloorIntoDB({...req.body, restaurant: user.restaurant});
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,

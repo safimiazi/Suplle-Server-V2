@@ -1,15 +1,15 @@
 
     import express from "express";
-    import { validateRequest } from "../../middlewares/validateRequest";
     import { tableController } from "./table.controller";
-    import { tablePostValidation,tableUpdateValidation } from "./table.validation";
+import { authenticate } from "../../middlewares/authGuard";
+import { ROLE } from "../users/user/users.constant";
 
     const router = express.Router();
     
-    router.post("/create-table", validateRequest(tablePostValidation), tableController.postTable);
-    router.get("/all-table", tableController.getAllTable);
-    router.get("/single-table/:id", tableController.getSingleTable);
-    router.put("/update-table/:id", validateRequest(tableUpdateValidation), tableController.updateTable);
+    router.post("/create-table-with-qrcode", authenticate(ROLE.RESTAURANT_OWNER), tableController.postTable);
+    router.get("/get-all-table/:floorId", tableController.getAllTable);
+    router.get("/get-single-table/:tableId", tableController.getSingleTable);
+    router.put("/update_table/:id", tableController.updateTable);
     router.delete("/delete-table/:id", tableController.deleteTable);
     
     export const tableRoutes = router;

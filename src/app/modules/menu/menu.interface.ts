@@ -9,7 +9,7 @@ export interface IMenu {
   image: string,
   price: number;
   size: IMenuSize;
-  availability: boolean;
+  availability: string;
   description: string;
   rating: number;
   like: number;

@@ -152,6 +152,7 @@ export const authService = {
         { session }
       );
 
+
       await session.commitTransaction();
       session.endSession();
 

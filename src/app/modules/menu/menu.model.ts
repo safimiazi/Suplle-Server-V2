@@ -14,11 +14,10 @@ const MenuSchema = new Schema<IMenu>(
     price: { type: Number, required: true },
     size: {
       type: String,
-      enum: ["small", "medium", "large"],
       required: true,
     },
-    availability: { type: Boolean, default: true },
-    description: { type: String, default: "" },
+    availability: { type: String, required: true},
+    description: { type: String, default: "",required: true },
     rating: { type: Number, default: 0 },
     like: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },

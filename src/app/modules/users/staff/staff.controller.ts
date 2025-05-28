@@ -7,9 +7,11 @@ import sendResponse from "../../../utils/sendResponse";
 const createStaff = catchAsync(async (req: Request, res: Response) => {
 
   const data = JSON.parse(req.body.data);
+  const user = req.user as any;
   const uploadImage = req.file;
-  console.log("11",uploadImage)
-  const result = await staffService.createStaff(data,uploadImage as Express.Multer.File);
+
+
+  const result = await staffService.createStaff({...data, restaurant:user.restaurant },uploadImage as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -19,7 +21,7 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllStaff = catchAsync(async (_req: Request, res: Response) => {
-  const result = await staffService.getAllStaff();
+  const result = await staffService.getAllStaff(_req.query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -40,7 +42,6 @@ const getSingleStaff = catchAsync(async (req: Request, res: Response) => {
 
 const updateStaff = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(id,req.body.data)
   const data = JSON.parse(req.body.data);
   const file = req.file;
 

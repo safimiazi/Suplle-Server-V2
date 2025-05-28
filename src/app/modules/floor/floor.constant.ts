@@ -1,1 +1,1 @@
-export const FLOOR_SEARCHABLE_FIELDS = [];
+export const FLOOR_SEARCHABLE_FIELDS = ["floorName"];

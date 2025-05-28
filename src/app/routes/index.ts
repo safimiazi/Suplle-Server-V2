@@ -5,15 +5,17 @@ import { categoryRoutes } from "../modules/category/category.routes";
 import { menuRoutes } from "../modules/menu/menu.routes";
 import { floorRoutes } from "../modules/floor/floor.routes";
 import { orderRoutes } from "../modules/order/order.routes";
-import { tableRoutes } from "../modules/table/table.routes";
 import { restaurantZoneRoutes } from "../modules/restaurantZone/restaurantZone.routes";
 import { restaurantLayoutRoutes } from "../modules/restaurantLayout/restaurantLayout.routes";
 import { restuarantRoutes } from "../modules/restuarant/restuarant.routes";
 import { staffRoutes } from "../modules/users/staff/staff.routes";
-import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/analytic.route";
+import { analyticsRoutes } from "../modules/analytics/RestaurantAnaltytics/dashboard/analytic.route";
 import { AdminAnalyticsRoutes } from "../modules/analytics/adminAnalytics/adminAnalytics.route";
 import { SubscriptionPlanRoutes } from "../modules/SubscriptionPlan/SubscriptionPlan.routes";
 import { QrCodeDesignRoutes } from "../modules/QrCodeDesign/QrCodeDesign.routes";
+import { subscriptionRoutes } from "../modules/subscription/subscription.routes";
+import { tableRoutes } from "../modules/table/table.routes";
+import { QRCodePurchaseRoutes } from "../modules/QRCodePurchase/QRCodePurchase.routes";
 
 
 const router = Router();
@@ -42,9 +44,6 @@ const moduleRoutes = [
     path:"/order",
     route: orderRoutes
   },{
-    path:"/table",
-    route: tableRoutes
-  },{
     path:"/zone",
     route:  restaurantZoneRoutes ,
   },{
@@ -71,8 +70,20 @@ const moduleRoutes = [
     route: SubscriptionPlanRoutes,
   }
   ,{
+    path:"/subscription",
+    route: subscriptionRoutes,
+  }
+  ,{
     path:"/QrCodeDesign",
     route: QrCodeDesignRoutes,
+  }
+  ,{
+    path:"/table",
+    route: tableRoutes,
+  }
+  ,{
+    path:"/qr-code-purchase",
+    route: QRCodePurchaseRoutes,
   }
 ];
 
