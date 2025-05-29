@@ -22,7 +22,6 @@ router.post("/reset-password", authController.resetPassword);
 router.post("/approved-restaurant-admin",authenticate(ROLE.ADMIN), authController.approveRestaurantByAdmin);
 
 
-
 // Google OAuth
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
 
