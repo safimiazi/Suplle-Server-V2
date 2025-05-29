@@ -159,13 +159,13 @@ export const menuService = {
         newData.image = secure_url as string;
       }
 
-      const restaurant = await RestaurantModel.findOne({
-        _id: newData.restaurant,
-      });
+      // const restaurant = await RestaurantModel.findOne({
+      //   _id: newData.restaurant,
+      // });
 
-      if (!restaurant) {
-        throw new AppError(400, "restaurant doesn't found");
-      }
+      // if (!restaurant) {
+      //   throw new AppError(400, "restaurant doesn't found");
+      // }
 
       const result = await MenuModel.findByIdAndUpdate({ _id: id }, newData, {
         new: true,

@@ -12,13 +12,13 @@ import { ROLE } from "../users/user/users.constant";
     router.post("/create-menu",upload.single('image'),
     (req: Request, res: Response, next: NextFunction) => {
       next();
-    },authenticate(ROLE.RESTAURANT_OWNER,ROLE.RESTAURANT_OWNER), menuController.postMenu);
+    },authenticate(ROLE.RESTAURANT_OWNER), menuController.postMenu);
     router.get("/all-menu", menuController.getAllMenu);
     router.get("/single-menu/:id", menuController.getSingleMenu);
     router.get("/restaurant-menu/:restaurantId", menuController.MenuWithRestaurant);
     router.put("/update-menu/:id", upload.fields([
       { name: "images", maxCount: 1},
-    ]), validateRequest(menuUpdateValidation), menuController.updateMenu);
+    ]), authenticate(ROLE.RESTAURANT_OWNER), validateRequest(menuUpdateValidation), menuController.updateMenu);
     router.delete("/delete-menu/:id", menuController.deleteMenu);
     
     export const menuRoutes = router;
