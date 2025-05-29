@@ -19,7 +19,7 @@ router.post(
 );
 
 router.put(
-  "/update-restaurant/:id",
+  "/update-restaurant",
   authenticate(ROLE.RESTAURANT_OWNER),
 
   upload.fields([

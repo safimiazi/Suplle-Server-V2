@@ -13,14 +13,18 @@ const getAllRestaurant = async () => {
 };
 
 const getSingleRestaurant = async (id: string) => {
-  const result = await RestaurantModel.findById(id);
+  const result = await RestaurantModel.findById(id).populate('menus');
+  
   if (!result || result.isDeleted) {
     throw new AppError(404, "Restaurant not found");
   }
+
   return result;
 };
 
+
 const updateRestaurant = async (id: string, payload: Partial<IRestaurant>) => {
+  
   const result = await RestaurantModel.findByIdAndUpdate(id, payload, {
     new: true,
   });

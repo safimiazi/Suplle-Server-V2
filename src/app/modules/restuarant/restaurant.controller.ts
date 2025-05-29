@@ -54,22 +54,17 @@ const getSingleRestuarant = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
-  // Parse data only if it exists and is a string
   let data: Partial<IRestaurant & { status?: string }> = {};
   if (req.body.data && typeof req.body.data === 'string') {
     data = JSON.parse(req.body.data);
   } else if (req.body.data) {
-    data = req.body.data; // Handle non-string data if applicable
+    data = req.body.data;
   }
 
-  // if (data.status) {
-  //   throw new AppError(400, "You cannot update status");
-  // }
+  const user: any = req.user;
+  const restaurantId = user.restaurant;
 
-  const id = req.params.id;
-
-  // Safely handle file uploads
-  const files = (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map((file: Express.Multer.File) => file.path) || [];
+  const files = (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map((file) => file.path) || [];
   const uploadLogo = (req.files as { [fieldname: string]: Express.Multer.File[] })?.logo?.[0]?.path;
 
   const { images, coverPhoto, logo, ...rest } = data;
@@ -87,21 +82,27 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
-  // Upload images if provided
+  // Retrieve existing restaurant to keep previous images
+  const existingRestaurant = await restaurantService.getSingleRestaurant(restaurantId); // or use RestaurantModel.findById()
+
+  // Upload and merge images if new ones are provided
   if (files.length > 0) {
     try {
       const uploadedImages = await uploadMultipleImages(files);
-      restaurantData.images = uploadedImages;
-      restaurantData.coverPhoto = uploadedImages[0]; 
+      restaurantData.images = [...(existingRestaurant.images || []), ...uploadedImages];
+      restaurantData.coverPhoto = restaurantData.coverPhoto || uploadedImages[0]; // only set if not provided
     } catch (err) {
       console.error("Error uploading images to Cloudinary:", err);
       throw new AppError(500, "Failed to upload images");
     }
+  } else {
+    // Keep existing images if no new images are uploaded
+    restaurantData.images = existingRestaurant.images;
   }
 
   const validate = await validateData(restuarantUpdateValidation, restaurantData) as Partial<IRestaurant>;
 
-  const result = await restaurantService.updateRestaurant(id, validate);
+  const result = await restaurantService.updateRestaurant(restaurantId, validate);
 
   sendResponse(res, {
     success: true,
@@ -110,6 +111,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
   
   
 
