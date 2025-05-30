@@ -316,5 +316,7 @@ export const authService = {
       session.endSession();
       throw error;
     }
-  },
+  }
+  
+  
 };
