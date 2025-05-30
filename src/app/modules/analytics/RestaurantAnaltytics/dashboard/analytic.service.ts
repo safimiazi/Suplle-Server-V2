@@ -147,21 +147,11 @@ export const allAnalytic = async (restaurantId: string) => {
   ? Number((totalRevenue / SuccessfulOrders.length).toFixed(2))
   : 0;
 
-  const totalCustomers = orders.reduce((sum, order, index) => {
-    const persons = order.person || 0;
-    // console.log(`Order #${index + 1}:`);
-    // console.log(`  Order ID: ${order._id}`);
-    // console.log(`  Person count: ${persons}`);
-    // console.log(`  Running total: ${sum + persons}`);
-    return sum + persons;
-  }, 0);
-  
-
   return {
     totalOrders: orders.length,
     CancelOrders: CancelOrders.length,
     deliveredOrders: SuccessfulOrders.length,
-    totalCustomers,
+    totalCustomers: orders.length,
     revenue: {
       totalRevenue: Number(totalRevenue.toFixed(2)),
       averageOrderValue,

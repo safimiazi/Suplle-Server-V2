@@ -5,7 +5,6 @@ export interface IOrder {
   restaurant: Types.ObjectId;
   table?: Types.ObjectId | string; 
   orderId: string;
-  person?:number;
   menus: {
     menu: Types.ObjectId;
     quantity: number;
