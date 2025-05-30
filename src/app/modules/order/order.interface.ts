@@ -10,6 +10,7 @@ export interface IOrder {
     quantity: number;
   }[];
   customerName: string;
+  person: number;
   customerPhone: string;
   orderType: "dine in" | "takeaway";
   specialRequest?: string;

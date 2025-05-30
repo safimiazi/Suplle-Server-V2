@@ -19,7 +19,7 @@ const OrderSchema = new Schema<IOrder>(
       unique: true,
       default: () => `ORD-${Date.now().toString(36)}`
     },
-
+    person: { type: Number, default: 1 },
     menus: {
       type: [
         {

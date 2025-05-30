@@ -125,10 +125,30 @@ const deleteRestuarant = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const setAccountSettings = catchAsync(async (req: Request, res: Response) => {
+  const { oldPassword, newPassword } = req.body;
+  const user: any = req.user;
+  // console.log(user)
+  if (!oldPassword || !newPassword) {
+    throw new AppError(400, "Old password and new password are required");
+  }
+
+  const result = await restaurantService.accountSettings(user.restaurant, oldPassword, newPassword);
+  
+  
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    // message: "Account settings updated successfully",
+    data: result,
+  });
+})
+
 export const restuarantController = {
   postRestuarant,
   getAllRestuarant,
   getSingleRestuarant,
   updateRestuarant,
   deleteRestuarant,
+  setAccountSettings
 };
