@@ -75,7 +75,7 @@ export const allAnalytic = async (restaurantId: string) => {
     }
     monthlyRevenueMap[monthKey] += order.total || 0;
   }
-
+ console.log("here i am")
   // Save monthly revenue to DB
   for (const [month, revenue] of Object.entries(monthlyRevenueMap)) {
     await MonthlyRevenueModel.findOneAndUpdate(
