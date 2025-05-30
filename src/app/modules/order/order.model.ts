@@ -8,6 +8,10 @@ const OrderSchema = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
+    person: {
+      type: Number,
+      default:1
+    },
     // table: { type: Schema.Types.ObjectId, ref: "Table" ,default:"" },
     table: {
       type: String,
