@@ -142,6 +142,15 @@ export const allAnalytic = async (restaurantId: string) => {
     isDeleted: false,
   });
 
+  const totalCustomers = orders.reduce((sum, order, index) => {
+    const persons = order.person || 0;
+    // console.log(`Order #${index + 1}:`);
+    // console.log(`  Order ID: ${order._id}`);
+    // console.log(`  Person count: ${persons}`);
+    // console.log(`  Running total: ${sum + persons}`);
+    return sum + persons;
+  }, 0);
+
   const totalRevenue = SuccessfulOrders.reduce((sum, order) => sum + (order.total || 0), 0);
   const averageOrderValue = SuccessfulOrders.length > 0
   ? Number((totalRevenue / SuccessfulOrders.length).toFixed(2))
@@ -151,7 +160,7 @@ export const allAnalytic = async (restaurantId: string) => {
     totalOrders: orders.length,
     CancelOrders: CancelOrders.length,
     deliveredOrders: SuccessfulOrders.length,
-    totalCustomers: orders.length,
+    totalCustomers,
     revenue: {
       totalRevenue: Number(totalRevenue.toFixed(2)),
       averageOrderValue,
