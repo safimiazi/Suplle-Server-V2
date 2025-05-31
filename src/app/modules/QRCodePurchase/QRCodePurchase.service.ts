@@ -5,6 +5,8 @@ import status from "http-status";
 import AppError from "../../errors/AppError";
 import { QrCodeDesignModel } from "../QrCodeDesign/QrCodeDesign.model";
 import { generateQRCodeOrderId } from "./qrCodePurchase.utils";
+import { notificationModel } from "../notification/notification.model";
+import { io } from "../../../server";
 
 
 
@@ -32,8 +34,18 @@ export const QRCodePurchaseService = {
       if (!purchase) {
         throw new AppError(status.BAD_REQUEST, "Failed to create QR code purchase");
       }
+  
+    const notification = await notificationModel.create({
+      type: "subscription", // or create a new type like "qr_code_purchase"
+      message: `A QR code purchase was made for restaurant ${data.restaurant} with ${data.tableQuantity} tables.`,
+    });
 
-      return purchase;
+    if (io) {
+      io.emit("new_notification", notification);
+    }
+
+    return purchase;
+
     } catch (error: unknown) {
       throw error;
     }
