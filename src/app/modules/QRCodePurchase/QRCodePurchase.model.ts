@@ -23,7 +23,8 @@ const QRCodePurchaseSchema = new mongoose.Schema({
     isDeleted: {
         type: Boolean,
         default: false,
-    }
+    },
+    orderId: { type: String, required: true }, 
 }, { timestamps: true });
 
 export const QRCodePurchaseModel = mongoose.model("QRCodePurchase", QRCodePurchaseSchema);

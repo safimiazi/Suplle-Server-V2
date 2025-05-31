@@ -4,6 +4,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import status from "http-status";
 import AppError from "../../errors/AppError";
 import { QrCodeDesignModel } from "../QrCodeDesign/QrCodeDesign.model";
+import { generateQRCodeOrderId } from "./qrCodePurchase.utils";
 
 
 
@@ -12,21 +13,21 @@ import { QrCodeDesignModel } from "../QrCodeDesign/QrCodeDesign.model";
 export const QRCodePurchaseService = {
   async postQRCodePurchaseIntoDB(data: any) {
     try {
-      // step 1: 
       const design: any = await QrCodeDesignModel.findById(data.qrCodeDesign);
       if (!design) {
         throw new AppError(status.NOT_FOUND, "QR code design not found");
       }
+       const orderId =await generateQRCodeOrderId();
 
-      // step 2: Validate the table quantity
       const purchase = await QRCodePurchaseModel.create({
         user: data.user,
         restaurant: data.restaurant,
         qrCodeDesign: data.qrCodeDesign,
         tableQuantity: data.tableQuantity,
-        status: "pending", // default status
-        isPaid: false, // default payment status
+        status: "pending", 
+        isPaid: false,
         price: design.price * data.tableQuantity,
+        orderId
       });
       if (!purchase) {
         throw new AppError(status.BAD_REQUEST, "Failed to create QR code purchase");
