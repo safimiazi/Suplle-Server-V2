@@ -35,14 +35,14 @@ export const QRCodePurchaseService = {
         throw new AppError(status.BAD_REQUEST, "Failed to create QR code purchase");
       }
   
-    const notification = await notificationModel.create({
-      type: "subscription", // or create a new type like "qr_code_purchase"
-      message: `A QR code purchase was made for restaurant ${data.restaurant} with ${data.tableQuantity} tables.`,
-    });
+    // const notification = await notificationModel.create({
+    //   type: "subscription", // or create a new type like "qr_code_purchase"
+    //   message: `A QR code purchase was made for restaurant ${data.restaurant} with ${data.tableQuantity} tables.`,
+    // });
 
-    if (io) {
-      io.emit("new_notification", notification);
-    }
+    // if (io) {
+    //   io.emit("new_notification", notification);
+    // }
 
     return purchase;
 
