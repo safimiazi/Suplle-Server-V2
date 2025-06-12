@@ -22,7 +22,10 @@ const restuarantRegisterRequest = catchAsync(
       statusCode: status.CREATED,
       success: true,
       message: "An OTP has been sent to your email and phone for verification.",
-      data: pendingRestuarant,
+      data: {
+        email: req.body.email,
+        ...pendingRestuarant
+      },
     });
   }
 );
@@ -505,7 +508,7 @@ const verifyEmailOTP = catchAsync(
 );
 
 const approveRestaurantByAdmin = catchAsync(async (req, res) => {
-    
+
   console.log(req.body)
 
   const email = req.body.email;
