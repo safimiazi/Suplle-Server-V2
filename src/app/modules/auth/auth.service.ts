@@ -98,7 +98,7 @@ export const authService = {
 
       return {
         message: "Restaurant registration successful",
-        email: newUser.email,
+        userEmail: newUser.email,
       };
     } catch (error) {
       await session.abortTransaction();
