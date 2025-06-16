@@ -8,10 +8,8 @@ import { IOrder } from "./order.interface";
 import { OrderModel } from "./order.model";
 import { generateOrderId } from "./order.utils/generateOrderId";
 
-
 export const createOrder = async (payload: Omit<IOrder, "total">) => {
-
-const orderId = await generateOrderId();
+  const orderId = await generateOrderId();
 
   const restaurant = await RestaurantModel.findById(payload.restaurant);
   if (!restaurant) {
@@ -42,16 +40,21 @@ const orderId = await generateOrderId();
     ...payload,
     orderId,
     menus: validatedMenus,
-    total
+    total,
   };
   const result = await OrderModel.create(orderData);
   return result;
 };
 
-
 export const getAllOrders = async (query: any = {}) => {
   try {
-    const ORDER_SEARCHABLE_FIELDS = ['customerName', 'customerPhone', 'orderType', 'status', 'isDeleted'];
+    const ORDER_SEARCHABLE_FIELDS = [
+      "customerName",
+      "customerPhone",
+      "orderType",
+      "status",
+      "isDeleted",
+    ];
 
     const service_query = new QueryBuilder(OrderModel.find(), query)
       .search(ORDER_SEARCHABLE_FIELDS)
@@ -61,14 +64,14 @@ export const getAllOrders = async (query: any = {}) => {
       .fields();
 
     const rawOrders = await service_query.modelQuery.populate([
-      {
-        path: "restaurant",
-        select: "name address contact",
-      },
+      // {
+      //   path: "restaurant",
+      //   select: "name address contact",
+      // },
       {
         path: "menus.menu",
         select: "itemName price size",
-      }
+      },
     ]);
 
     // Format timestamps
@@ -89,38 +92,39 @@ export const getAllOrders = async (query: any = {}) => {
   }
 };
 const getSingleOrder = async (id: string, query: any = {}) => {
-
   const existingOrder = await OrderModel.findById(id);
   if (!existingOrder || existingOrder.isDeleted) {
     throw new AppError(400, "the order is not exist");
   }
 
-  const service_query = new QueryBuilder(OrderModel.find({_id:id}), query)
-    .fields();
+  const service_query = new QueryBuilder(
+    OrderModel.find({ _id: id }),
+    query
+  ).fields();
 
   const order = await service_query.modelQuery.populate([
     {
-      path: "restaurant", 
+      path: "restaurant",
     },
     {
       path: "menus.menu",
       select: "itemName price size",
-    }
+    },
   ]);
 
   return order;
 };
 
-
-
 const updateOrder = async (id: string, payload: Partial<IOrder>) => {
-
-  const existingOrder = await OrderModel.findOne({_id: id, isDeleted: false});
+  const existingOrder = await OrderModel.findOne({ _id: id, isDeleted: false });
   if (!existingOrder || existingOrder.isDeleted) {
     throw new AppError(400, "Cannot update a deleted order");
   }
-  const isCurrentRestaurant = await OrderModel.findOne({_id:id,restaurant: payload.restaurant});
-  if(!isCurrentRestaurant ){
+  const isCurrentRestaurant = await OrderModel.findOne({
+    _id: id,
+    restaurant: payload.restaurant,
+  });
+  if (!isCurrentRestaurant) {
     throw new AppError(400, "you can not update order from another restaurant");
   }
 
@@ -166,14 +170,16 @@ const updateOrder = async (id: string, payload: Partial<IOrder>) => {
   return updatedOrder;
 };
 
-
-const deleteOrder = async (id: string,restaurant: string) => {
-  const findOrder = await OrderModel.findOne({_id: id, isDeleted: false});
-  if (!findOrder || findOrder.isDeleted){
+const deleteOrder = async (id: string, restaurant: string) => {
+  const findOrder = await OrderModel.findOne({ _id: id, isDeleted: false });
+  if (!findOrder || findOrder.isDeleted) {
     throw new AppError(400, "Cannot delete a deleted order");
   }
-  const isCurrentRestaurant = await OrderModel.findOne({_id:id,restaurant:restaurant});
-  if(!isCurrentRestaurant ){
+  const isCurrentRestaurant = await OrderModel.findOne({
+    _id: id,
+    restaurant: restaurant,
+  });
+  if (!isCurrentRestaurant) {
     throw new AppError(400, "you can not update order from another restaurant");
   }
   const deleted = await OrderModel.findByIdAndUpdate(
