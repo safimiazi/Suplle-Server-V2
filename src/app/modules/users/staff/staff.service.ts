@@ -70,28 +70,40 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
     throw error;
   }
 };
-const getAllStaff = async (query: any) => {
+const getAllStaff = async (query: any, restaurantId: string) => {
   try {
-    const service_query = new QueryBuilder(StaffModel.find(), query)
+    const service_query = new QueryBuilder(
+      StaffModel.find({ restaurant: restaurantId }),
+      query
+    )
       .search(STAFF_SEARCHABLE_FIELDS)
       .filter()
       .sort()
       .paginate()
       .fields();
 
-    const result = await service_query.modelQuery.populate("user")
-      .populate("restaurant");;
+    const result = await service_query.modelQuery
+      .populate({
+        path: "user",
+        select: "name email phone role isDeleted",
+      })
+      .populate({
+        path: "restaurant",
+        select: "restaurantName restaurantAddress phone status isDeleted",
+      });
+
     const meta = await service_query.countTotal();
+
     return {
       result,
       meta,
     };
   } catch (error: unknown) {
     throw error;
-
-
   }
 };
+
+
 
 const getSingleStaff = async (id: string) => {
   try {

@@ -94,7 +94,11 @@ const uploadMenuFileController = catchAsync(async (req: Request, res: Response) 
 
 
 const getAllMenu = catchAsync(async (req: Request, res: Response) => {
-  const result = await menuService.getAllMenuFromDB(req.query);
+
+  const user: any = req.user;
+
+  const restaurantId = user.restaurant;
+  const result = await menuService.getAllMenuFromDB(req.query, restaurantId);
 
   sendResponse(res, {
     statusCode: status.OK,

@@ -9,6 +9,7 @@ import { RestaurantModel } from "../restuarant/restuarant.model";
 import mongoose, { Types } from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { MENU_SEARCHABLE_FIELDS } from "./menu.constant";
+import { CLIENT_RENEG_LIMIT } from "tls";
 
 export const menuService = {
   async postMenuIntoDB(
@@ -18,10 +19,10 @@ export const menuService = {
   ) {
     const session = await mongoose.startSession();
     const parsedData = JSON.parse(data); // parse JSON string into object
-  
+
     try {
       session.startTransaction();
-  
+
       // Upload image to Cloudinary if file is provided
       if (file && file.path) {
         const imageName = `${Math.floor(100 + Math.random() * 900)}`;
@@ -35,38 +36,38 @@ export const menuService = {
       } else {
         parsedData.image = null;
       }
-  
+
       // Inject restaurant ID
       parsedData.restaurant = restaurant;
-  
+
       console.log("Parsed Data with Restaurant:", parsedData); // Debug log
-  
+
       // Validate data
       const validatedData = await validateData<IMenu>(
         menuPostValidation,
         parsedData
       );
-  
+
       // Ensure restaurant exists
       const restaurantData = await RestaurantModel.findById(restaurant).session(session);
       if (!restaurantData) {
         throw new AppError(400, "Restaurant doesn't exist");
       }
-  
+
       // Create menu
       const menu = await MenuModel.create([parsedData], { session });
       const createdMenu = menu[0];
-  
+
       // Link to restaurant
       await RestaurantModel.findByIdAndUpdate(
         restaurant,
         { $push: { menus: createdMenu._id } },
         { session }
       );
-  
+
       await session.commitTransaction();
       session.endSession();
-  
+
       return createdMenu;
     } catch (error: unknown) {
       await session.abortTransaction();
@@ -74,11 +75,15 @@ export const menuService = {
       throw error;
     }
   },
-  
-  
-  async getAllMenuFromDB(query: any) {
+
+
+  async getAllMenuFromDB(query: any, restaurantId: string) {
     try {
-      const service_query = new QueryBuilder(MenuModel.find(), query)
+      // Apply restaurantId filtering before using the QueryBuilder
+      const service_query = new QueryBuilder(
+        MenuModel.find({ restaurant: restaurantId }), // <-- filter added here
+        query
+      )
         .search(MENU_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -95,17 +100,19 @@ export const menuService = {
           },
         },
       }).populate("category");
+
       const meta = await service_query.countTotal();
+
       return {
         result,
         meta,
       };
     } catch (error: unknown) {
-               throw error;
-
-
+      throw error;
     }
-  },
+  }
+
+  ,
   async getSingleMenuFromDB(id: string) {
     try {
       const result = await MenuModel.findOne({ _id: id });
@@ -114,7 +121,7 @@ export const menuService = {
       }
       return result;
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }
@@ -124,7 +131,7 @@ export const menuService = {
     try {
       return await MenuModel.find({ restaurant: new Types.ObjectId(id) });
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }
