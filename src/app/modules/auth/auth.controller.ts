@@ -12,7 +12,6 @@ import { authService } from "./auth.service";
 import { OwnerModel } from "../users/owner/owner.model";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
 
-
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(
@@ -24,7 +23,7 @@ const restuarantRegisterRequest = catchAsync(
       message: "An OTP has been sent to your email and phone for verification.",
       data: {
         email: req.body.email,
-        ...pendingRestuarant
+        ...pendingRestuarant,
       },
     });
   }
@@ -134,12 +133,12 @@ const Login = catchAsync(
         );
       }
 
-      if (owner.status === OWNER_STATUS.UNVERIFIED) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Your account is not verified. Please verify OTP."
-        );
-      }
+      // if (owner.status === OWNER_STATUS.UNVERIFIED) {
+      //   throw new AppError(
+      //     status.UNAUTHORIZED,
+      //     "Your account is not verified. Please verify OTP."
+      //   );
+      // }
 
       // if (owner.status === OWNER_STATUS.PENDING) {
       //   throw new AppError(
@@ -155,9 +154,6 @@ const Login = catchAsync(
         );
       }
     }
-
-
-
 
     const payload = {
       userId: user._id,
@@ -183,7 +179,6 @@ const Login = catchAsync(
       sameSite: config.ENVIRONMENT === "production" ? "strict" : "lax",
       maxAge: parseInt(config.JWT_REFRESH_TOKEN_EXPIRES_IN!) * 1000,
     });
-
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -459,8 +454,7 @@ const resendVerificationPhoneNumber = catchAsync(
       message: "Verification phone number resent",
       data: null,
     });
-  },
-
+  }
 );
 // 16. Verify phone number OTP
 const verifyPhoneNumberOTP = catchAsync(
@@ -508,13 +502,11 @@ const verifyEmailOTP = catchAsync(
 );
 
 const approveRestaurantByAdmin = catchAsync(async (req, res) => {
-
-  console.log(req.body)
+  console.log(req.body);
 
   const email = req.body.email;
 
   const result = await authService.approveRestaurantByAdmin(email);
-
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -522,7 +514,7 @@ const approveRestaurantByAdmin = catchAsync(async (req, res) => {
     message: "Restaurant  approved successfully",
     data: result,
   });
-})
+});
 
 export const authController = {
   restuarantRegisterRequest,
@@ -545,5 +537,5 @@ export const authController = {
   resendVerificationPhoneNumber,
   verifyPhoneNumberOTP,
   verifyEmailOTP,
-  approveRestaurantByAdmin
+  approveRestaurantByAdmin,
 };

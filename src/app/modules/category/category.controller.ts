@@ -25,7 +25,12 @@ const postCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
-  const result = await categoryService.getAllCategoryFromDB(req.query);
+  const user: any = req.user;
+  const restaurantId = user.restaurant;
+  const result = await categoryService.getAllCategoryFromDB(
+    req.query,
+    restaurantId
+  );
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

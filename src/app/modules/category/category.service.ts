@@ -28,7 +28,7 @@ export const categoryService = {
         };
 
         newData.image = secure_url as string;
-      } 
+      }
 
       const restaurant = await RestaurantModel.findOne({
         _id: newData.restaurant,
@@ -47,9 +47,12 @@ export const categoryService = {
       }
     }
   },
-  async getAllCategoryFromDB(query: any) {
+  async getAllCategoryFromDB(query: any, restaurantId: string) {
     try {
-      const service_query = new QueryBuilder(CategoryModel.find(), query)
+      const service_query = new QueryBuilder(
+        CategoryModel.find({ restaurant: restaurantId }),
+        query
+      )
         .search(CATEGORY_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -58,13 +61,6 @@ export const categoryService = {
 
       const result = await service_query.modelQuery.populate({
         path: "restaurant",
-        populate: {
-          path: "owner",
-          populate: {
-            path: "user",
-            select: "name email phone role isDeleted",
-          },
-        },
       });
       const meta = await service_query.countTotal();
       return {
@@ -77,7 +73,10 @@ export const categoryService = {
   },
   async getSingleCategoryFromDB(id: string) {
     try {
-      return await CategoryModel.findById(id);
+      const result = CategoryModel.find({ _id: id });
+      if (!result) {
+        throw new AppError(404, "category donot found");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`${error.message}`);
@@ -110,7 +109,7 @@ export const categoryService = {
         };
 
         newData.image = secure_url as string;
-      } 
+      }
 
       const restaurant = await RestaurantModel.findOne({
         _id: newData.restaurant,

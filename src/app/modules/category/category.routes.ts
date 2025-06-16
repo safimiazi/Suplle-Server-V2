@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   "/create-category",
-  authenticate(ROLE.RESTAURANT_OWNER),
+  authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN),
   upload.single("image"),
   (req: Request, res: Response, next: NextFunction) => {
     next();

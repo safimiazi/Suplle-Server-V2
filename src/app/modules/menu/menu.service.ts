@@ -15,7 +15,7 @@ export const menuService = {
   async postMenuIntoDB(
     data: any,
     restaurant: string,
-    file: Express.Multer.File & { path?: string; }
+    file: Express.Multer.File & { path?: string }
   ) {
     const session = await mongoose.startSession();
     const parsedData = JSON.parse(data); // parse JSON string into object
@@ -49,7 +49,9 @@ export const menuService = {
       );
 
       // Ensure restaurant exists
-      const restaurantData = await RestaurantModel.findById(restaurant).session(session);
+      const restaurantData = await RestaurantModel.findById(restaurant).session(
+        session
+      );
       if (!restaurantData) {
         throw new AppError(400, "Restaurant doesn't exist");
       }
@@ -76,7 +78,6 @@ export const menuService = {
     }
   },
 
-
   async getAllMenuFromDB(query: any, restaurantId: string) {
     try {
       // Apply restaurantId filtering before using the QueryBuilder
@@ -90,16 +91,7 @@ export const menuService = {
         .paginate()
         .fields();
 
-      const result = await service_query.modelQuery.populate({
-        path: "restaurant",
-        populate: {
-          path: "owner",
-          populate: {
-            path: "user",
-            select: "name email phone role isDeleted",
-          },
-        },
-      }).populate("category");
+      const result = await service_query.modelQuery.populate("category");
 
       const meta = await service_query.countTotal();
 
@@ -110,9 +102,8 @@ export const menuService = {
     } catch (error: unknown) {
       throw error;
     }
-  }
+  },
 
-  ,
   async getSingleMenuFromDB(id: string) {
     try {
       const result = await MenuModel.findOne({ _id: id });
@@ -122,8 +113,6 @@ export const menuService = {
       return result;
     } catch (error: unknown) {
       throw error;
-
-
     }
   },
 
@@ -132,8 +121,6 @@ export const menuService = {
       return await MenuModel.find({ restaurant: new Types.ObjectId(id) });
     } catch (error: unknown) {
       throw error;
-
-
     }
   },
 
@@ -183,7 +170,6 @@ export const menuService = {
     }
   },
 
-
   async deleteMenuFromDB(id: string) {
     try {
       const isExist = await MenuModel.findOne({ _id: id });
@@ -205,6 +191,5 @@ export const menuService = {
     } catch (error: unknown) {
       throw error;
     }
-  }
-
+  },
 };
