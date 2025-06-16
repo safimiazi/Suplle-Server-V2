@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   "/create-restaurant",
   authenticate(ROLE.RESTAURANT_OWNER),
- checkActiveSubscription(),
+  checkActiveSubscription(),
   upload.fields([
     { name: "images", maxCount: 5 },
     { name: "logo", maxCount: 1 },
@@ -20,7 +20,7 @@ router.post(
 
 router.put(
   "/update-restaurant",
-  authenticate(ROLE.RESTAURANT_OWNER),
+  authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN),
 
   upload.fields([
     { name: "images", maxCount: 5 },
@@ -29,7 +29,17 @@ router.put(
   restuarantController.updateRestuarant
 );
 
-router.get("/all-restaurant", restuarantController.getAllRestuarant);
+router.put(
+  "/update-restaurant-admin/:id",
+  authenticate(ROLE.ADMIN),
+  upload.fields([
+    { name: "images", maxCount: 5 },
+    { name: "logo", maxCount: 1 },
+  ]),
+  restuarantController.updateRestuarantByAdmin
+);
+
+router.get("/all-restaurant", authenticate(ROLE.ADMIN), restuarantController.getAllRestuarant);
 router.get("/single-restaurant/:id", restuarantController.getSingleRestuarant);
 // router.put("/update-restaurant/:id", validateRequest(restuarantUpdateValidation), restuarantController.updateRestuarant);
 router.delete(
@@ -37,6 +47,6 @@ router.delete(
   authenticate(ROLE.RESTAURANT_OWNER),
   restuarantController.deleteRestuarant
 );
-router.put("/account-settings",authenticate(ROLE.RESTAURANT_OWNER), restuarantController.setAccountSettings);
+router.put("/account-settings", authenticate(ROLE.RESTAURANT_OWNER), restuarantController.setAccountSettings);
 
 export const restuarantRoutes = router;
