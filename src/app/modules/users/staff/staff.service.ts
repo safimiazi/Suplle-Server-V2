@@ -79,8 +79,7 @@ const getAllStaff = async (query: any) => {
       .paginate()
       .fields();
 
-    const result = await service_query.modelQuery.populate("user")
-      .populate("restaurant");;
+    const result = await service_query.modelQuery
     const meta = await service_query.countTotal();
     return {
       result,

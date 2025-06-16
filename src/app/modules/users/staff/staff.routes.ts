@@ -15,7 +15,7 @@ router.post(
   },
   staffController.createStaff
 );
-router.get("/all-staff", authenticate(ROLE.RESTAURANT_OWNER),
+router.get("/all-staff", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN),
   staffController.getAllStaff);
 router.get("/single-staff/:id", staffController.getSingleStaff);
 router.put(
