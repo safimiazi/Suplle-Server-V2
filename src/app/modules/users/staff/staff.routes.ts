@@ -22,7 +22,7 @@ router.put(
   "/update-staff/:id", upload.single("image"),
   (req: Request, res: Response, next: NextFunction) => {
     next();
-  },
+  }, authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN),
   staffController.updateStaff
 );
 

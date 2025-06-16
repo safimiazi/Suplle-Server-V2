@@ -8,6 +8,7 @@ const RoleEnum = [
   "customer",
   "manager",
   "dine in",
+  "take away",
   "waiter",
   "chief",
   "cashier",
