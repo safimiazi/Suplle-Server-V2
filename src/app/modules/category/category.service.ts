@@ -73,10 +73,12 @@ export const categoryService = {
   },
   async getSingleCategoryFromDB(id: string) {
     try {
-      const result = CategoryModel.find({ _id: id });
+      const result = await CategoryModel.find({ _id: id });
+
       if (!result) {
         throw new AppError(404, "category donot found");
       }
+      return result;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`${error.message}`);
