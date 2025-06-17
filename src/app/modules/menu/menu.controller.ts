@@ -124,8 +124,10 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const data = req.body.data;
   const file = req.file;
   const parseData = JSON.parse(data);
+  const user: any = req.user;
+  const restaurantId = user.restaurant;
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id);
+  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurantId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

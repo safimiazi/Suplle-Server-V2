@@ -127,7 +127,8 @@ export const menuService = {
   async updateMenuIntoDB(
     data: any,
     file: Express.Multer.File & { path?: string },
-    id: string
+    id: string,
+    restaurantId: string
   ) {
     try {
       const existingMenu = await MenuModel.findById(id);
@@ -138,7 +139,9 @@ export const menuService = {
       if (existingMenu.isDeleted) {
         throw new AppError(status.BAD_REQUEST, "Menu is already deleted");
       }
-
+      if (existingMenu.restaurant.toString() !== restaurantId) {
+        throw new AppError(status.BAD_REQUEST, "Menu does not belong to the specified restaurant");
+      }
       let newData = data;
       if (file) {
         const imageName = `${Math.floor(100 + Math.random() * 900)}`;
