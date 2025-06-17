@@ -9,7 +9,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 
   const owner = req.user;
 
-  const result = await userService.createUser(req.body , owner);
+  const result = await userService.createUser(req.body, owner);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -20,6 +20,17 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 
 const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
   const result = await userService.getAllUsers(_req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Users retrieved successfully",
+    data: result,
+  });
+});
+const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
+  const user: any = req.user;
+  const restaurant = user.restaurant
+  const result = await userService.getAllUsersForOwner(req.query, restaurant);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -41,12 +52,12 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 const updateUser = catchAsync(async (req: Request, res: Response) => {
 
 
-    const id = req.params.id;
-    const file = req.file;
-    const data = req.body.data;
+  const id = req.params.id;
+  const file = req.file;
+  const data = req.body.data;
 
 
-  const result = await userService.updateUser(id,data,file as Express.Multer.File);
+  const result = await userService.updateUser(id, data, file as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -71,4 +82,5 @@ export const userController = {
   getSingleUser,
   updateUser,
   deleteUser,
+  getAllUsersOWner
 };

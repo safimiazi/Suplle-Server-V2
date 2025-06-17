@@ -11,21 +11,22 @@ const router = express.Router();
 
 router.post(
   "/owner-create-sub-user",
-  authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN),
+  authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN),
   validateRequest(userInputSchema),
   userController.createUser
 );
 
-router.get("/all-users",  authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN), userController.getAllUsers);
+router.get("/all-users", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN), userController.getAllUsers);
+router.get("/all-users-owner", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN), userController.getAllUsersOWner);
 
-router.get("/single-user/:id",   authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN), userController.getSingleUser);
+router.get("/single-user/:id", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN), userController.getSingleUser);
 
 router.put(
-  "/update-user/:id",upload.single('image'),  authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN,ROLE.STAFF),
+  "/update-user/:id", upload.single('image'), authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN, ROLE.STAFF),
   validateRequest(usersUpdateValidation),
   userController.updateUser
 );
 
-router.delete("/delete-user/:id", authenticate(ROLE.RESTAURANT_OWNER,ROLE.ADMIN), userController.deleteUser);
+router.delete("/delete-user/:id", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN), userController.deleteUser);
 
 export const usersRoutes = router;

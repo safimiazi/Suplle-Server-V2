@@ -4,7 +4,7 @@ import AppError from "../../../errors/AppError";
 import { uploadImgToCloudinary } from "../../../utils/sendImageToCloudinary";
 import { validateData } from "../../../middlewares/validateData ";
 import { usersUpdateValidation } from "./users.validation";
-import { UpdateQuery } from "mongoose";
+import mongoose, { UpdateQuery } from "mongoose";
 import { sendUserLoginCredentials } from "../../../utils/subUserEmailTamplate";
 import { OwnerModel } from "../owner/owner.model";
 
@@ -32,7 +32,7 @@ const createUser = async (data: IUser, owner: any) => {
 
     modifiedData.restaurant = owner.restaurant;
     // 3. Hash the password before saving to the database
-      modifiedData.password = await bcrypt.hash(modifiedData.password, 10); // 10 is salt rounds
+    modifiedData.password = await bcrypt.hash(modifiedData.password, 10); // 10 is salt rounds
 
     // 2. Create new user with session
     const result = await UserModel.create([modifiedData], { session });
@@ -95,6 +95,39 @@ const getAllUsers = async (query: any) => {
     throw error;
   }
 };
+const getAllUsersForOwner = async (query: any, restaurantId: string) => {
+  try {
+    const service_query = new QueryBuilder(
+      UserModel.find({
+        restaurant: new mongoose.Types.ObjectId(restaurantId),
+        role: { $ne: "admin" },
+        isDeleted: false,
+      }),
+      query
+    )
+      .search(USERS_SEARCHABLE_FIELDS)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+
+    const result = await service_query.modelQuery.select("-password"); // Only user fields, no populate
+
+    const meta = await service_query.countTotal();
+
+    return {
+      result,
+      meta,
+    };
+  } catch (error: unknown) {
+    console.error("Error in getAllUsersForOwner:", error);
+    throw error;
+  }
+};
+
+
+
+
 const getSingleUser = async (id: string) => {
   const result = await UserModel.findById(id);
   if (!result || result.isDeleted) {
@@ -151,4 +184,5 @@ export const userService = {
   getSingleUser,
   updateUser,
   deleteUser,
+  getAllUsersForOwner
 };
