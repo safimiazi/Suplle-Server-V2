@@ -15,7 +15,7 @@ router.post(
 );
 
 router.get("/get_all_owner", ownerController.getAllOwner);
-router.get("/get_single_owner/:id", ownerController.getSingleOwner);
+router.get("/get-single-owner/:id", authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER), ownerController.getSingleOwner);
 router.put(
   "/update-owner", authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER),
   validateRequest(ownerUpdateValidation),

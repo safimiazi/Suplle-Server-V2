@@ -38,9 +38,12 @@ export const ownerService = {
 
     }
   },
-  async getSingleOwnerFromDB(id: string) {
+  async getSingleOwnerFromDB(id: string, restaurant: string) {
     try {
-      return await OwnerModel.findById(id);
+      const result = await OwnerModel.findById(id);
+      const restaurantdata = await RestaurantModel.findOne({ _id: restaurant });
+      console.log(restaurantdata);
+      return { result, address: restaurantdata ? restaurantdata.restaurantAddress : null };
     } catch (error: unknown) {
       throw error;
 
