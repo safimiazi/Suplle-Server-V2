@@ -49,7 +49,7 @@ export const ownerService = {
   },
   async updateOwnerIntoDB(data: any, id: string) {
     try {
-   
+
       const finduser = await OwnerModel.findOne({ user: id });
       if (!finduser) {
         throw new AppError(400, "the user is not found");
@@ -59,7 +59,7 @@ export const ownerService = {
       const findRestaurant = await RestaurantModel.updateOne({ owner: finduser._id }, { restaurantAddress: data.restaurantAddress });
 
 
-      const result = await OwnerModel.updateOne({ user: id }, data, {
+      const result = await OwnerModel.findOneAndUpdate({ user: id }, data, {
         new: true,
       });
       if (!result) {

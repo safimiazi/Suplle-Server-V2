@@ -260,6 +260,7 @@ export const authService = {
 
     if (!user) throw new Error("User not found.");
 
+    console.log(user);
     if (user.password !== oldPassword) {
       throw new Error("Old password is incorrect.");
     }
