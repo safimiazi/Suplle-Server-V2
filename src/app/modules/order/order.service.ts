@@ -46,7 +46,7 @@ export const createOrder = async (payload: Omit<IOrder, "total">) => {
   return result;
 };
 
-export const getAllOrders = async (query: any = {}) => {
+export const getAllOrders = async (query: any, restaurantId: string) => {
   try {
     const ORDER_SEARCHABLE_FIELDS = [
       "customerName",
@@ -56,7 +56,7 @@ export const getAllOrders = async (query: any = {}) => {
       "isDeleted",
     ];
 
-    const service_query = new QueryBuilder(OrderModel.find(), query)
+    const service_query = new QueryBuilder(OrderModel.find({ restaurant: restaurantId }), query)
       .search(ORDER_SEARCHABLE_FIELDS)
       .filter()
       .sort()

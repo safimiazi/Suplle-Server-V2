@@ -30,7 +30,9 @@ const createOrder = catchAsync(async (req, res) => {
 
 const getAllOrders = catchAsync(async (req, res) => {
   const query = req.query;
-  const result = await orderServices.getAllOrders(query);
+  const user: any = req.user;
+
+  const result = await orderServices.getAllOrders(query, user.restaurant);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
