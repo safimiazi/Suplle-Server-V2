@@ -3,6 +3,9 @@ import { validateRequest } from "../../../middlewares/validateRequest";
 import { ownerController } from "./owner.controller";
 import { ownerPostValidation, ownerUpdateValidation } from "./owner.validation";
 
+import { ROLE } from "../user/users.constant";
+import { authenticate } from "../../../middlewares/authGuard";
+
 const router = express.Router();
 
 router.post(
@@ -14,7 +17,7 @@ router.post(
 router.get("/get_all_owner", ownerController.getAllOwner);
 router.get("/get_single_owner/:id", ownerController.getSingleOwner);
 router.put(
-  "/update_owner/:id",
+  "/update-owner", authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER),
   validateRequest(ownerUpdateValidation),
   ownerController.updateOwner
 );

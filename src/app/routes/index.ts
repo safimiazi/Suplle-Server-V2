@@ -16,6 +16,7 @@ import { QrCodeDesignRoutes } from "../modules/QrCodeDesign/QrCodeDesign.routes"
 import { subscriptionRoutes } from "../modules/subscription/subscription.routes";
 import { tableRoutes } from "../modules/table/table.routes";
 import { QRCodePurchaseRoutes } from "../modules/QRCodePurchase/QRCodePurchase.routes";
+import { ownerRoutes } from "../modules/users/owner/owner.routes";
 
 
 const router = Router();
@@ -30,60 +31,63 @@ const moduleRoutes = [
     route: usersRoutes,
 
   }
-,{
+  , {
     path: "/categories",
     route: categoryRoutes,
 
-  },{
-    path:"/menus",
+  }, {
+    path: "/menus",
     route: menuRoutes
-  },{
-    path:"/floor",
+  }, {
+    path: "/floor",
     route: floorRoutes
-  },{
-    path:"/order",
+  }, {
+    path: "/order",
     route: orderRoutes
-  },{
-    path:"/zone",
-    route:  restaurantZoneRoutes ,
-  },{
-    path:"/orders",
+  }, {
+    path: "/zone",
+    route: restaurantZoneRoutes,
+  }, {
+    path: "/orders",
     route: orderRoutes,
-  },{
-    path:"/layout",
+  }, {
+    path: "/layout",
     route: restaurantLayoutRoutes,
-  },{
-    path:"/restaurant",
+  }, {
+    path: "/restaurant",
     route: restuarantRoutes,
-  },{
-    path:"/staff",
+  }, {
+    path: "/staff",
     route: staffRoutes,
-  },{
-    path:"/analytics",
+  }, {
+    path: "/analytics",
     route: analyticsRoutes
-  },{
-    path:"/admin-analytics",
+  }, {
+    path: "/admin-analytics",
     route: AdminAnalyticsRoutes,
   }
-  ,{
-    path:"/subscriptionPlan",
+  , {
+    path: "/subscriptionPlan",
     route: SubscriptionPlanRoutes,
   }
-  ,{
-    path:"/subscription",
+  , {
+    path: "/subscription",
     route: subscriptionRoutes,
   }
-  ,{
-    path:"/QrCodeDesign",
+  , {
+    path: "/QrCodeDesign",
     route: QrCodeDesignRoutes,
   }
-  ,{
-    path:"/table",
+  , {
+    path: "/table",
     route: tableRoutes,
   }
-  ,{
-    path:"/qr-code-purchase",
+  , {
+    path: "/qr-code-purchase",
     route: QRCodePurchaseRoutes,
+  }, {
+    path: "/owner",
+    route: ownerRoutes,
   }
 ];
 

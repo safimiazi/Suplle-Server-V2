@@ -14,8 +14,9 @@ const roleEnum = z.enum([
   "customer",
   "manager",
   "dine in",
+  "take away",
   "waiter",
-  "chief",
+  "chef",
   "cashier",
   "maintenance",
 ]);

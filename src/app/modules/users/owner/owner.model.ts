@@ -15,9 +15,9 @@ const OwnerSchema = new Schema<IOwner>(
       default: "pending",
     },
     taxInfo: {
-      gstRate: { type: String },
-      cgstRate: { type: String },
-      sgstRate: { type: String },
+      gstRate: { type: String, default: "0%" },
+      cgstRate: { type: String, default: "0%" },
+      sgstRate: { type: String, default: "0%" },
     },
     isDeleted: {
       type: Boolean,

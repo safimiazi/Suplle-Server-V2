@@ -3,12 +3,20 @@ import httpStatus from 'http-status';
 import { orderServices } from './order.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
+import AppError from '../../errors/AppError';
 
 
 const createOrder = catchAsync(async (req, res) => {
-  
-  const user:any =  req.user;
+
+  const user: any = req.user;
   const data = req.body;
+
+  const orderType = data.orderType;
+  if (orderType != user.role) {
+    throw new AppError(400, "You can not take order");
+  }
+
+
   const result = await orderServices.createOrder({ ...data, restaurant: user.restaurant });
   sendResponse(res, {
     success: true,
@@ -42,10 +50,10 @@ const getSingleOrder = catchAsync(async (req, res) => {
 
 
 const updateOrder = catchAsync(async (req, res) => {
-  const user:any =  req.user;
+  const user: any = req.user;
   const data = req.body;
 
-  const result = await orderServices.updateOrder(req.params.id,{ ...data,restaurant: user.restaurant});
+  const result = await orderServices.updateOrder(req.params.id, { ...data, restaurant: user.restaurant });
 
   sendResponse(res, {
     success: true,
@@ -57,10 +65,10 @@ const updateOrder = catchAsync(async (req, res) => {
 
 
 const deleteOrder = catchAsync(async (req, res) => {
-  const user :any =  req.user;
+  const user: any = req.user;
   const restaurant = user.restaurant;
-   
-  const result = await orderServices.deleteOrder(req.params.id,restaurant);
+
+  const result = await orderServices.deleteOrder(req.params.id, restaurant);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

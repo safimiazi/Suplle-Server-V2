@@ -35,11 +35,14 @@ const getSingleOwner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateOwner = catchAsync(async (req: Request, res: Response) => {
-  const result = await ownerService.updateOwnerIntoDB(req.body);
+  const user: any = req.user;
+  const ownerId = user._id;
+
+  const result = await ownerService.updateOwnerIntoDB(req.body, ownerId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "Updated successfully",
+    message: "Restaurant owner information updated successfully",
     data: result,
   });
 });

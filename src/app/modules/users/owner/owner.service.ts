@@ -4,13 +4,15 @@ import QueryBuilder from "../../../builder/QueryBuilder";
 import status from "http-status";
 import AppError from "../../../errors/AppError";
 import { OwnerModel } from "./owner.model";
+import { RestaurantModel } from "../../restuarant/restuarant.model";
+import mongoose from "mongoose";
 
 export const ownerService = {
   async postOwnerIntoDB(data: any) {
     try {
       return await OwnerModel.create(data);
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }
@@ -31,7 +33,7 @@ export const ownerService = {
         meta,
       };
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }
@@ -40,29 +42,51 @@ export const ownerService = {
     try {
       return await OwnerModel.findById(id);
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }
   },
-  async updateOwnerIntoDB(data: any) {
+  async updateOwnerIntoDB(data: any, id: string) {
+    const session = await mongoose.startSession();
+
     try {
-      const isDeleted = await OwnerModel.findOne({ _id: data.id });
-      if (isDeleted?.isDeleted) {
-        throw new AppError(status.NOT_FOUND, "owner is already deleted");
+      session.startTransaction();
+
+      const findOwner = await OwnerModel.findOne({ user: id }).session(session);
+      if (!findOwner) {
+        throw new AppError(400, "The owner (user) was not found");
       }
 
-      const result = await OwnerModel.updateOne({ _id: data.id }, data, {
-        new: true,
-      });
-      if (!result) {
-        throw new Error("owner not found.");
+      // Update the related Restaurant's address
+      const restaurantUpdate = await RestaurantModel.updateOne(
+        { owner: findOwner._id },
+        { restaurantAddress: data.restaurantAddress },
+        { session }
+      );
+
+      if (restaurantUpdate.matchedCount === 0) {
+        throw new AppError(404, "Associated restaurant not found");
       }
-      return result;
-    } catch (error: unknown) {
-               throw error;
 
+      // Update the Owner
+      const ownerUpdate = await OwnerModel.updateOne(
+        { user: id },
+        data,
+        { session }
+      );
 
+      if (ownerUpdate.matchedCount === 0) {
+        throw new AppError(404, "Owner update failed");
+      }
+
+      await session.commitTransaction();
+      return { ownerUpdate, restaurantUpdate };
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
     }
   },
   async deleteOwnerFromDB(id: string) {
@@ -78,7 +102,7 @@ export const ownerService = {
       await OwnerModel.updateOne({ _id: id }, { isDelete: true });
       return;
     } catch (error: unknown) {
-               throw error;
+      throw error;
 
 
     }

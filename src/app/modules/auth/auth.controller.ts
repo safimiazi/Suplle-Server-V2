@@ -164,7 +164,7 @@ const Login = catchAsync(
     const accessToken = generateToken(
       payload,
       config.JWT_ACCESS_TOKEN_SECRET!,
-      18000
+      36000
     );
 
     const refreshToken = generateToken(

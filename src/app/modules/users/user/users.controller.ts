@@ -29,7 +29,7 @@ const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
 });
 const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.restaurant
+  const restaurant = user.restaurant;
   const result = await userService.getAllUsersForOwner(req.query, restaurant);
   sendResponse(res, {
     success: true,
