@@ -14,23 +14,23 @@ const router = express.Router();
 
 router.post(
   "/create-order",
-  authenticate(ROLE.DINE_IN, ROLE.TAKEAWAY, ROLE.RESTAURANT_OWNER),
+  authenticate(ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY),
   validateRequest(orderPostValidation),
   orderController.createOrder
 );
 
-router.get("/all-order", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY, ROLE.DINE_IN), orderController.getAllOrders);
+router.get("/all-order", authenticate(ROLE.ADMIN, ROLE.STAFF), orderController.getAllOrders);
 
-router.get("/single-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY, ROLE.DINE_IN), orderController.getSingleOrder);
+router.get("/single-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF), orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
-  authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY, ROLE.DINE_IN),
+  authenticate(ROLE.ADMIN, ROLE.STAFF),
   validateRequest(orderUpdateValidation),
 
   orderController.updateOrder
 );
 
-router.delete("/delete-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY, ROLE.DINE_IN), orderController.deleteOrder);
+router.delete("/delete-order/:id", authenticate(ROLE.STAFF), orderController.deleteOrder);
 
 export const orderRoutes = router;

@@ -1,6 +1,6 @@
 import { OrderModel } from "../../../order/order.model";
 import { DailyRevenueModel } from "./DailyRevenueModel";
-import { MonthlyRevenueModel } from "./MonthlyRevenueModel"; 
+import { MonthlyRevenueModel } from "./MonthlyRevenueModel";
 
 // Helper function to convert 'YYYY-MM' to 'Month Year' string
 function formatMonthName(monthKey: string) {
@@ -67,15 +67,21 @@ export const allAnalytic = async (restaurantId: string) => {
 
   // Group monthly revenue
   const monthlyRevenueMap: Record<string, number> = {};
+  const monthlyOrderCountMap: Record<string, number> = {};
+
   for (const order of SuccessfulOrders) {
     const createdAt = order.createdAt ?? new Date();
-    const monthKey = createdAt.toISOString().slice(0, 7); 
+    const monthKey = createdAt.toISOString().slice(0, 7); // 'YYYY-MM'
+
     if (!monthlyRevenueMap[monthKey]) {
       monthlyRevenueMap[monthKey] = 0;
+      monthlyOrderCountMap[monthKey] = 0;
     }
+
     monthlyRevenueMap[monthKey] += order.total || 0;
+    monthlyOrderCountMap[monthKey] += 1;
   }
- console.log("here i am")
+
   // Save monthly revenue to DB
   for (const [month, revenue] of Object.entries(monthlyRevenueMap)) {
     await MonthlyRevenueModel.findOneAndUpdate(
@@ -91,6 +97,7 @@ export const allAnalytic = async (restaurantId: string) => {
     .map(([month, revenue]) => ({
       month: formatMonthName(month),
       revenue: Number(revenue.toFixed(2)),
+      totalMonthlyOrders: monthlyOrderCountMap[month] || 0
     }));
 
   // Date range calculations for weekly & monthly revenues
@@ -132,8 +139,8 @@ export const allAnalytic = async (restaurantId: string) => {
       weeklyComparison > 0
         ? `↑ ${weeklyComparison}% increase from last week`
         : weeklyComparison < 0
-        ? `↓ ${Math.abs(weeklyComparison)}% decrease from last week`
-        : "No change from last week";
+          ? `↓ ${Math.abs(weeklyComparison)}% decrease from last week`
+          : "No change from last week";
   }
 
   const CancelOrders = await OrderModel.find({
@@ -142,19 +149,15 @@ export const allAnalytic = async (restaurantId: string) => {
     isDeleted: false,
   });
 
-  const totalCustomers = orders.reduce((sum, order, index) => {
+  const totalCustomers = orders.reduce((sum, order) => {
     const persons = order.person || 0;
-    // console.log(`Order #${index + 1}:`);
-    // console.log(`  Order ID: ${order._id}`);
-    // console.log(`  Person count: ${persons}`);
-    // console.log(`  Running total: ${sum + persons}`);
     return sum + persons;
   }, 0);
 
   const totalRevenue = SuccessfulOrders.reduce((sum, order) => sum + (order.total || 0), 0);
   const averageOrderValue = SuccessfulOrders.length > 0
-  ? Number((totalRevenue / SuccessfulOrders.length).toFixed(2))
-  : 0;
+    ? Number((totalRevenue / SuccessfulOrders.length).toFixed(2))
+    : 0;
 
   return {
     totalOrders: orders.length,
@@ -169,7 +172,7 @@ export const allAnalytic = async (restaurantId: string) => {
       monthly: Number(currentMonthRevenue.toFixed(2)),
       weeklyComparison,
       weeklyComparisonComment,
-      monthlyAll, 
+      monthlyAll,
     }
   };
 };
