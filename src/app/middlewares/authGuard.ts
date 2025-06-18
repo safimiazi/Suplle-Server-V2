@@ -16,7 +16,6 @@ export const authenticate = (...allowedRoles: string[]) => async (
   next: NextFunction
 ) => {
 
-  console.log(allowedRoles)
 
   const token = req.headers.authorization;
 

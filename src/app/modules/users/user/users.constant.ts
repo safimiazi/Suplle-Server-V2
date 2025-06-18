@@ -10,7 +10,7 @@ export const ROLE = {
   WAITER: "waiter",
   CHEF: "chef",
   CASHIER: "cashier",
-  TAKEAWAY: "takeaway",
+  TAKEAWAY: "take away",
   MAINTENANCE: "maintenance",
 } as const;
 
