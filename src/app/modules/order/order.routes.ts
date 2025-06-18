@@ -31,6 +31,6 @@ router.put(
   orderController.updateOrder
 );
 
-router.delete("/delete-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY), orderController.deleteOrder);
+router.delete("/delete-order/:id", authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER, ROLE.STAFF, ROLE.DINE_IN, ROLE.TAKEAWAY), orderController.deleteOrder);
 
 export const orderRoutes = router;
