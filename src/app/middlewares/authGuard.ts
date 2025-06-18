@@ -16,6 +16,7 @@ export const authenticate = (...allowedRoles: string[]) => async (
   next: NextFunction
 ) => {
 
+
   const token = req.headers.authorization;
 
   if (!token) {
@@ -40,11 +41,11 @@ export const authenticate = (...allowedRoles: string[]) => async (
     }
 
 
-    if(allowedRoles.length && !allowedRoles.includes(user.role)){
-        throw new AppError(
-            status.FORBIDDEN,
-            "You do not have permission to access this resource"
-        );
+    if (allowedRoles.length && !allowedRoles.includes(user.role)) {
+      throw new AppError(
+        status.FORBIDDEN,
+        "You do not have permission to access this resource"
+      );
     }
 
 

@@ -4,6 +4,7 @@ import { orderServices } from './order.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import AppError from '../../errors/AppError';
+import { OrderModel } from './order.model';
 
 
 const createOrder = catchAsync(async (req, res) => {
@@ -13,7 +14,7 @@ const createOrder = catchAsync(async (req, res) => {
 
   const orderType = data.orderType;
   if (orderType != user.role) {
-    throw new AppError(400, "You can not take order");
+    throw new AppError(400, `You can not take ${orderType} order`);
   }
 
 
@@ -53,6 +54,14 @@ const updateOrder = catchAsync(async (req, res) => {
   const user: any = req.user;
   const data = req.body;
 
+
+  const orderType = data.orderType;
+  if (orderType) {
+    if (orderType != user.role) {
+      throw new AppError(400, `You can not update ${orderType} order`);
+    }
+
+  }
   const result = await orderServices.updateOrder(req.params.id, { ...data, restaurant: user.restaurant });
 
   sendResponse(res, {
@@ -67,6 +76,16 @@ const updateOrder = catchAsync(async (req, res) => {
 const deleteOrder = catchAsync(async (req, res) => {
   const user: any = req.user;
   const restaurant = user.restaurant;
+  const orderId = req.params.id;
+
+  console.log(orderId)
+
+  const order = await OrderModel.findOne({ _id: orderId })
+  const orderType = order?.orderType;
+
+  if (orderType != user.role) {
+    throw new AppError(400, `You can not update ${orderType} order`);
+  }
 
   const result = await orderServices.deleteOrder(req.params.id, restaurant);
   sendResponse(res, {
