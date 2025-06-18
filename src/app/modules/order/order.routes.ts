@@ -19,18 +19,18 @@ router.post(
   orderController.createOrder
 );
 
-router.get("/all-order", authenticate(ROLE.ADMIN, ROLE.STAFF), orderController.getAllOrders);
+router.get("/all-order", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY), orderController.getAllOrders);
 
-router.get("/single-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF), orderController.getSingleOrder);
+router.get("/single-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY), orderController.getSingleOrder);
 
 router.put(
   "/update-order/:id",
-  authenticate(ROLE.ADMIN, ROLE.STAFF),
+  authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY),
   validateRequest(orderUpdateValidation),
 
   orderController.updateOrder
 );
 
-router.delete("/delete-order/:id", authenticate(ROLE.STAFF), orderController.deleteOrder);
+router.delete("/delete-order/:id", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY), orderController.deleteOrder);
 
 export const orderRoutes = router;
