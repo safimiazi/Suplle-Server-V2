@@ -1,3 +1,5 @@
+
+import jwt from 'jsonwebtoken';
 import mongoose from "mongoose";
 import { UserModel } from "../users/user/users.model";
 import { IRestaurantValidationRequest } from "./auth.validation";
@@ -258,15 +260,21 @@ export const authService = {
   async resetPassword(email: string, newPassword: string, oldPassword: string) {
     const user = await UserModel.findOne({ email });
 
-    if (!user) throw new Error("User not found.");
+    if (!user) {
+      throw new Error("User not found.");
+    }
 
-    console.log(user);
-    if (user.password !== oldPassword) {
+    // Compare old password using bcrypt
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
       throw new Error("Old password is incorrect.");
     }
 
-    const hashed = await bcrypt.hash(newPassword, 10);
-    user.password = hashed;
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update and save the new password
+    user.password = hashedNewPassword;
     await user.save();
   },
 
