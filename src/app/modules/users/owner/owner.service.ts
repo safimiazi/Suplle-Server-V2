@@ -48,45 +48,28 @@ export const ownerService = {
     }
   },
   async updateOwnerIntoDB(data: any, id: string) {
-    const session = await mongoose.startSession();
-
     try {
-      session.startTransaction();
+   
+      const finduser = await OwnerModel.findOne({ user: id });
+      if (!finduser) {
+        throw new AppError(400, "the user is not found");
 
-      const findOwner = await OwnerModel.findOne({ user: id }).session(session);
-      if (!findOwner) {
-        throw new AppError(400, "The owner (user) was not found");
       }
 
-      // Update the related Restaurant's address
-      const restaurantUpdate = await RestaurantModel.updateOne(
-        { owner: findOwner._id },
-        { restaurantAddress: data.restaurantAddress },
-        { session }
-      );
+      const findRestaurant = await RestaurantModel.updateOne({ owner: finduser._id }, { restaurantAddress: data.restaurantAddress });
 
-      if (restaurantUpdate.matchedCount === 0) {
-        throw new AppError(404, "Associated restaurant not found");
+
+      const result = await OwnerModel.updateOne({ user: id }, data, {
+        new: true,
+      });
+      if (!result) {
+        throw new Error("owner not found.");
       }
-
-      // Update the Owner
-      const ownerUpdate = await OwnerModel.updateOne(
-        { user: id },
-        data,
-        { session }
-      );
-
-      if (ownerUpdate.matchedCount === 0) {
-        throw new AppError(404, "Owner update failed");
-      }
-
-      await session.commitTransaction();
-      return { ownerUpdate, restaurantUpdate };
-    } catch (error) {
-      await session.abortTransaction();
+      return result;
+    } catch (error: unknown) {
       throw error;
-    } finally {
-      session.endSession();
+
+
     }
   },
   async deleteOwnerFromDB(id: string) {
