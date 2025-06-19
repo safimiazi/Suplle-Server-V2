@@ -13,7 +13,7 @@ const OrderSchema = new Schema<IOrder>(
     orderId: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
       default: () => `ORD-${Date.now().toString(36)}`
     },
     person: { type: Number, default: 1 },
