@@ -5,11 +5,7 @@ import status from "http-status";
 import AppError from "../../errors/AppError";
 import { QrCodeDesignModel } from "../QrCodeDesign/QrCodeDesign.model";
 import { generateQRCodeOrderId } from "./qrCodePurchase.utils";
-import { notificationModel } from "../notification/notification.model";
-import { io } from "../../../server";
-
-
-
+import { notifyAdmin } from "../../utils/notifyAdmin";
 
 
 export const QRCodePurchaseService = {
@@ -19,14 +15,14 @@ export const QRCodePurchaseService = {
       if (!design) {
         throw new AppError(status.NOT_FOUND, "QR code design not found");
       }
-       const orderId =await generateQRCodeOrderId();
+      const orderId = await generateQRCodeOrderId();
 
       const purchase = await QRCodePurchaseModel.create({
         user: data.user,
         restaurant: data.restaurant,
         qrCodeDesign: data.qrCodeDesign,
         tableQuantity: data.tableQuantity,
-        status: "pending", 
+        status: "pending",
         isPaid: false,
         price: design.price * data.tableQuantity,
         orderId
@@ -34,17 +30,14 @@ export const QRCodePurchaseService = {
       if (!purchase) {
         throw new AppError(status.BAD_REQUEST, "Failed to create QR code purchase");
       }
-  
-    // const notification = await notificationModel.create({
-    //   type: "subscription", // or create a new type like "qr_code_purchase"
-    //   message: `A QR code purchase was made for restaurant ${data.restaurant} with ${data.tableQuantity} tables.`,
-    // });
+      notifyAdmin(
+        "Qr Order",
+        purchase.status,
+        "Qr Design",
+        data.user
+      );
 
-    // if (io) {
-    //   io.emit("new_notification", notification);
-    // }
-
-    return purchase;
+      return purchase;
 
     } catch (error: unknown) {
       throw error;
@@ -93,12 +86,22 @@ export const QRCodePurchaseService = {
         throw new AppError(status.NOT_FOUND, "QR Code Purchase is already deleted");
       }
 
-      const result = await QRCodePurchaseModel.updateOne({ _id: data.id }, { status: data.status }, {
+      const result: any = await QRCodePurchaseModel.updateOne({ _id: data.id }, { status: data.status }, {
         new: true,
       });
       if (!result) {
         throw new Error("QR Code Purchase not found.");
       }
+
+      notifyAdmin(
+        "Qr Order",
+        result.status,
+        "Qr Design",
+        data.user
+      );
+
+
+
       return result;
 
 

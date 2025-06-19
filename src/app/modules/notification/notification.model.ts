@@ -1,12 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
+
 
 const notificationSchema = new mongoose.Schema({
+    user: { type: Types.ObjectId, ref: "User", required: false },
     type: {
         type: String,
-        enum: ['user_registered', 'tour_completed', 'subscription', 'restaurant_created'],
         required: true,
     },
     message: { type: String, required: true },
+    status: { type: String, required: true },
     isRead: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     isDeleted: {

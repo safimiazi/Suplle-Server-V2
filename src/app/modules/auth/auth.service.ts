@@ -11,7 +11,9 @@ import { sendOtpToEmail } from "../../utils/sendOtpToEmail";
 import { OWNER_STATUS } from "../users/owner/owner.constant";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import AppError from "../../errors/AppError";
-
+import { notificationModel } from '../notification/notification.model';
+import { io } from "../../../server";
+import { notifyAdmin } from '../../utils/notifyAdmin';
 export const authService = {
   async restuarantRegisterRequestIntoDB(data: IRestaurantValidationRequest) {
     const session = await mongoose.startSession();
@@ -55,8 +57,11 @@ export const authService = {
             referralCode: data.referralCode,
           },
         ],
+
         { session }
       );
+
+
 
       // 4. Create restaurant
       const [newRestaurant] = await RestaurantModel.create(
@@ -85,7 +90,7 @@ export const authService = {
         { session }
       );
       // 6. Update user with restaurant reference
-      await UserModel.updateOne(
+      const user: any = await UserModel.updateOne(
         { _id: newUser._id },
         { restaurant: newRestaurant._id },
         { session }
@@ -97,6 +102,13 @@ export const authService = {
       // 7. Commit transaction
       await session.commitTransaction();
       session.endSession();
+
+      notifyAdmin(
+        "new user",
+        newOwner.status,
+        "owner registered",
+        user._id
+      );
 
       return {
         message: "Restaurant registration successful",

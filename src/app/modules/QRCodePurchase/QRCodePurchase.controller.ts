@@ -5,6 +5,7 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { QRCodePurchaseModel } from "./QRCodePurchase.model";
 import { stripe } from "../../utils/stripe";
+import { notifyAdmin } from "../../utils/notifyAdmin";
 
 const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
@@ -15,30 +16,35 @@ const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
 
 const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Response) => {
   const { id, status } = req.body;
-
-
-
-  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id});
+  const user: any = req.user;
+  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id });
   if (!isExistingPurchase) {
     throw new Error("QR code purchase not found.");
   }
   console.log("isExistingPurchase", isExistingPurchase);
-  if( isExistingPurchase.status !== "pending") {
+  if (isExistingPurchase.status !== "pending") {
     throw new Error("QR code purchase is already processed.");
   }
-   
+
 
 
   const updatedPurchase = await QRCodePurchaseModel.findByIdAndUpdate(
     isExistingPurchase._id,
-    { status  },
+    { status },
     { new: true }
   );
   if (!updatedPurchase) {
     throw new Error("Failed to update QR code purchase status.");
   }
 
-  sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully` , data: updatedPurchase });
+  notifyAdmin(
+    "Qr Order",
+    updatedPurchase.status,
+    "Qr Design",
+    user._id
+  );
+
+  sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully`, data: updatedPurchase });
 });
 
 
@@ -112,7 +118,7 @@ const getSingleQRCodePurchase = catchAsync(async (req: Request, res: Response) =
 
 const updateQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB({...req.body, id});
+  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB({ ...req.body, id });
   sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
 });
 
