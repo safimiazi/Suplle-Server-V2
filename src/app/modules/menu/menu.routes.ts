@@ -13,7 +13,7 @@ router.post("/create-menu", upload.single('image'),
   (req: Request, res: Response, next: NextFunction) => {
     next();
   }, authenticate(ROLE.RESTAURANT_OWNER), menuController.postMenu);
-router.get("/all-menu", authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN), menuController.getAllMenu);
+router.get("/all-menu", authenticate(ROLE.ADMIN, ROLE.STAFF, ROLE.DINE_IN, ROLE.RESTAURANT_OWNER, ROLE.TAKEAWAY), menuController.getAllMenu);
 router.get("/single-menu/:id", menuController.getSingleMenu);
 router.get("/restaurant-menu/:restaurantId", menuController.MenuWithRestaurant);
 router.put("/update-menu/:id", upload.fields([
