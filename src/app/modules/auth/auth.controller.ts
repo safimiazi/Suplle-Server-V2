@@ -87,6 +87,17 @@ const verifyResetOtp = catchAsync(async (req: Request, res: Response) => {
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email, newPassword, oldPassword } = req.body;
+
+  // Validate password length
+  if (!newPassword || newPassword.length < 6) {
+    res.status(400).json({
+      success: false,
+      message: "New password must be at least 6 characters long.",
+      data: null,
+    });
+    return;
+  }
+
   await authService.resetPassword(email, newPassword, oldPassword);
 
   sendResponse(res, {
@@ -96,6 +107,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
     data: null,
   });
 });
+
 
 const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
