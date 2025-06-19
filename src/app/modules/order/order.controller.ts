@@ -16,7 +16,7 @@ const createOrder = catchAsync(async (req, res) => {
   if (orderType != user.role) {
     throw new AppError(400, `You can not take ${orderType} order`);
   }
-
+  
 
   const result = await orderServices.createOrder({ ...data, restaurant: user.restaurant });
   sendResponse(res, {

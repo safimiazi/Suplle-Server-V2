@@ -9,9 +9,12 @@ import { OrderModel } from "./order.model";
 import { generateOrderId } from "./order.utils/generateOrderId";
 
 export const createOrder = async (payload: Omit<IOrder, "total">) => {
-  const orderId = await generateOrderId();
 
-  const restaurant = await RestaurantModel.findById(payload.restaurant);
+  const restaurantId = payload.restaurant
+  const restaurant = await RestaurantModel.findById(restaurantId);
+
+
+  const orderId = await generateOrderId(restaurantId as unknown as string);
   if (!restaurant) {
     throw new AppError(400, "Restaurant not found");
   }

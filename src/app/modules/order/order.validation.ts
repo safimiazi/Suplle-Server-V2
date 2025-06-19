@@ -2,13 +2,13 @@ import { z } from "zod";
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
-const orderTypeEnum = z.enum(["dine in", "takeaway"]);
+const orderTypeEnum = z.enum(["dine in", "take away"]);
 const statusEnum = z.enum(["pending", "inProgress", "delivered", "cancel"]);
 const paymentTypeEnum = z.enum(["cash", "card"]);
 
 export const orderPostValidation = z.object({
 
-  table: z.string().optional(),  
+  table: z.string().optional(),
 
   menus: z
     .array(
@@ -23,12 +23,12 @@ export const orderPostValidation = z.object({
     )
     .nonempty({ message: "At least one menu item is required" }),
 
-    customerName: z.string().nullable().optional().default(null),
+  customerName: z.string().nullable().optional().default(null),
 
-    customerPhone: z.string().nullable().optional().default(null),
-    
+  customerPhone: z.string().nullable().optional().default(null),
 
-  orderType: z.enum(["dine in", "takeaway"]),
+
+  orderType: z.enum(["dine in", "take away"]),
 
   specialRequest: z.string().optional().default(""),
 
@@ -45,8 +45,8 @@ export const orderPostValidation = z.object({
 });
 
 export const orderUpdateValidation = z.object({
-  
-  table: z.string().optional(), 
+
+  table: z.string().optional(),
 
   menus: z
     .array(

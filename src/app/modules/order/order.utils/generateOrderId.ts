@@ -1,23 +1,24 @@
 import { OrderModel } from "../order.model";
 
 
-const findLastOrderId = async (): Promise<string | undefined> => {
-  const lastOrder = await OrderModel.findOne({}, { orderId: 1 })
+export const generateOrderId = async (restaurantId: string): Promise<string> => {
+  // Find the latest order for the specific restaurant
+  const lastOrder = await OrderModel.findOne({ restaurant: restaurantId })
     .sort({ createdAt: -1 })
-    .select('-_id')
-    .lean();
+    .select("orderId");
 
-  return lastOrder?.orderId ? lastOrder.orderId.substring(4) : undefined;
-};
+  let lastNumericPart = 0;
 
-export const generateOrderId = async (): Promise<string> => {
-  let currentId = '0';
-
-  const lastOrderId = await findLastOrderId();
-  if (lastOrderId) {
-    currentId = lastOrderId;
+  if (lastOrder?.orderId) {
+    // Extract numeric part from the orderId string, e.g., "ORD-0007" -> 7
+    const match = lastOrder.orderId.match(/ORD-(\d+)/);
+    if (match) {
+      lastNumericPart = parseInt(match[1], 10);
+    }
   }
 
-  const incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
-  return `ORD-${incrementId}`;
+  // Increment the ID
+  const nextId = (lastNumericPart + 1).toString().padStart(4, "0");
+
+  return `ORD-${nextId}`;
 };

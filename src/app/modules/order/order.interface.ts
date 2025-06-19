@@ -1,9 +1,10 @@
 import { Types } from "mongoose";
 
 export interface IOrder {
-  _id?: Types.ObjectId; 
+  _id?: Types.ObjectId;
   restaurant: Types.ObjectId;
-  table?: Types.ObjectId | string; 
+  table: Types.ObjectId | string;
+  floor: Types.ObjectId;
   orderId: string;
   menus: {
     menu: Types.ObjectId;
@@ -12,7 +13,7 @@ export interface IOrder {
   customerName: string;
   person: number;
   customerPhone: string;
-  orderType: "dine in" | "takeaway";
+  orderType: "dine in" | "take away";
   specialRequest?: string;
   total: number;
   paymentMethod: {

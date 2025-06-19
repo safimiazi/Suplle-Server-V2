@@ -8,12 +8,9 @@ const OrderSchema = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
-    // table: { type: Schema.Types.ObjectId, ref: "Table" ,default:"" },
-    table: {
-      type: String,
-      default: null,
-    },
-    orderId:{
+    table: { type: Schema.Types.ObjectId, ref: "Table", default: "" },
+    floor: { type: Schema.Types.ObjectId, ref: "Floor", default: "" },
+    orderId: {
       type: String,
       required: true,
       unique: true,
@@ -27,18 +24,18 @@ const OrderSchema = new Schema<IOrder>(
           quantity: { type: Number, required: true },
         },
       ],
-       
+
     },
-    customerName: { type: String, default:null },
-    customerPhone: { type: String, default:null},
+    customerName: { type: String, default: null },
+    customerPhone: { type: String, default: null },
     orderType: {
       type: String,
-      enum: ["dine in", "takeaway"],
+      enum: ["dine in", "take away"],
       required: true,
     },
-  
+
     specialRequest: { type: String, default: "" },
-    total: { type: Number, default:0},
+    total: { type: Number, default: 0 },
     paymentMethod: {
       type: {
         type: String,
@@ -59,8 +56,8 @@ const OrderSchema = new Schema<IOrder>(
     isDeleted: { type: Boolean, default: false },
   },
   {
-    timestamps: true, 
-    versionKey:false
+    timestamps: true,
+    versionKey: false
   }
 );
 
