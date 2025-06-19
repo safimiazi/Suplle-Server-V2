@@ -67,20 +67,23 @@ export const getAllOrders = async (query: any, restaurantId: string) => {
       .fields();
 
     const rawOrders = await service_query.modelQuery.populate([
-      // {
-      //   path: "restaurant",
-      //   select: "name address contact",
-      // },
       {
         path: "menus.menu",
         select: "itemName price size",
       },
+      {
+        path: "table",
+        select: "tableNumber capacity",
+      },
+      {
+        path: "floor",
+        select: "floorName",
+      },
     ]);
 
-    // Format timestamps
     const result = rawOrders.map((order: any) => ({
       ...order.toObject(),
-      createdAtFormatted: format(new Date(order.createdAt), "hh:mm a"), // Example: 02:15 AM
+      createdAtFormatted: format(new Date(order.createdAt), "hh:mm a"),
       updatedAtFormatted: format(new Date(order.updatedAt), "hh:mm a"),
     }));
 
@@ -94,6 +97,7 @@ export const getAllOrders = async (query: any, restaurantId: string) => {
     throw error;
   }
 };
+;
 const getSingleOrder = async (id: string, query: any = {}) => {
   const existingOrder = await OrderModel.findById(id);
   if (!existingOrder || existingOrder.isDeleted) {
