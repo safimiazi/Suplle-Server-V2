@@ -17,6 +17,7 @@ import { subscriptionRoutes } from "../modules/subscription/subscription.routes"
 import { tableRoutes } from "../modules/table/table.routes";
 import { QRCodePurchaseRoutes } from "../modules/QRCodePurchase/QRCodePurchase.routes";
 import { ownerRoutes } from "../modules/users/owner/owner.routes";
+import { notificationRoutes } from "../modules/notification/notification.routes";
 
 
 const router = Router();
@@ -88,6 +89,9 @@ const moduleRoutes = [
   }, {
     path: "/owner",
     route: ownerRoutes,
+  }, {
+    path: "/notifications",
+    route: notificationRoutes,
   }
 ];
 

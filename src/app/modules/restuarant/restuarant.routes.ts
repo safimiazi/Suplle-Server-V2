@@ -49,4 +49,5 @@ router.delete(
 );
 router.put("/account-settings", authenticate(ROLE.RESTAURANT_OWNER), restuarantController.setAccountSettings);
 
+
 export const restuarantRoutes = router;
