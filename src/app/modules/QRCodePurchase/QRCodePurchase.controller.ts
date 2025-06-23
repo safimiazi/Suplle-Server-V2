@@ -16,13 +16,13 @@ const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
 
 const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Response) => {
   const { id, status } = req.body;
-<<<<<<< HEAD
+
   const user: any = req.user;
-=======
 
 
 
->>>>>>> shafi
+
+
   const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id });
   if (!isExistingPurchase) {
     throw new Error("QR code purchase not found.");
@@ -43,7 +43,7 @@ const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Respo
     throw new Error("Failed to update QR code purchase status.");
   }
 
-<<<<<<< HEAD
+
   notifyAdmin(
     "Qr Order",
     updatedPurchase.status,
@@ -51,8 +51,8 @@ const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Respo
     user._id
   );
 
-=======
->>>>>>> shafi
+
+
   sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully`, data: updatedPurchase });
 });
 
