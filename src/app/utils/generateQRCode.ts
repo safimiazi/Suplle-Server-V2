@@ -1,5 +1,5 @@
 import config from "../config";
-import QRCode from "qrcode";
+import QRCode from "qrcode";       
 
 
 export const generateTableQRCode = async (tableId : string, restaurantId : string) => {

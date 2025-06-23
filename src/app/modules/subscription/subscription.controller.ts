@@ -9,6 +9,7 @@ import { stripe } from "../../utils/stripe";
 
 
 
+
 const createSubscriptionIntent = catchAsync(async (req: Request, res: Response) => {
   const { planId, months = 1 } = req.body;
   const userId = (req.user as any)?._id;
