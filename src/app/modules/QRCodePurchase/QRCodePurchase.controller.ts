@@ -18,27 +18,27 @@ const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Respo
 
 
 
-  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id});
+  const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id });
   if (!isExistingPurchase) {
     throw new Error("QR code purchase not found.");
   }
   console.log("isExistingPurchase", isExistingPurchase);
-  if( isExistingPurchase.status !== "pending") {
+  if (isExistingPurchase.status !== "pending") {
     throw new Error("QR code purchase is already processed.");
   }
-   
+
 
 
   const updatedPurchase = await QRCodePurchaseModel.findByIdAndUpdate(
     isExistingPurchase._id,
-    { status  },
+    { status },
     { new: true }
   );
   if (!updatedPurchase) {
     throw new Error("Failed to update QR code purchase status.");
   }
 
-  sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully` , data: updatedPurchase });
+  sendResponse(res, { statusCode: 200, success: true, message: `${updatedPurchase.status} successfully`, data: updatedPurchase });
 });
 
 
@@ -112,7 +112,7 @@ const getSingleQRCodePurchase = catchAsync(async (req: Request, res: Response) =
 
 const updateQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB({...req.body, id});
+  const result = await QRCodePurchaseService.updateQRCodePurchaseIntoDB({ ...req.body, id });
   sendResponse(res, { statusCode: status.OK, success: true, message: "Updated successfully", data: result });
 });
 
