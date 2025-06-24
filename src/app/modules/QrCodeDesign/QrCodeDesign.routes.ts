@@ -15,7 +15,7 @@ router.post(
   }, authenticate(ROLE.ADMIN),
   QrCodeDesignController.postQrCodeDesign
 );
-router.get("/get-all-QrCodeDesign", authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER), QrCodeDesignController.getAllQrCodeDesign);
+router.get("/get-all-QrCodeDesign",authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER), QrCodeDesignController.getAllQrCodeDesign);
 router.get(
   "/get-single-QrCodeDesign/:id", authenticate(ROLE.ADMIN),
   QrCodeDesignController.getSingleQrCodeDesign
