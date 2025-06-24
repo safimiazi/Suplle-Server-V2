@@ -3,7 +3,7 @@ import { QrCodeDesignController } from "./QrCodeDesign.controller";
 
 import { upload } from "../../utils/sendImageToCloudinary";
 import { authenticate } from "../../middlewares/authGuard";
-import { ROLE } from "../../constant/role";
+import { ROLE } from "../users/user/users.constant";
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.post(
   },authenticate(ROLE.ADMIN),
   QrCodeDesignController.postQrCodeDesign
 );
-router.get("/get-all-QrCodeDesign",authenticate(ROLE.ADMIN), QrCodeDesignController.getAllQrCodeDesign);
+router.get("/get-all-QrCodeDesign",authenticate(ROLE.ADMIN, ROLE.RESTAURANT_OWNER), QrCodeDesignController.getAllQrCodeDesign);
 router.get(
   "/get-single-QrCodeDesign/:id",authenticate(ROLE.ADMIN),
   QrCodeDesignController.getSingleQrCodeDesign
