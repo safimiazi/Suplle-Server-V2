@@ -19,20 +19,10 @@ const qrCodePurchaseDecisionByAdmin = catchAsync(async (req: Request, res: Respo
 
   const user: any = req.user;
 
-
-
-
-
   const isExistingPurchase = await QRCodePurchaseModel.findOne({ _id: id });
   if (!isExistingPurchase) {
     throw new Error("QR code purchase not found.");
   }
-  console.log("isExistingPurchase", isExistingPurchase);
-  if (isExistingPurchase.status !== "pending") {
-    throw new Error("QR code purchase is already processed.");
-  }
-
-
 
   const updatedPurchase = await QRCodePurchaseModel.findByIdAndUpdate(
     isExistingPurchase._id,
