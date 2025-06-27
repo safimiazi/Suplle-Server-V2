@@ -42,7 +42,7 @@ export const ownerService = {
     try {
       const result = await OwnerModel.findById(id);
       const restaurantdata = await RestaurantModel.findOne({ _id: restaurant });
-      console.log(restaurantdata);
+
       return { result, address: restaurantdata ? restaurantdata.restaurantAddress : null };
     } catch (error: unknown) {
       throw error;
@@ -55,14 +55,18 @@ export const ownerService = {
 
       const finduser = await OwnerModel.findOne({ user: id });
       if (!finduser) {
-        throw new AppError(400, "the user is not found");
+        throw new AppError(404, "the user is not found");
 
       }
 
-      const findRestaurant = await RestaurantModel.updateOne({ owner: finduser._id }, { restaurantAddress: data.restaurantAddress });
+      if (data.businessEmail) {
+        throw new AppError(400, "you cannot update bussiness email");
+      }
+
+      // const findRestaurant = await RestaurantModel.updateOne({ owner: finduser._id }, { restaurantAddress: data.restaurantAddress });
 
 
-      const result = await OwnerModel.findOneAndUpdate({ user: id }, data, {
+      const result = await OwnerModel.findOneAndUpdate({ user: id }, { ...data, address: data.restaurantAddress }, {
         new: true,
       });
       if (!result) {

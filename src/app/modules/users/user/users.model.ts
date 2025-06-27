@@ -17,11 +17,13 @@ const RoleEnum = [
 
 const UserSchema = new Schema<IUser>(
   {
-    restaurant: {
-      type: Schema.Types.ObjectId,
-      ref: "Restaurant",
-      default: null,
-    },
+    restaurant: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Restaurant",
+        default: [],
+      }
+    ],
     name: { type: String },
 
     email: { type: String },

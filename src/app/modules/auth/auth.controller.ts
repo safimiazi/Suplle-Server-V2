@@ -113,6 +113,21 @@ const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
+    const restaurants = await OwnerModel.findOne({ businessEmail: email })
+      .select("restaurant") // only include the restaurant field from Owner
+      .populate({
+        path: "restaurant",
+        select: "restaurantName restaurantAddress" // only these fields from Restaurant
+      });
+
+    if (!restaurants) {
+      throw new AppError(
+        status.NOT_FOUND,
+        "you have no restaurant. Please register as a restaurant owner."
+      );
+    }
+
+
     const user = await UserModel.findOne({ email }).select("+password");
 
     if (!user) {
@@ -173,6 +188,7 @@ const Login = catchAsync(
       role: user.role,
     };
 
+
     const accessToken = generateToken(
       payload,
       config.JWT_ACCESS_TOKEN_SECRET!,
@@ -200,7 +216,7 @@ const Login = catchAsync(
         accessToken,
         user: {
           _id: user._id,
-          restuarant: user.restaurant || null,
+          restaurants: restaurants || null,
           name: user.name,
           email: user.email,
           role: user.role,

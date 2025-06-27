@@ -12,28 +12,26 @@ import { validateData } from "../../middlewares/validateData ";
 import { restuarantUpdateValidation } from "./restuarant.validation";
 import AppError from "../../errors/AppError";
 import { RestaurantModel } from "./restuarant.model";
+import { CLIENT_RENEG_LIMIT } from "tls";
+import { OwnerModel } from "../users/owner/owner.model";
 
 const postRestuarant = catchAsync(async (req: Request, res: Response) => {
-  const data = JSON.parse(req.body.data);
-  const owner: any = req.user;
+  const user: any = req.user;
 
-  const files = (req.files as any)?.images?.map(
-    (file: Express.Multer.File) => file.path
-  );
-  const uploadLogo = (req.files as any)?.logo?.[0]?.path;
 
-  const { secure_url } = await uploadImgToCloudinary("logo", uploadLogo);
-  const uploadedImages = await uploadMultipleImages(files);
-  const { images, coverPhoto, logo, ...rest } = data;
-  const restaurantData = {
-    images: uploadedImages,
-    logo: secure_url,
-    coverPhoto: uploadedImages[0],
-    owner: owner._id,
-    ...rest,
-  };
 
-  const result = await restaurantService.postRestaurant(restaurantData);
+  const owner = await OwnerModel.findOne({ user: user._id });
+
+  if (!owner) {
+    throw new AppError(404, "Owner not found. Please register as an owner first.");
+  }
+
+  console.log("owner", owner)
+  const data = req.body;
+
+
+
+  const result = await restaurantService.postRestaurant(data, owner.id as string, user._id as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -41,6 +39,7 @@ const postRestuarant = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 
 const getAllRestuarant = catchAsync(async (_req: Request, res: Response) => {
   const result = await restaurantService.getAllRestaurant();
@@ -229,13 +228,12 @@ const deleteRestuarant = catchAsync(async (req: Request, res: Response) => {
 const setAccountSettings = catchAsync(async (req: Request, res: Response) => {
   const { oldPassword, newPassword } = req.body;
   const user: any = req.user;
-  // console.log(user)
   if (!oldPassword || !newPassword) {
     throw new AppError(400, "Old password and new password are required");
   }
 
   const result = await restaurantService.accountSettings(
-    user.restaurant,
+    user._id,
     oldPassword,
     newPassword
   );

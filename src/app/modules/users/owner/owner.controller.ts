@@ -38,9 +38,9 @@ const getSingleOwner = catchAsync(async (req: Request, res: Response) => {
 
 const updateOwner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const ownerId = user._id;
+  const userId = user._id;
 
-  const result = await ownerService.updateOwnerIntoDB(req.body, ownerId);
+  const result = await ownerService.updateOwnerIntoDB(req.body, userId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

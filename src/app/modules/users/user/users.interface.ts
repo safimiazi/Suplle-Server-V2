@@ -14,7 +14,7 @@ export type IUserRole =
 
 export type IUser = {
   _id: string;
-  restaurant?: Types.ObjectId;
+  restaurant?: Types.ObjectId[];
   name: string;
   otp: string;
   otpExpiresAt: Date;

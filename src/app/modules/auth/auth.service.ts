@@ -24,9 +24,9 @@ export const authService = {
       const existingUser = await UserModel.findOne({
         email: data.businessEmail,
       }).session(session);
-      if (existingUser) {
-        throw new Error("Restaurant owner already exists.");
-      }
+      // if (existingUser) {
+      //   throw new Error("Restaurant owner already exists.");
+      // }
 
       // 2. Create user with OTP
       const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -52,6 +52,7 @@ export const authService = {
           {
             user: newUser._id,
             businessName: data.businessName,
+            address: data.restaurantAddress,
             businessEmail: data.businessEmail,
             status: OWNER_STATUS.UNVERIFIED,
             referralCode: data.referralCode,

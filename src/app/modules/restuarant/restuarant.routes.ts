@@ -4,17 +4,20 @@ import { restuarantController } from "./restaurant.controller";
 import { authenticate } from "../../middlewares/authGuard";
 import { ROLE } from "../users/user/users.constant";
 import { checkActiveSubscription } from "../../middlewares/checkSubscription";
+import { validateRequest } from "../../middlewares/validateRequest";
+import { restuarantPostValidation } from "./restuarant.validation";
 
 const router = express.Router();
 
 router.post(
   "/create-restaurant",
   authenticate(ROLE.RESTAURANT_OWNER),
-  checkActiveSubscription(),
-  upload.fields([
-    { name: "images", maxCount: 5 },
-    { name: "logo", maxCount: 1 },
-  ]),
+  // checkActiveSubscription(),
+  // upload.fields([
+  //   { name: "images", maxCount: 5 },
+  //   { name: "logo", maxCount: 1 },
+  // ]),
+  validateRequest(restuarantPostValidation),
   restuarantController.postRestuarant
 );
 
