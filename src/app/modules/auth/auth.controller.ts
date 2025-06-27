@@ -187,7 +187,7 @@ const Login = catchAsync(
       restaurantId: user.restaurant,
       role: user.role,
     };
-
+    console.log("payload", payload);
 
     const accessToken = generateToken(
       payload,
