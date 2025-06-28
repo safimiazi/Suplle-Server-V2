@@ -10,6 +10,7 @@ import mongoose, { Types } from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { MENU_SEARCHABLE_FIELDS } from "./menu.constant";
 import { CLIENT_RENEG_LIMIT } from "tls";
+import { CategoryModel } from "../category/category.model";
 
 export const menuService = {
   async postMenuIntoDB(
@@ -54,6 +55,15 @@ export const menuService = {
       );
       if (!restaurantData) {
         throw new AppError(400, "Restaurant doesn't exist");
+      }
+      const restaurantCategory = await CategoryModel.findOne({
+        _id: parsedData.category
+      });
+      if (!restaurantCategory) {
+        throw new AppError(400, "Category doesn't exist");
+      }
+      if (!restaurantCategory.restaurant.equals(restaurant)) {
+        throw new AppError(400, "Category does not belong to this restaurant");
       }
 
       // Create menu
@@ -139,7 +149,9 @@ export const menuService = {
       if (existingMenu.isDeleted) {
         throw new AppError(status.BAD_REQUEST, "Menu is already deleted");
       }
-      if (existingMenu.restaurant.toString() !== restaurantId) {
+
+
+      if (!existingMenu.restaurant.equals(new Types.ObjectId(restaurantId))) {
         throw new AppError(status.BAD_REQUEST, "Menu does not belong to the specified restaurant");
       }
       let newData = data;

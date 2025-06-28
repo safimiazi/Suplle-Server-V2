@@ -16,9 +16,9 @@ const createOrder = catchAsync(async (req, res) => {
   if (orderType != user.role) {
     throw new AppError(400, `You can not take ${orderType} order`);
   }
-  
 
-  const result = await orderServices.createOrder({ ...data, restaurant: user.restaurant });
+
+  const result = await orderServices.createOrder({ ...data, restaurant: user.selectedRestaurant });
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -32,7 +32,7 @@ const getAllOrders = catchAsync(async (req, res) => {
   const query = req.query;
   const user: any = req.user;
 
-  const result = await orderServices.getAllOrders(query, user.restaurant);
+  const result = await orderServices.getAllOrders(query, user.selectedRestaurant);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -64,7 +64,7 @@ const updateOrder = catchAsync(async (req, res) => {
     }
 
   }
-  const result = await orderServices.updateOrder(req.params.id, { ...data, restaurant: user.restaurant });
+  const result = await orderServices.updateOrder(req.params.id, { ...data, restaurant: user.selectedRestaurant });
 
   sendResponse(res, {
     success: true,
@@ -77,7 +77,7 @@ const updateOrder = catchAsync(async (req, res) => {
 
 const deleteOrder = catchAsync(async (req, res) => {
   const user: any = req.user;
-  const restaurant = user.restaurant;
+  const restaurant = user.selectedRestaurant;
   const orderId = req.params.id;
 
   console.log(orderId)

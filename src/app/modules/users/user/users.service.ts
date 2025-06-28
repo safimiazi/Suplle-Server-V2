@@ -30,8 +30,9 @@ const createUser = async (data: IUser, owner: any) => {
 
     let modifiedData: any = { ...data };
 
-    modifiedData.restaurant = owner.restaurant;
+    modifiedData.restaurant = owner.selectedRestaurant;
     // 3. Hash the password before saving to the database
+    modifiedData.selectedRestaurant = owner.selectedRestaurant;
     modifiedData.password = await bcrypt.hash(modifiedData.password, 10); // 10 is salt rounds
 
     // 2. Create new user with session

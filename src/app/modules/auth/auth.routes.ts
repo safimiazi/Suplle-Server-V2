@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { authController } from "./auth.controller";
-import { authLoginValidation, restaurantValidationRequest,  } from "./auth.validation";
+import { authLoginValidation, restaurantValidationRequest, } from "./auth.validation";
 import passport from 'passport';
 import { authenticate } from "../../middlewares/authGuard";
 import { ROLE } from "../../constant/role";
@@ -19,7 +19,7 @@ router.post("/resend-otp", authController.resendOtp);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-password-otp", authController.verifyResetOtp);
 router.post("/reset-password", authController.resetPassword);
-router.post("/approved-restaurant-admin",authenticate(ROLE.ADMIN), authController.approveRestaurantByAdmin);
+router.post("/approved-restaurant-admin", authenticate(ROLE.ADMIN), authController.approveRestaurantByAdmin);
 
 
 // Google OAuth
@@ -48,6 +48,10 @@ router.post(
 router.post(
   "/logout",
   authController.Logout
+);
+router.post(
+  "/switch-account",
+  authController.switchAccountByUser
 );
 
 export const authRoutes = router;

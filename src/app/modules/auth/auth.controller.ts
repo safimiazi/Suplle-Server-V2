@@ -14,7 +14,7 @@ import { OWNER_STATUS } from "../users/owner/owner.constant";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(
+    const pendingRestuarant = await authService.restaurantRegisterRequestIntoDB(
       req.body
     );
     sendResponse(res, {
@@ -120,12 +120,6 @@ const Login = catchAsync(
         select: "restaurantName restaurantAddress" // only these fields from Restaurant
       });
 
-    if (!restaurants) {
-      throw new AppError(
-        status.NOT_FOUND,
-        "you have no restaurant. Please register as a restaurant owner."
-      );
-    }
 
 
     const user = await UserModel.findOne({ email }).select("+password");
@@ -216,11 +210,12 @@ const Login = catchAsync(
         accessToken,
         user: {
           _id: user._id,
-          restaurants: restaurants || null,
+          owner: restaurants || null,
           name: user.name,
           email: user.email,
           role: user.role,
           image: user.image || null,
+          selectedRestaurant: user.selectedRestaurant || null,
         },
       },
     });
@@ -544,6 +539,21 @@ const approveRestaurantByAdmin = catchAsync(async (req, res) => {
   });
 });
 
+
+const switchAccountByUser = catchAsync(async (req, res) => {
+  const { email, restaurantId } = req.body;
+
+  const result = await authService.switchAccount(email, restaurantId);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Switched account successfully",
+    data: result,
+  });
+});
+
+
 export const authController = {
   restuarantRegisterRequest,
   otpValidation,
@@ -566,4 +576,5 @@ export const authController = {
   verifyPhoneNumberOTP,
   verifyEmailOTP,
   approveRestaurantByAdmin,
+  switchAccountByUser
 };

@@ -7,9 +7,9 @@ import sendResponse from "../../../utils/sendResponse";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
-  const owner = req.user;
-
-  const result = await userService.createUser(req.body, owner);
+  const user = req.user;
+   
+  const result = await userService.createUser(req.body, user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -29,7 +29,7 @@ const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
 });
 const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.restaurant;
+  const restaurant = user.selectedRestaurant;
   const result = await userService.getAllUsersForOwner(req.query, restaurant);
   sendResponse(res, {
     success: true,

@@ -8,11 +8,12 @@ import { ICategory } from "./category.interface";
 const postCategory = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
-  const { restaurant } = req.user as { restaurant: string };
+  // const { restaurant } = req.user as { restaurant: string };
+  const user: any = req.user;
   const parsedData = JSON.parse(data);
 
   const result = await categoryService.postCategoryIntoDB(
-    { ...parsedData, restaurant: restaurant } as ICategory,
+    { ...parsedData, restaurant: user.selectedRestaurant } as ICategory,
     file as Express.Multer.File
   );
 
@@ -26,7 +27,7 @@ const postCategory = catchAsync(async (req: Request, res: Response) => {
 
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurantId = user.restaurant;
+  const restaurantId = user.selectedRestaurant;
   const result = await categoryService.getAllCategoryFromDB(
     req.query,
     restaurantId
@@ -51,7 +52,8 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
-  const { restaurant } = req.user as { restaurant: string };
+  const user: any = req.user;
+  const restaurant = user.selectedRestaurant;
   const parsedData = JSON.parse(data);
   const { id } = req.params;
 

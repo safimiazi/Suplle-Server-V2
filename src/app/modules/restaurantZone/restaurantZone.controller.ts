@@ -8,12 +8,13 @@ const postRestaurantZoneType = catchAsync(async (req: Request, res: Response) =>
   const data = req.body;
   const user = req.user as any;
 
-  const result = await restaurantZoneTypeService.postRestaurantZoneTypeIntoDB({...data, restaurant: user.restaurant});
+  const result = await restaurantZoneTypeService.postRestaurantZoneTypeIntoDB({ ...data, restaurant: user.selectedRestaurant });
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "Restaurant zone Created successfully", data: result });
 });
 
 const getAllRestaurantZoneType = catchAsync(async (req: Request, res: Response) => {
-  const result = await restaurantZoneTypeService.getAllRestaurantZoneTypeFromDB(req.query);
+  const user = req.user as any;
+  const result = await restaurantZoneTypeService.getAllRestaurantZoneTypeFromDB(req.query, user.selectedRestaurant);
   sendResponse(res, { statusCode: status.OK, success: true, message: "Restaurant zone Fetched successfully", data: result });
 });
 
@@ -24,12 +25,14 @@ const getSingleRestaurantZoneType = catchAsync(async (req: Request, res: Respons
 
 const updateRestaurantZoneType = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const result = await restaurantZoneTypeService.updateRestaurantZoneTypeIntoDB(req.body, id);
+  const user = req.user as any;
+  const result = await restaurantZoneTypeService.updateRestaurantZoneTypeIntoDB(req.body, id, user.selectedRestaurant);
   sendResponse(res, { statusCode: status.OK, success: true, message: "Restaurant zone Updated successfully", data: result });
 });
 
 const deleteRestaurantZoneType = catchAsync(async (req: Request, res: Response) => {
-  await restaurantZoneTypeService.deleteRestaurantZoneTypeFromDB(req.params.id);
+  const user: any = req.user;
+  await restaurantZoneTypeService.deleteRestaurantZoneTypeFromDB(req.params.id, user.selectedRestaurant);
   sendResponse(res, { statusCode: status.OK, success: true, message: "Restaurant zone Deleted successfully", data: null });
 });
 

@@ -5,9 +5,9 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 
 const postFloor = catchAsync(async (req: Request, res: Response) => {
-  const user : any = req.user;
-
-  const result = await floorService.postFloorIntoDB({...req.body, restaurant: user.restaurant});
+  const user: any = req.user;
+  const restaurant = user.selectedRestaurant;
+  const result = await floorService.postFloorIntoDB({ ...req.body, restaurant });
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,
@@ -17,7 +17,9 @@ const postFloor = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllFloor = catchAsync(async (req: Request, res: Response) => {
-  const result = await floorService.getAllFloorFromDB(req.query);
+  const user: any = req.user;
+  const restaurant = user.selectedRestaurant;
+  const result = await floorService.getAllFloorFromDB(req.query, restaurant);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -39,7 +41,8 @@ const getSingleFloor = catchAsync(async (req: Request, res: Response) => {
 const updateFloor = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const data = req.body;
-  const result = await floorService.updateFloorIntoDB(data, id);
+  const user: any = req.user;
+  const result = await floorService.updateFloorIntoDB(data, id, user.selectedRestaurant);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

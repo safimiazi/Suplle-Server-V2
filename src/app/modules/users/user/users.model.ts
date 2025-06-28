@@ -24,6 +24,11 @@ const UserSchema = new Schema<IUser>(
         default: [],
       }
     ],
+    selectedRestaurant: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      default: null,
+    },
     name: { type: String },
 
     email: { type: String },
@@ -49,6 +54,7 @@ const UserSchema = new Schema<IUser>(
       type: Boolean,
       default: false
     },
+
     isDeleted: {
       type: Boolean,
       default: false,

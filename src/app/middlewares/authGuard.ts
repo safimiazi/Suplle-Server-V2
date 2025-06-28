@@ -1,9 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-
-
-
-
-
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../errors/AppError";
 import status from "http-status";
@@ -28,7 +23,7 @@ export const authenticate = (...allowedRoles: string[]) => async (
       config.JWT_ACCESS_TOKEN_SECRET as string
     )) as JwtPayload;
 
-    // console.log(decoded)
+    console.log("decoded", decoded)
 
     if (!decoded) {
       throw new Error("Invalid token");

@@ -22,6 +22,7 @@ export type IUser = {
   provider?: string;
   email: string;
   phone: string;
+  selectedRestaurant: Types.ObjectId;
   role: IUserRole;
   image: string;
   password: string;

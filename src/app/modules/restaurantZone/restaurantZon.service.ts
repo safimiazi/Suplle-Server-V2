@@ -6,6 +6,7 @@ import { RestaurantZone } from "./restaurantZone.model";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { RESTAURANTZONETYPE_SEARCHABLE_FIELDS } from "./restaurantZone.constant";
+import { Types } from "mongoose";
 
 export const restaurantZoneTypeService = {
   async postRestaurantZoneTypeIntoDB(data: IRestaurantZone) {
@@ -25,9 +26,9 @@ export const restaurantZoneTypeService = {
       throw error;
     }
   },
-  async getAllRestaurantZoneTypeFromDB(query: any) {
+  async getAllRestaurantZoneTypeFromDB(query: any, restaurant: string) {
     try {
-      const service_query = new QueryBuilder(RestaurantZone.find(), query)
+      const service_query = new QueryBuilder(RestaurantZone.find({ restaurant }), query)
         .search(RESTAURANTZONETYPE_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -67,10 +68,8 @@ export const restaurantZoneTypeService = {
       throw error;
     }
   },
-  async updateRestaurantZoneTypeIntoDB(data: Partial<IRestaurantZone>, id: string) {
+  async updateRestaurantZoneTypeIntoDB(data: Partial<IRestaurantZone>, id: string, restaurant: string) {
     try {
-
-
 
       const isExist = await RestaurantZone.findOne({ _id: id });
 
@@ -80,7 +79,9 @@ export const restaurantZoneTypeService = {
       if (isExist?.isDeleted) {
         throw new AppError(status.NOT_FOUND, "restaurantZoneType is already deleted");
       }
-
+      if (!isExist || !isExist.restaurant.equals(new Types.ObjectId(restaurant))) {
+        throw new AppError(status.BAD_REQUEST, "Zone does not belong to the specified restaurant");
+      }
       const result = await RestaurantZone.updateOne({ _id: id }, data, {
         new: true,
       });
@@ -92,13 +93,16 @@ export const restaurantZoneTypeService = {
       throw error
     }
   },
-  async deleteRestaurantZoneTypeFromDB(id: string) {
+  async deleteRestaurantZoneTypeFromDB(id: string, restaurant: string) {
     try {
 
       const isExist = await RestaurantZone.findOne({ _id: id });
 
       if (isExist?.isDeleted) {
         throw new AppError(status.NOT_FOUND, "restaurantZoneType already deleted");
+      }
+      if (!isExist || !isExist.restaurant.equals(new Types.ObjectId(restaurant))) {
+        throw new AppError(status.BAD_REQUEST, "Zone does not belong to the specified restaurant");
       }
 
       const result = await RestaurantZone.updateOne({ _id: id }, { isDeleted: true });

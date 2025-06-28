@@ -99,6 +99,15 @@ export const categoryService = {
         throw new AppError(404, "category not found");
       }
 
+      const findCategory = await CategoryModel.findOne({ _id: id });
+      if (!findCategory) {
+        throw new AppError(404, "category not found");
+      }
+
+      if (!findCategory.restaurant.equals(data.restaurant)) {
+        throw new AppError(400, "You can not update category to another restaurant");
+      }
+
       let newData = data;
       if (file) {
         const imageName = `${Math.floor(100 + Math.random() * 900)}`;

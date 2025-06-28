@@ -17,7 +17,7 @@ const postMenu = catchAsync(async (req: Request, res: Response) => {
 
   const result = await menuService.postMenuIntoDB(
     data, // still JSON string here
-    user.restaurant, // restaurant ID (assumed to be in user object)
+    user.selectedRestaurant, // restaurant ID (assumed to be in user object)
     file as Express.Multer.File
   );
 
@@ -97,7 +97,7 @@ const getAllMenu = catchAsync(async (req: Request, res: Response) => {
 
   const user: any = req.user;
 
-  const restaurantId = user.restaurant;
+  const restaurantId = user.selectedRestaurant;
   const result = await menuService.getAllMenuFromDB(req.query, restaurantId);
 
   sendResponse(res, {
@@ -125,7 +125,7 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const parseData = JSON.parse(data);
   const user: any = req.user;
-  const restaurantId = user.restaurant;
+  const restaurantId = user.selectedRestaurant;
   const id = req.params.id;
   const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurantId);
   sendResponse(res, {
