@@ -11,7 +11,7 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
   const uploadImage = req.file;
 
 
-  const result = await staffService.createStaff({ ...data, restaurant: user.restaurant }, uploadImage as Express.Multer.File);
+  const result = await staffService.createStaff({ ...data, restaurant: user.selectedRestaurant }, uploadImage as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -22,7 +22,7 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
 
 const getAllStaff = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as any;
-  const restaurantId = user.restaurant;
+  const restaurantId = user.selectedRestaurant;
   const result = await staffService.getAllStaff(req.query, restaurantId);
   sendResponse(res, {
     success: true,

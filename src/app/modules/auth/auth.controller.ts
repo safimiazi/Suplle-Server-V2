@@ -178,7 +178,7 @@ const Login = catchAsync(
 
     const payload = {
       userId: user._id,
-      restaurantId: user.restaurant,
+      restaurantId: user.selectedRestaurant,
       role: user.role,
     };
     console.log("payload", payload);

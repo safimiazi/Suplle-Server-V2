@@ -9,7 +9,7 @@ import { notifyAdmin } from "../../utils/notifyAdmin";
 
 const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({ ...req.body, user: user._id, restaurant: user.restaurant });
+  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({ ...req.body, user: user._id, restaurant: user.selectedRestaurant });
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "QR Code Apply Successfully.", data: result });
 });
 

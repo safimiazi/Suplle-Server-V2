@@ -26,7 +26,7 @@ const getAllOwner = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleOwner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.restaurant;
+  const restaurant = user.selectedRestaurant;
   const result = await ownerService.getSingleOwnerFromDB(req.params.id, restaurant);
   sendResponse(res, {
     statusCode: status.OK,

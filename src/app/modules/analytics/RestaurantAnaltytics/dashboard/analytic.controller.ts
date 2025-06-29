@@ -9,8 +9,8 @@ import sendResponse from "../../../../utils/sendResponse";
 
 const analytics = catchAsync(async (req: Request, res: Response) => {
 
-    const user:any = req.user;
-    const restaurantId = user.restaurant;
+    const user: any = req.user;
+    const restaurantId = user.selectedRestaurant;
 
 
 
@@ -21,8 +21,8 @@ const analytics = catchAsync(async (req: Request, res: Response) => {
         statusCode: httpStatus.OK,
         message: "Restaurant Analytics data retrieved successfully",
         data: result,
-      });
- 
+    });
+
 });
 
 export const analyticController = {

@@ -70,7 +70,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   }
 
   const user: any = req.user;
-  const restaurantId = user.restaurant;
+  const restaurantId = user.selectedRestaurant;
 
   const files =
     (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map(
