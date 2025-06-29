@@ -130,10 +130,13 @@ const getAllUsersForOwner = async (query: any, restaurantId: string) => {
 
 
 const getSingleUser = async (id: string) => {
-  const result = await UserModel.findById(id);
+  const result = await UserModel.findById(id)
+    .populate("restaurant"); // populaate restaurant array of
+
   if (!result || result.isDeleted) {
     throw new AppError(404, "User not found");
   }
+
   return result;
 };
 

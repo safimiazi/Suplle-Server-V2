@@ -8,7 +8,7 @@ import sendResponse from "../../../utils/sendResponse";
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
   const user = req.user;
-   
+
   const result = await userService.createUser(req.body, user);
   sendResponse(res, {
     success: true,
@@ -40,6 +40,7 @@ const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+
   const result = await userService.getSingleUser(req.params.id);
   sendResponse(res, {
     success: true,

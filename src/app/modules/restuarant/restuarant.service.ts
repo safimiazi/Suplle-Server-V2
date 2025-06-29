@@ -48,14 +48,21 @@ const getAllRestaurant = async () => {
 };
 
 const getSingleRestaurant = async (id: string) => {
-  const result = await RestaurantModel.findById(id).populate('menus');
+  const result = await UserModel.findById(id).populate({
+    path: 'restaurant',
+    model: 'Restaurant',
+    match: { isDeleted: false }, // Optional: skip soft-deleted ones
+    select: '-__v -isDeleted -updatedAt' // Optional: control fields you return
+  });
 
   if (!result || result.isDeleted) {
-    throw new AppError(404, "Restaurant not found");
+    throw new AppError(404, 'User not found');
   }
 
   return result;
 };
+
+
 
 
 const updateRestaurant = async (id: string, payload: Partial<IRestaurant>) => {
@@ -125,7 +132,6 @@ const accountSettings = async (userId: string, oldPassword: string, newPassword:
     message: "Password updated successfully"
   };
 };
-
 
 
 

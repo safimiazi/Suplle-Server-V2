@@ -126,6 +126,8 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const parseData = JSON.parse(data);
   const user: any = req.user;
   const restaurantId = user.selectedRestaurant;
+
+  console.log("Restaurant ID:", restaurantId);
   const id = req.params.id;
   const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurantId);
   sendResponse(res, {
