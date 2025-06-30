@@ -10,17 +10,14 @@ import { CategoryModel } from "../category/category.model";
 import { MenuModel } from "./menu.model";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import { UserModel } from "../users/user/users.model";
+import { getSelectedRestaurantId } from "../../utils/getSelectedRestaurant";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const user: any = req.user;
   const data = req.body.data;
-  const restaurantData = await UserModel.findOne({ _id: user._id });
 
-
-  // return
-
-  const restaurant = restaurantData?.selectedRestaurant;
+  const restaurant = await getSelectedRestaurantId(user._id);
   const result = await menuService.postMenuIntoDB(
     data, // still JSON string here
     restaurant as unknown as string, // restaurant ID (assumed to be in user object)

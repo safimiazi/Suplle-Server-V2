@@ -41,7 +41,7 @@ export const menuService = {
       // Inject restaurant ID
       parsedData.restaurant = restaurant;
 
-      console.log("Parsed Data with Restaurant:", parsedData); // Debug log
+      // console.log("Parsed Data with Restaurant:", parsedData); // Debug log
 
       // Validate data
       const validatedData = await validateData<IMenu>(
