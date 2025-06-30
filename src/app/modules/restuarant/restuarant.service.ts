@@ -53,7 +53,7 @@ const getSingleRestaurant = async (id: string) => {
     .select('-__v -isDeleted -updatedAt')
     .populate({
       path: 'owner',
-      select: 'name email' // or whatever fields you need
+      select: 'name email'
     })
     .populate({
       path: 'menus',
