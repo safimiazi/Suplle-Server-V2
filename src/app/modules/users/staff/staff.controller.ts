@@ -10,9 +10,14 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
   const data = JSON.parse(req.body.data);
   const user = req.user as any;
   const uploadImage = req.file;
-  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
 
-  const result = await staffService.createStaff({ ...data, restaurant: restaurantId }, uploadImage as Express.Multer.File);
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+  const result = await staffService.createStaff({ ...data, restaurant: restaurant }, uploadImage as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -23,9 +28,14 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
 
 const getAllStaff = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as any;
-  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
 
-  const result = await staffService.getAllStaff(req.query, restaurantId as unknown as string);
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+  const result = await staffService.getAllStaff(req.query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

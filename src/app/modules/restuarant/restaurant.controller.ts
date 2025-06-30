@@ -71,7 +71,12 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   }
 
   const user: any = req.user;
-  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const userData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = userData?.selectedRestaurant;
 
   const files =
     (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map(
@@ -97,7 +102,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Retrieve existing restaurant to keep previous images
-  const existingRestaurant = await RestaurantModel.findById(restaurantId);
+  const existingRestaurant = await RestaurantModel.findById(restaurant);
 
   // Upload and merge images if new ones are provided
   if (files.length > 0) {
@@ -124,7 +129,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   )) as Partial<IRestaurant>;
 
   const result = await restaurantService.updateRestaurant(
-    restaurantId as unknown as string,
+    restaurant as unknown as string,
     validate
   );
 
