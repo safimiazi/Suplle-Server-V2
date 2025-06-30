@@ -18,7 +18,12 @@ const createOrder = catchAsync(async (req, res) => {
     throw new AppError(400, `You can not take ${orderType} order`);
   }
 
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
 
   const result = await orderServices.createOrder({ ...data, restaurant: restaurant });
   sendResponse(res, {
@@ -33,7 +38,9 @@ const createOrder = catchAsync(async (req, res) => {
 const getAllOrders = catchAsync(async (req, res) => {
   const query = req.query;
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await orderServices.getAllOrders(query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,
@@ -67,7 +74,9 @@ const updateOrder = catchAsync(async (req, res) => {
 
   }
 
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await orderServices.updateOrder(req.params.id, { ...data, restaurant: restaurant });
 
   sendResponse(res, {
@@ -81,7 +90,10 @@ const updateOrder = catchAsync(async (req, res) => {
 
 const deleteOrder = catchAsync(async (req, res) => {
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const orderId = req.params.id;
 
   console.log(orderId)

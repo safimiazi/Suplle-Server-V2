@@ -126,7 +126,9 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const parseData = JSON.parse(data);
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
 
 
   const id = req.params.id;

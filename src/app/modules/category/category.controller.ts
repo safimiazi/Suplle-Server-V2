@@ -11,9 +11,15 @@ const postCategory = catchAsync(async (req: Request, res: Response) => {
   const data = req.body.data;
   // const { restaurant } = req.user as { restaurant: string };
   const user: any = req.user;
-  const parsedData = JSON.parse(data);
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
 
+  const parsedData = JSON.parse(data);
+
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await categoryService.postCategoryIntoDB(
     { ...parsedData, restaurant } as ICategory,
     file as Express.Multer.File
@@ -30,10 +36,13 @@ const postCategory = catchAsync(async (req: Request, res: Response) => {
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
 
-  const restaurantId = UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await categoryService.getAllCategoryFromDB(
     req.query,
-    restaurantId as unknown as string
+    restaurant as unknown as string
   );
   sendResponse(res, {
     statusCode: status.OK,
@@ -57,7 +66,12 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const data = req.body.data;
   const user: any = req.user;
 
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
 
 
   const parsedData = JSON.parse(data);

@@ -30,7 +30,9 @@ const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
 });
 const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await userService.getAllUsersForOwner(req.query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,

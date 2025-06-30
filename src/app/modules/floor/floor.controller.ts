@@ -7,7 +7,12 @@ import { UserModel } from "../users/user/users.model";
 
 const postFloor = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await floorService.postFloorIntoDB({ ...req.body, restaurant });
   sendResponse(res, {
     statusCode: status.CREATED,
@@ -19,7 +24,9 @@ const postFloor = catchAsync(async (req: Request, res: Response) => {
 
 const getAllFloor = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await floorService.getAllFloorFromDB(req.query, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
@@ -43,7 +50,12 @@ const updateFloor = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const data = req.body;
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await floorService.updateFloorIntoDB(data, id, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,

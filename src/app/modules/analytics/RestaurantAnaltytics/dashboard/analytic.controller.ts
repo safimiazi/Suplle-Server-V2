@@ -11,9 +11,11 @@ import { UserModel } from "../../../users/user/users.model";
 const analytics = catchAsync(async (req: Request, res: Response) => {
 
     const user: any = req.user;
-    const Restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+    const restaurantData = await UserModel.findOne({ _id: user._id });
 
-    const result = await allAnalytic(Restaurant as unknown as string)
+    const restaurant = restaurantData?.selectedRestaurant;
+
+    const result = await allAnalytic(restaurant as unknown as string);
 
     sendResponse(res, {
         success: true,

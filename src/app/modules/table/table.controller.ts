@@ -7,7 +7,12 @@ import { UserModel } from "../users/user/users.model";
 
 const postTable = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
 
   const result = await tableService.postTableIntoDB({ ...req.body, restaurant: restaurant });
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
