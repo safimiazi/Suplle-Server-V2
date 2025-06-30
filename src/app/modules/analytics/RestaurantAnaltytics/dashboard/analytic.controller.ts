@@ -5,15 +5,15 @@ import catchAsync from "../../../../utils/catchAsync";
 import { allAnalytic } from "./analytic.service";
 import sendResponse from "../../../../utils/sendResponse";
 import { UserModel } from "../../../users/user/users.model";
+import { getSelectedRestaurantId } from "../../../../utils/getSelectedRestaurant";
 
 
 
 const analytics = catchAsync(async (req: Request, res: Response) => {
 
     const user: any = req.user;
-    const restaurantData = await UserModel.findOne({ _id: user._id });
 
-    const restaurant = restaurantData?.selectedRestaurant;
+    const restaurant = await getSelectedRestaurantId(user._id);
 
     const result = await allAnalytic(restaurant as unknown as string);
 

@@ -5,21 +5,18 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { ICategory } from "./category.interface";
 import { UserModel } from "../users/user/users.model";
+import { getSelectedRestaurantId } from "../../utils/getSelectedRestaurant";
 
 const postCategory = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
-  // const { restaurant } = req.user as { restaurant: string };
+
   const user: any = req.user;
 
   const parsedData = JSON.parse(data);
 
-  const restaurantData = await UserModel.findOne({ _id: user._id });
+  const restaurant = await getSelectedRestaurantId(user._id);
 
-
-  // return
-
-  const restaurant = restaurantData?.selectedRestaurant;
   const result = await categoryService.postCategoryIntoDB(
     { ...parsedData, restaurant } as ICategory,
     file as Express.Multer.File

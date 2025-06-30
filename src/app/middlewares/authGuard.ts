@@ -23,7 +23,6 @@ export const authenticate = (...allowedRoles: string[]) => async (
       config.JWT_ACCESS_TOKEN_SECRET as string
     )) as JwtPayload;
 
-    console.log("decoded", decoded)
 
     if (!decoded) {
       throw new Error("Invalid token");
