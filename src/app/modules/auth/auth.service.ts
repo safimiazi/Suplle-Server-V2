@@ -68,7 +68,7 @@ export const authService = {
         [
           {
             owner: newOwner._id,
-            restaurantName: "your restaurant name",
+            restaurantName: data.restaurantName,
             menus: [],
             status: "pending",
             restaurantAddress: data.restaurantAddress,

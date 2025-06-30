@@ -103,8 +103,13 @@ const getAllMenu = catchAsync(async (req: Request, res: Response) => {
 
   const user: any = req.user;
 
-  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
-  const result = await menuService.getAllMenuFromDB(req.query, restaurantId as unknown as string);
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+  const result = await menuService.getAllMenuFromDB(req.query, restaurant as unknown as string);
 
   sendResponse(res, {
     statusCode: status.OK,
