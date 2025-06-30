@@ -15,10 +15,15 @@ const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const user: any = req.user;
   const data = req.body.data;
-  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await menuService.postMenuIntoDB(
     data, // still JSON string here
-    restaurantId as unknown as string, // restaurant ID (assumed to be in user object)
+    restaurant as unknown as string, // restaurant ID (assumed to be in user object)
     file as Express.Multer.File
   );
 

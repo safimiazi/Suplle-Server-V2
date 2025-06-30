@@ -124,8 +124,6 @@ const Login = catchAsync(
 
     const user = await UserModel.findOne({ email }).select("+password");
 
-    console.log("user", user);
-
     if (!user) {
       throw new AppError(
         status.NOT_FOUND,
