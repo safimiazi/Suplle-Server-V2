@@ -48,19 +48,25 @@ const getAllRestaurant = async () => {
 };
 
 const getSingleRestaurant = async (id: string) => {
-  const result = await UserModel.findById(id).populate({
-    path: 'restaurant',
-    model: 'Restaurant',
-    match: { isDeleted: false }, // Optional: skip soft-deleted ones
-    select: '-__v -isDeleted -updatedAt' // Optional: control fields you return
-  });
+  const result = await RestaurantModel.findById(id)
+    .where({ isDeleted: false })
+    .select('-__v -isDeleted -updatedAt')
+    .populate({
+      path: 'owner',
+      select: 'name email' // or whatever fields you need
+    })
+    .populate({
+      path: 'menus',
+      select: 'menuName items'
+    });
 
-  if (!result || result.isDeleted) {
-    throw new AppError(404, 'User not found');
+  if (!result) {
+    throw new AppError(404, 'Restaurant not found');
   }
 
   return result;
 };
+
 
 
 
