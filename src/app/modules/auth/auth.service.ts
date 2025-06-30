@@ -366,16 +366,19 @@ export const authService = {
       throw new AppError(403, "User does not own this restaurant");
     }
 
-    // Update selectedRestaurant
-    await UserModel.findByIdAndUpdate(
+    // Update selectedRestaurant and populate it
+    const updatedUser = await UserModel.findByIdAndUpdate(
       user._id,
       { selectedRestaurant: restaurantId },
       { new: true }
-    );
+    ).populate('selectedRestaurant'); // 👈 populate restaurant
 
+    if (!updatedUser) {
+      throw new AppError(404, "User not found after update");
+    }
     return {
       message: "Switched account successfully",
-      selectedRestaurant: restaurantId,
+      loggedRestaurant: updatedUser.selectedRestaurant, // now full object
     };
   }
 
