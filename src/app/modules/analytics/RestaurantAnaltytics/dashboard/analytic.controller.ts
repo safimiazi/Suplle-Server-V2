@@ -4,17 +4,16 @@ import httpStatus from "http-status";
 import catchAsync from "../../../../utils/catchAsync";
 import { allAnalytic } from "./analytic.service";
 import sendResponse from "../../../../utils/sendResponse";
+import { UserModel } from "../../../users/user/users.model";
 
 
 
 const analytics = catchAsync(async (req: Request, res: Response) => {
 
     const user: any = req.user;
-    const restaurantId = user.selectedRestaurant;
+    const Restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
 
-
-
-    const result = await allAnalytic(restaurantId)
+    const result = await allAnalytic(Restaurant as unknown as string)
 
     sendResponse(res, {
         success: true,

@@ -3,10 +3,11 @@ import { floorService } from "./floor.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
+import { UserModel } from "../users/user/users.model";
 
 const postFloor = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.selectedRestaurant;
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
   const result = await floorService.postFloorIntoDB({ ...req.body, restaurant });
   sendResponse(res, {
     statusCode: status.CREATED,
@@ -18,8 +19,8 @@ const postFloor = catchAsync(async (req: Request, res: Response) => {
 
 const getAllFloor = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.selectedRestaurant;
-  const result = await floorService.getAllFloorFromDB(req.query, restaurant);
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const result = await floorService.getAllFloorFromDB(req.query, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -42,7 +43,8 @@ const updateFloor = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const data = req.body;
   const user: any = req.user;
-  const result = await floorService.updateFloorIntoDB(data, id, user.selectedRestaurant);
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const result = await floorService.updateFloorIntoDB(data, id, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

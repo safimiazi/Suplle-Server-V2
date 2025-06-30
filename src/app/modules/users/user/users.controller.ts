@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../../utils/catchAsync";
 import { userService } from "./users.service";
 import sendResponse from "../../../utils/sendResponse";
+import { UserModel } from "./users.model";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
@@ -29,8 +30,8 @@ const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
 });
 const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.selectedRestaurant;
-  const result = await userService.getAllUsersForOwner(req.query, restaurant);
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const result = await userService.getAllUsersForOwner(req.query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

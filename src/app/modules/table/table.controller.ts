@@ -3,11 +3,13 @@ import { tableService } from "./table.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
+import { UserModel } from "../users/user/users.model";
 
 const postTable = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
 
-  const result = await tableService.postTableIntoDB({ ...req.body, restaurant: user.selectedRestaurant });
+  const result = await tableService.postTableIntoDB({ ...req.body, restaurant: restaurant });
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "Created successfully", data: result });
 });
 

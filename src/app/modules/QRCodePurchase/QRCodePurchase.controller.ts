@@ -6,10 +6,12 @@ import status from "http-status";
 import { QRCodePurchaseModel } from "./QRCodePurchase.model";
 import { stripe } from "../../utils/stripe";
 import { notifyAdmin } from "../../utils/notifyAdmin";
+import { UserModel } from "../users/user/users.model";
 
 const postQRCodePurchase = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({ ...req.body, user: user._id, restaurant: user.selectedRestaurant });
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const result = await QRCodePurchaseService.postQRCodePurchaseIntoDB({ ...req.body, user: user._id, restaurant: restaurant });
   sendResponse(res, { statusCode: status.CREATED, success: true, message: "QR Code Apply Successfully.", data: result });
 });
 

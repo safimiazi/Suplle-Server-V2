@@ -9,15 +9,16 @@ import * as XLSX from "xlsx"
 import { CategoryModel } from "../category/category.model";
 import { MenuModel } from "./menu.model";
 import { RestaurantModel } from "../restuarant/restuarant.model";
+import { UserModel } from "../users/user/users.model";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const user: any = req.user;
   const data = req.body.data;
-
+  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
   const result = await menuService.postMenuIntoDB(
     data, // still JSON string here
-    user.selectedRestaurant, // restaurant ID (assumed to be in user object)
+    restaurantId as unknown as string, // restaurant ID (assumed to be in user object)
     file as Express.Multer.File
   );
 
@@ -97,8 +98,8 @@ const getAllMenu = catchAsync(async (req: Request, res: Response) => {
 
   const user: any = req.user;
 
-  const restaurantId = user.selectedRestaurant;
-  const result = await menuService.getAllMenuFromDB(req.query, restaurantId);
+  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
+  const result = await menuService.getAllMenuFromDB(req.query, restaurantId as unknown as string);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -125,11 +126,11 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const parseData = JSON.parse(data);
   const user: any = req.user;
-  const restaurantId = user.selectedRestaurant;
+  const restaurant = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
 
-  console.log("Restaurant ID:", restaurantId);
+
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurantId);
+  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

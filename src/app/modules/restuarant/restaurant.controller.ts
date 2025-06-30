@@ -14,6 +14,7 @@ import AppError from "../../errors/AppError";
 import { RestaurantModel } from "./restuarant.model";
 import { CLIENT_RENEG_LIMIT } from "tls";
 import { OwnerModel } from "../users/owner/owner.model";
+import { UserModel } from "../users/user/users.model";
 
 const postRestuarant = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
@@ -70,7 +71,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   }
 
   const user: any = req.user;
-  const restaurantId = user.selectedRestaurant;
+  const restaurantId = await UserModel.findOne({ _id: user._id }).populate("selectedRestaurant");
 
   const files =
     (req.files as { [fieldname: string]: Express.Multer.File[] })?.images?.map(
@@ -123,7 +124,7 @@ const updateRestuarant = catchAsync(async (req: Request, res: Response) => {
   )) as Partial<IRestaurant>;
 
   const result = await restaurantService.updateRestaurant(
-    restaurantId,
+    restaurantId as unknown as string,
     validate
   );
 
