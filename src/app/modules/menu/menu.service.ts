@@ -113,6 +113,31 @@ export const menuService = {
       throw error;
     }
   },
+  async getAllMenuByRestaurantIdFromDB(query: any) {
+    try {
+      // Apply restaurantId filtering before using the QueryBuilder
+      const service_query = new QueryBuilder(
+        MenuModel.find({ restaurant: query.restaurant }), // <-- filter added here
+        query
+      )
+        .search(MENU_SEARCHABLE_FIELDS)
+        .filter()
+        .sort()
+        .paginate()
+        .fields();
+
+      const result = await service_query.modelQuery.populate("category");
+
+      const meta = await service_query.countTotal();
+
+      return {
+        result,
+        meta,
+      };
+    } catch (error: unknown) {
+      throw error;
+    }
+  },
 
   async getSingleMenuFromDB(id: string) {
     try {

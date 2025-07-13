@@ -154,19 +154,19 @@ const Login = catchAsync(
         );
       }
 
-      // if (owner.status === OWNER_STATUS.UNVERIFIED) {
-      //   throw new AppError(
-      //     status.UNAUTHORIZED,
-      //     "Your account is not verified. Please verify OTP."
-      //   );
-      // }
+      if (owner.status === OWNER_STATUS.UNVERIFIED) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is not verified. Please verify OTP."
+        );
+      }
 
-      // if (owner.status === OWNER_STATUS.PENDING) {
-      //   throw new AppError(
-      //     status.UNAUTHORIZED,
-      //     "Your account is pending admin approval."
-      //   );
-      // }
+      if (owner.status === OWNER_STATUS.PENDING) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is pending admin approval."
+        );
+      }
 
       if (owner.status === OWNER_STATUS.REJECTED) {
         throw new AppError(
@@ -525,7 +525,6 @@ const verifyEmailOTP = catchAsync(
 );
 
 const approveRestaurantByAdmin = catchAsync(async (req, res) => {
-  console.log(req.body);
 
   const email = req.body.email;
 

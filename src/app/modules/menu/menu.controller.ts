@@ -104,9 +104,22 @@ const getAllMenu = catchAsync(async (req: Request, res: Response) => {
 
 
   // return
-
   const restaurant = restaurantData?.selectedRestaurant;
   const result = await menuService.getAllMenuFromDB(req.query, restaurant as unknown as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Menus Fetched successfully",
+    data: result,
+  });
+});
+
+
+const getAllMenuByRestaurantId = catchAsync(async (req: Request, res: Response) => {
+
+  // return
+  const result = await menuService.getAllMenuByRestaurantIdFromDB(req.query);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -174,6 +187,7 @@ export const menuController = {
   postMenu,
   uploadMenuFileController,
   getAllMenu,
+  getAllMenuByRestaurantId,
   getSingleMenu,
   updateMenu,
   deleteMenu,
