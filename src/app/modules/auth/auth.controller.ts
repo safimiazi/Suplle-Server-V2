@@ -161,12 +161,12 @@ const Login = catchAsync(
         );
       }
 
-      if (owner.status === OWNER_STATUS.PENDING) {
-        throw new AppError(
-          status.UNAUTHORIZED,
-          "Your account is pending admin approval."
-        );
-      }
+      // if (owner.status === OWNER_STATUS.PENDING) {
+      //   throw new AppError(
+      //     status.UNAUTHORIZED,
+      //     "Your account is pending admin approval."
+      //   );
+      // }
 
       if (owner.status === OWNER_STATUS.REJECTED) {
         throw new AppError(
