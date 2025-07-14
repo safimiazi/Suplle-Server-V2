@@ -6,7 +6,7 @@ export const sendUserLoginCredentials = async (
   email: string,
   password: string,
   name: string,
-    role: string,
+  role: string,
   phone: string
 ) => {
   try {
