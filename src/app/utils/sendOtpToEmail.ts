@@ -9,10 +9,11 @@ export const sendOtpToEmail = async (email: string, otp: string) => {
       host: "smtp.sendgrid.net",
       port: 587,
       auth: {
-        user: process.env.SENDGRID_USER, // 'apikey'
-        pass: process.env.SENDGRID_PASS, // real API key
+       user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
+    
 
 
     // const transporter = nodemailer.createTransport({
