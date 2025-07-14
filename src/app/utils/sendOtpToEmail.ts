@@ -4,13 +4,24 @@ dotenv.config();
 
 export const sendOtpToEmail = async (email: string, otp: string) => {
   try {
+
     const transporter = nodemailer.createTransport({
-      service: "gmail", // You can use 'smtp.ethereal.email' or others for testing
+      host: "smtp.sendgrid.net",
+      port: 587,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.SENDGRID_USER, // 'apikey'
+        pass: process.env.SENDGRID_PASS, // real API key
       },
     });
+
+
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail", // You can use 'smtp.ethereal.email' or others for testing
+    //   auth: {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_PASS,
+    //   },
+    // });
 
     // Create a verification URL, for example
     const verificationUrl = `${process.env.FRONTEND_URL}/api/v1/auth/verify-otp?email=${email}`;
