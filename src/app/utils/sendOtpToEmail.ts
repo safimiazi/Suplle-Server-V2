@@ -13,6 +13,7 @@ export const sendOtpToEmail = async (email: string, otp: string) => {
         pass: process.env.EMAIL_PASS,
       },
     });
+    
 
 
     // const transporter = nodemailer.createTransport({
