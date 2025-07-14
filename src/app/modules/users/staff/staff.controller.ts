@@ -3,15 +3,21 @@ import httpStatus from "http-status";
 import { staffService } from "./staff.service";
 import catchAsync from "../../../utils/catchAsync";
 import sendResponse from "../../../utils/sendResponse";
+import { UserModel } from "../user/users.model";
 
 const createStaff = catchAsync(async (req: Request, res: Response) => {
 
   const data = JSON.parse(req.body.data);
   const user = req.user as any;
   const uploadImage = req.file;
+  const restaurantData = await UserModel.findOne({ _id: user._id });
 
 
-  const result = await staffService.createStaff({ ...data, restaurant: user.restaurant }, uploadImage as Express.Multer.File);
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+  const result = await staffService.createStaff({ ...data, restaurant: restaurant }, uploadImage as Express.Multer.File);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -22,8 +28,14 @@ const createStaff = catchAsync(async (req: Request, res: Response) => {
 
 const getAllStaff = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as any;
-  const restaurantId = user.restaurant;
-  const result = await staffService.getAllStaff(req.query, restaurantId);
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+  const result = await staffService.getAllStaff(req.query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

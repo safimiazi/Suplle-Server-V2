@@ -4,12 +4,13 @@ import httpStatus from "http-status";
 import catchAsync from "../../../utils/catchAsync";
 import { userService } from "./users.service";
 import sendResponse from "../../../utils/sendResponse";
+import { UserModel } from "./users.model";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
-  const owner = req.user;
+  const user = req.user;
 
-  const result = await userService.createUser(req.body, owner);
+  const result = await userService.createUser(req.body, user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -29,8 +30,10 @@ const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
 });
 const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.restaurant;
-  const result = await userService.getAllUsersForOwner(req.query, restaurant);
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
+  const result = await userService.getAllUsersForOwner(req.query, restaurant as unknown as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -40,6 +43,7 @@ const getAllUsersOWner = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+
   const result = await userService.getSingleUser(req.params.id);
   sendResponse(res, {
     success: true,

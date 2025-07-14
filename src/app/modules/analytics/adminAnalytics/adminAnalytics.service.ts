@@ -95,7 +95,7 @@ const allAdminAnalytic = async () => {
     totalRestaurants,
     ...salesStats,
     monthlyStats,
-    dayWiseMonthStats,
+    // dayWiseMonthStats,
     dayWiseWeekStats,
   };
 };

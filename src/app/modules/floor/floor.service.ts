@@ -24,9 +24,9 @@ export const floorService = {
 
     }
   },
-  async getAllFloorFromDB(query: any) {
+  async getAllFloorFromDB(query: any, restaurant: string) {
     try {
-      const service_query = new QueryBuilder(FloorModel.find(), query)
+      const service_query = new QueryBuilder(FloorModel.find({ restaurant: restaurant }), query)
         .search(FLOOR_SEARCHABLE_FIELDS)
         .filter()
         .sort()
@@ -54,28 +54,33 @@ export const floorService = {
 
     }
   },
-async getSingleFloorFromDB(id: string) {
-  try {
-    const floor = await FloorModel.findOne({
-      _id: id,
-      isDeleted: false, 
-    });
-
-    if (!floor) {
-      throw new Error("Floor not found or has been deleted");
-    }
-
-    return floor;
-  } catch (error) {
-    throw error;
-  }
-}
-,
-  async updateFloorIntoDB(data: IFloor, id: string) {
+  async getSingleFloorFromDB(id: string) {
     try {
+      const floor = await FloorModel.findOne({
+        _id: id,
+        isDeleted: false,
+      });
+
+      if (!floor) {
+        throw new Error("Floor not found or has been deleted");
+      }
+
+      return floor;
+    } catch (error) {
+      throw error;
+    }
+  }
+  ,
+  async updateFloorIntoDB(data: IFloor, id: string, restaurantId: string) {
+    try {
+
       const isDeleted = await FloorModel.findOne({ _id: id });
       if (isDeleted?.isDeleted) {
         throw new AppError(status.NOT_FOUND, "floor is already deleted");
+      }
+
+      if (restaurantId !== String(data.restaurant)) {
+        throw new AppError(status.NOT_FOUND, "you can not update oj");
       }
 
       const result = await FloorModel.findByIdAndUpdate({ _id: id }, data, {
@@ -98,7 +103,7 @@ async getSingleFloorFromDB(id: string) {
       if (!isExist) {
         throw new AppError(status.NOT_FOUND, "floor not found");
       }
-      await FloorModel.findByIdAndUpdate({_id: id},{ isDeleted:true });
+      await FloorModel.findByIdAndUpdate({ _id: id }, { isDeleted: true });
       return;
     } catch (error: unknown) {
       throw error;

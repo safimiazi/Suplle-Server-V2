@@ -4,10 +4,42 @@ import AppError from "../../errors/AppError";
 import { UserModel } from "../users/user/users.model";
 import httpStatus from "http-status";
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
+import { OwnerModel } from "../users/owner/owner.model";
 
-const postRestaurant = async (data: IRestaurant) => {
-  const result = await RestaurantModel.create(data);
-  return result;
+
+export const postRestaurant = async (data: any, ownerId: string, userId: string) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    // 1. Create restaurant document
+    const restaurant = await RestaurantModel.create([data], { session });
+    const newRestaurant = restaurant[0];
+
+    // 2. Add restaurant reference to Owner's restaurants array
+    await OwnerModel.findByIdAndUpdate(
+      ownerId,
+      { $push: { restaurant: newRestaurant._id } },
+      { session }
+    );
+
+    // 3. Add restaurant reference to User's restaurants array
+    await UserModel.findByIdAndUpdate(
+      userId,
+      { $push: { restaurant: newRestaurant._id } },
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return newRestaurant;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
 
 const getAllRestaurant = async () => {
@@ -16,14 +48,27 @@ const getAllRestaurant = async () => {
 };
 
 const getSingleRestaurant = async (id: string) => {
-  const result = await RestaurantModel.findById(id).populate('menus');
+  const result = await RestaurantModel.findById(id)
+    .where({ isDeleted: false })
+    .select('-__v -isDeleted -updatedAt')
+    .populate({
+      path: 'owner',
+      select: 'name email'
+    })
+    .populate({
+      path: 'menus',
+      select: 'menuName items'
+    });
 
-  if (!result || result.isDeleted) {
-    throw new AppError(404, "Restaurant not found");
+  if (!result) {
+    throw new AppError(404, 'Restaurant not found');
   }
 
   return result;
 };
+
+
+
 
 
 const updateRestaurant = async (id: string, payload: Partial<IRestaurant>) => {
@@ -59,9 +104,16 @@ const deleteRestaurant = async (id: string) => {
   return result;
 };
 
-const accountSettings = async (restaurantId: string, oldPassword: string, newPassword: string) => {
+const accountSettings = async (userId: string, oldPassword: string, newPassword: string) => {
   // Find user by restaurant
-  const user = await UserModel.findOne({ restaurant: restaurantId }).select("+password");
+
+  const owner = await OwnerModel.findOne({ user: userId });
+
+  if (!owner) {
+    throw new AppError(httpStatus.NOT_FOUND, "Owner not found");
+  }
+
+  const user = await UserModel.findOne({ _id: owner.user }).select("+password");
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -86,7 +138,6 @@ const accountSettings = async (restaurantId: string, oldPassword: string, newPas
     message: "Password updated successfully"
   };
 };
-
 
 
 

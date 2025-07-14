@@ -4,15 +4,21 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { ICategory } from "./category.interface";
+import { UserModel } from "../users/user/users.model";
+import { getSelectedRestaurantId } from "../../utils/getSelectedRestaurant";
 
 const postCategory = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
-  const { restaurant } = req.user as { restaurant: string };
+
+  const user: any = req.user;
+
   const parsedData = JSON.parse(data);
 
+  const restaurant = await getSelectedRestaurantId(user._id);
+
   const result = await categoryService.postCategoryIntoDB(
-    { ...parsedData, restaurant: restaurant } as ICategory,
+    { ...parsedData, restaurant } as ICategory,
     file as Express.Multer.File
   );
 
@@ -26,10 +32,14 @@ const postCategory = catchAsync(async (req: Request, res: Response) => {
 
 const getAllCategory = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurantId = user.restaurant;
+
+
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
   const result = await categoryService.getAllCategoryFromDB(
     req.query,
-    restaurantId
+    restaurant as unknown as string
   );
   sendResponse(res, {
     statusCode: status.OK,
@@ -51,7 +61,16 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const data = req.body.data;
-  const { restaurant } = req.user as { restaurant: string };
+  const user: any = req.user;
+
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+
   const parsedData = JSON.parse(data);
   const { id } = req.params;
 

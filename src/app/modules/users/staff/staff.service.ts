@@ -39,6 +39,7 @@ const createStaff = async (data: any, file: Express.Multer.File) => {
     const userData = {
       restaurant: staffData.restaurant,
       name: staffData.name,
+      selectedRestaurant: staffData.restaurant,
       email: staffData.email,
       phone: staffData.phone,
       role: staffData.role,

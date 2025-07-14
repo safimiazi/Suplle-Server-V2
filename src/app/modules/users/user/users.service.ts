@@ -30,8 +30,9 @@ const createUser = async (data: IUser, owner: any) => {
 
     let modifiedData: any = { ...data };
 
-    modifiedData.restaurant = owner.restaurant;
+    modifiedData.restaurant = owner.selectedRestaurant;
     // 3. Hash the password before saving to the database
+    modifiedData.selectedRestaurant = owner.selectedRestaurant;
     modifiedData.password = await bcrypt.hash(modifiedData.password, 10); // 10 is salt rounds
 
     // 2. Create new user with session
@@ -129,10 +130,13 @@ const getAllUsersForOwner = async (query: any, restaurantId: string) => {
 
 
 const getSingleUser = async (id: string) => {
-  const result = await UserModel.findById(id);
+  const result = await UserModel.findById(id)
+    .populate("restaurant"); // populaate restaurant array of
+
   if (!result || result.isDeleted) {
     throw new AppError(404, "User not found");
   }
+
   return result;
 };
 

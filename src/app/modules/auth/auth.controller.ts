@@ -14,7 +14,7 @@ import { OWNER_STATUS } from "../users/owner/owner.constant";
 
 const restuarantRegisterRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const pendingRestuarant = await authService.restuarantRegisterRequestIntoDB(
+    const pendingRestuarant = await authService.restaurantRegisterRequestIntoDB(
       req.body
     );
     sendResponse(res, {
@@ -113,6 +113,15 @@ const Login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
+    const restaurants = await OwnerModel.findOne({ businessEmail: email })
+      .select("restaurant") // only include the restaurant field from Owner
+      .populate({
+        path: "restaurant",
+        select: "restaurantName restaurantAddress" // only these fields from Restaurant
+      });
+
+
+
     const user = await UserModel.findOne({ email }).select("+password");
 
     if (!user) {
@@ -145,19 +154,19 @@ const Login = catchAsync(
         );
       }
 
-      // if (owner.status === OWNER_STATUS.UNVERIFIED) {
-      //   throw new AppError(
-      //     status.UNAUTHORIZED,
-      //     "Your account is not verified. Please verify OTP."
-      //   );
-      // }
+      if (owner.status === OWNER_STATUS.UNVERIFIED) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is not verified. Please verify OTP."
+        );
+      }
 
-      // if (owner.status === OWNER_STATUS.PENDING) {
-      //   throw new AppError(
-      //     status.UNAUTHORIZED,
-      //     "Your account is pending admin approval."
-      //   );
-      // }
+      if (owner.status === OWNER_STATUS.PENDING) {
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Your account is pending admin approval."
+        );
+      }
 
       if (owner.status === OWNER_STATUS.REJECTED) {
         throw new AppError(
@@ -169,9 +178,10 @@ const Login = catchAsync(
 
     const payload = {
       userId: user._id,
-      restaurantId: user.restaurant,
+      restaurantId: user.selectedRestaurant,
       role: user.role,
     };
+    console.log("payload", payload);
 
     const accessToken = generateToken(
       payload,
@@ -200,11 +210,12 @@ const Login = catchAsync(
         accessToken,
         user: {
           _id: user._id,
-          restuarant: user.restaurant || null,
+          owner: restaurants || null,
           name: user.name,
           email: user.email,
           role: user.role,
           image: user.image || null,
+          selectedRestaurant: user.selectedRestaurant || null,
         },
       },
     });
@@ -514,7 +525,6 @@ const verifyEmailOTP = catchAsync(
 );
 
 const approveRestaurantByAdmin = catchAsync(async (req, res) => {
-  console.log(req.body);
 
   const email = req.body.email;
 
@@ -527,6 +537,21 @@ const approveRestaurantByAdmin = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+
+const switchAccountByUser = catchAsync(async (req, res) => {
+  const { email, restaurantId } = req.body;
+
+  const result = await authService.switchAccount(email, restaurantId);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Switched account successfully",
+    data: result,
+  });
+});
+
 
 export const authController = {
   restuarantRegisterRequest,
@@ -550,4 +575,5 @@ export const authController = {
   verifyPhoneNumberOTP,
   verifyEmailOTP,
   approveRestaurantByAdmin,
+  switchAccountByUser
 };

@@ -17,7 +17,14 @@ const RoleEnum = [
 
 const UserSchema = new Schema<IUser>(
   {
-    restaurant: {
+    restaurant: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Restaurant",
+        default: [],
+      }
+    ],
+    selectedRestaurant: {
       type: Schema.Types.ObjectId,
       ref: "Restaurant",
       default: null,
@@ -47,6 +54,7 @@ const UserSchema = new Schema<IUser>(
       type: Boolean,
       default: false
     },
+
     isDeleted: {
       type: Boolean,
       default: false,

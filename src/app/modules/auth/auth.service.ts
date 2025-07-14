@@ -15,7 +15,7 @@ import { notificationModel } from '../notification/notification.model';
 import { io } from "../../../server";
 import { notifyAdmin } from '../../utils/notifyAdmin';
 export const authService = {
-  async restuarantRegisterRequestIntoDB(data: IRestaurantValidationRequest) {
+  async restaurantRegisterRequestIntoDB(data: IRestaurantValidationRequest) {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -24,6 +24,7 @@ export const authService = {
       const existingUser = await UserModel.findOne({
         email: data.businessEmail,
       }).session(session);
+
       if (existingUser) {
         throw new Error("Restaurant owner already exists.");
       }
@@ -31,6 +32,7 @@ export const authService = {
       // 2. Create user with OTP
       const hashedPassword = await bcrypt.hash(data.password, 10);
       const otp = generateOtp(4);
+
       const [newUser] = await UserModel.create(
         [
           {
@@ -38,7 +40,7 @@ export const authService = {
             email: data.businessEmail,
             phone: data.phone,
             otp,
-            otpExpiresAt: new Date(Date.now() + 5 * 60000),
+            otpExpiresAt: new Date(Date.now() + 5 * 60000), // 5 minutes
             role: ROLE.RESTAURANT_OWNER,
             password: hashedPassword,
           },
@@ -52,23 +54,21 @@ export const authService = {
           {
             user: newUser._id,
             businessName: data.businessName,
+            address: data.restaurantAddress,
             businessEmail: data.businessEmail,
             status: OWNER_STATUS.UNVERIFIED,
             referralCode: data.referralCode,
           },
         ],
-
         { session }
       );
-
-
 
       // 4. Create restaurant
       const [newRestaurant] = await RestaurantModel.create(
         [
           {
             owner: newOwner._id,
-            restaurantName: "your restaurant name",
+            restaurantName: data.restaurantName,
             menus: [],
             status: "pending",
             restaurantAddress: data.restaurantAddress,
@@ -89,25 +89,30 @@ export const authService = {
         { restaurant: newRestaurant._id },
         { session }
       );
-      // 6. Update user with restaurant reference
-      const user: any = await UserModel.updateOne(
-        { _id: newUser._id },
-        { restaurant: newRestaurant._id },
+
+      // 6. Update user: push restaurant and set selectedRestaurant
+      await UserModel.findByIdAndUpdate(
+        newUser._id,
+        {
+          $push: { restaurant: newRestaurant._id },
+          $set: { selectedRestaurant: newRestaurant._id },
+        },
         { session }
       );
 
-      // 6. Send OTP
+      // 7. Send OTP to user
       await sendOtpToEmail(newUser.email, otp);
 
-      // 7. Commit transaction
+      // 8. Commit transaction
       await session.commitTransaction();
       session.endSession();
 
+      // 9. Notify admin (optional)
       notifyAdmin(
         "new user",
         newOwner.status,
         "owner registered",
-        user._id
+        newUser._id
       );
 
       return {
@@ -122,7 +127,9 @@ export const authService = {
         "Registration failed: " + (error as Error).message
       );
     }
-  },
+  }
+
+  ,
   async otpValidationIntoDB(data: any, userEmail: string) {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -338,6 +345,41 @@ export const authService = {
       session.endSession();
       throw error;
     }
+  },
+
+
+  async switchAccount(email: string, restaurantId: string) {
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      throw new AppError(404, "User not found");
+    }
+
+    // Check if the restaurantId exists in user's owned restaurants
+    const isOwner = await OwnerModel.findOne({
+      user: user._id,
+      restaurant: { $in: [restaurantId] },
+      isDeleted: false,
+    });
+
+    if (!isOwner) {
+      throw new AppError(403, "User does not own this restaurant");
+    }
+
+    // Update selectedRestaurant and populate it
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
+      { selectedRestaurant: restaurantId },
+      { new: true }
+    ).populate('selectedRestaurant'); // 👈 populate restaurant
+
+    if (!updatedUser) {
+      throw new AppError(404, "User not found after update");
+    }
+    return {
+      message: "Switched account successfully",
+      loggedRestaurant: updatedUser.selectedRestaurant, // now full object
+    };
   }
 
 

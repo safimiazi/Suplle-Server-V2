@@ -9,15 +9,18 @@ import * as XLSX from "xlsx"
 import { CategoryModel } from "../category/category.model";
 import { MenuModel } from "./menu.model";
 import { RestaurantModel } from "../restuarant/restuarant.model";
+import { UserModel } from "../users/user/users.model";
+import { getSelectedRestaurantId } from "../../utils/getSelectedRestaurant";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const user: any = req.user;
   const data = req.body.data;
 
+  const restaurant = await getSelectedRestaurantId(user._id);
   const result = await menuService.postMenuIntoDB(
     data, // still JSON string here
-    user.restaurant, // restaurant ID (assumed to be in user object)
+    restaurant as unknown as string, // restaurant ID (assumed to be in user object)
     file as Express.Multer.File
   );
 
@@ -97,8 +100,26 @@ const getAllMenu = catchAsync(async (req: Request, res: Response) => {
 
   const user: any = req.user;
 
-  const restaurantId = user.restaurant;
-  const result = await menuService.getAllMenuFromDB(req.query, restaurantId);
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+
+  // return
+  const restaurant = restaurantData?.selectedRestaurant;
+  const result = await menuService.getAllMenuFromDB(req.query, restaurant as unknown as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Menus Fetched successfully",
+    data: result,
+  });
+});
+
+
+const getAllMenuByRestaurantId = catchAsync(async (req: Request, res: Response) => {
+
+  // return
+  const result = await menuService.getAllMenuByRestaurantIdFromDB(req.query);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -125,9 +146,13 @@ const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const parseData = JSON.parse(data);
   const user: any = req.user;
-  const restaurantId = user.restaurant;
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
+
+
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurantId);
+  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -162,6 +187,7 @@ export const menuController = {
   postMenu,
   uploadMenuFileController,
   getAllMenu,
+  getAllMenuByRestaurantId,
   getSingleMenu,
   updateMenu,
   deleteMenu,

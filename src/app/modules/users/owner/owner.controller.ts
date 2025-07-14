@@ -3,6 +3,7 @@ import { ownerService } from "./owner.service";
 import catchAsync from "../../../utils/catchAsync";
 import sendResponse from "../../../utils/sendResponse";
 import status from "http-status";
+import { UserModel } from "../user/users.model";
 
 const postOwner = catchAsync(async (req: Request, res: Response) => {
   const result = await ownerService.postOwnerIntoDB(req.body);
@@ -26,8 +27,10 @@ const getAllOwner = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleOwner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const restaurant = user.restaurant;
-  const result = await ownerService.getSingleOwnerFromDB(req.params.id, restaurant);
+  const restaurantData = await UserModel.findOne({ _id: user._id });
+
+  const restaurant = restaurantData?.selectedRestaurant;
+  const result = await ownerService.getSingleOwnerFromDB(req.params.id, restaurant as unknown as string);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -38,9 +41,9 @@ const getSingleOwner = catchAsync(async (req: Request, res: Response) => {
 
 const updateOwner = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
-  const ownerId = user._id;
+  const userId = user._id;
 
-  const result = await ownerService.updateOwnerIntoDB(req.body, ownerId);
+  const result = await ownerService.updateOwnerIntoDB(req.body, userId);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,

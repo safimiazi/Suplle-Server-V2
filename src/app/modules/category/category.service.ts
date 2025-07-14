@@ -16,6 +16,7 @@ export const categoryService = {
     file: Express.Multer.File & { path?: string }
   ) {
     try {
+      // console.log("data in category service", data);
       let newData = data;
       if (file) {
         const imageName = `${Math.floor(100 + Math.random() * 900)}`;
@@ -31,8 +32,9 @@ export const categoryService = {
       }
 
       const restaurant = await RestaurantModel.findOne({
-        _id: newData.restaurant,
+        _id: newData.restaurant
       });
+
 
       if (!restaurant) {
         throw new AppError(400, "restaurant doesn't found");
@@ -97,6 +99,15 @@ export const categoryService = {
 
       if (!isDeleted) {
         throw new AppError(404, "category not found");
+      }
+
+      const findCategory = await CategoryModel.findOne({ _id: id });
+      if (!findCategory) {
+        throw new AppError(404, "category not found");
+      }
+
+      if (!findCategory.restaurant.equals(data.restaurant)) {
+        throw new AppError(400, "You can not update category to another restaurant");
       }
 
       let newData = data;
