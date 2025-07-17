@@ -22,7 +22,7 @@ export const QRCodePurchaseService = {
         restaurant: data.restaurant,
         qrCodeDesign: data.qrCodeDesign,
         tableQuantity: data.tableQuantity,
-        status: "pending",
+        status: "approved",
         isPaid: false,
         price: design.price * data.tableQuantity,
         orderId
