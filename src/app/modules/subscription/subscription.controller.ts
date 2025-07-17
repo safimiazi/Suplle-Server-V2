@@ -43,6 +43,8 @@ const createSubscriptionIntent = catchAsync(async (req: Request, res: Response) 
 const activateSubscription = catchAsync(async (req: Request, res: Response) => {
   const { paymentIntentId } = req.body;
 
+
+
   // 1. Retrieve PaymentIntent
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
   if (paymentIntent.status !== 'succeeded') {
