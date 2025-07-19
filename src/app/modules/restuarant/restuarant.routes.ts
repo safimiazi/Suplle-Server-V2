@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
   "/create-restaurant",
   authenticate(ROLE.RESTAURANT_OWNER),
-  checkActiveSubscription(),
+  checkActiveSubscription("maxRestaurants"),
   // upload.fields([
   //   { name: "images", maxCount: 5 },
   //   { name: "logo", maxCount: 1 },

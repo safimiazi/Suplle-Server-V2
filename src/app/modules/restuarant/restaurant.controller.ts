@@ -21,18 +21,23 @@ const postRestuarant = catchAsync(async (req: Request, res: Response) => {
 
 
 
+
   const owner = await OwnerModel.findOne({ user: user._id });
+
 
   if (!owner) {
     throw new AppError(404, "Owner not found. Please register as an owner first.");
   }
 
-  console.log("owner", owner)
+
+
   const data = req.body;
 
 
 
-  const result = await restaurantService.postRestaurant(data, owner.id as string, user._id as string);
+
+
+  const result = await restaurantService.postRestaurant(data, owner._id.toString(), user._id.toString());
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,

@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
   "/create-subscriptionPlan",
-  validateRequest(SubscriptionPlanPostValidation),
+  // validateRequest(SubscriptionPlanPostValidation),
   SubscriptionPlanController.postSubscriptionPlan
 );
 router.get(

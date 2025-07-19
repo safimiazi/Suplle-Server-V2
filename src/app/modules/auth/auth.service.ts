@@ -70,7 +70,7 @@ export const authService = {
             owner: newOwner._id,
             restaurantName: data.restaurantName,
             menus: [],
-            status: "pending",
+            status: "active", // agee pending chilo ami change kore active kore dicchi
             restaurantAddress: data.restaurantAddress,
             phone: "your phone",
             logo: "",
