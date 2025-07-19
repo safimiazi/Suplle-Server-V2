@@ -7,8 +7,9 @@ import AppError from "../../errors/AppError";
 export const SubscriptionPlanService = {
   async postSubscriptionPlanIntoDB(data: any) {
     try {
+
       const alreadyExist = await SubscriptionPlanModel.findOne({
-        name: data.name,
+        state: data.state,
       });
       if (alreadyExist) {
         throw new Error("Subscription plan already exist!");
@@ -65,17 +66,12 @@ export const SubscriptionPlanService = {
 
       // prepare safe update payload:
 
-      const updatePayload: Partial<typeof data> = {};
-      if (data.name !== undefined) updatePayload.name = data.name;
-      if (data.price !== undefined) updatePayload.price = data.price;
-      if (data.maxRestaurants !== undefined)
-        updatePayload.maxRestaurants = data.maxRestaurants;
-      if (Array.isArray(data.features)) updatePayload.features = data.features;
+     
 
       const result = await SubscriptionPlanModel.findByIdAndUpdate(
         id,
         {
-          $set: updatePayload,
+          $set: data,
         },
         { new: true }
       );
@@ -83,6 +79,8 @@ export const SubscriptionPlanService = {
       if (!result) {
         throw new Error("Subscription not found.");
       }
+
+      return result
     } catch (error: unknown) {
       throw error;
     }
