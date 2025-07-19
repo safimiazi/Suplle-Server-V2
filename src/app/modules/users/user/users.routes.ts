@@ -6,12 +6,14 @@ import { userController } from "./users.controller";
 import { upload } from "../../../utils/sendImageToCloudinary";
 import { authenticate } from "../../../middlewares/authGuard";
 import { ROLE } from "./users.constant";
+import { checkActiveSubscription } from "../../../middlewares/checkSubscription";
 
 const router = express.Router();
 
 router.post(
   "/owner-create-sub-user",
   authenticate(ROLE.RESTAURANT_OWNER, ROLE.ADMIN),
+  checkActiveSubscription("isEccessSubUser"),
   validateRequest(userInputSchema),
   userController.createUser
 );

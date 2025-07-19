@@ -11,6 +11,8 @@ import { MenuModel } from "./menu.model";
 import { RestaurantModel } from "../restuarant/restuarant.model";
 import { UserModel } from "../users/user/users.model";
 import { getSelectedRestaurantId } from "../../utils/getSelectedRestaurant";
+import { OwnerModel } from "../users/owner/owner.model";
+import AppError from "../../errors/AppError";
 
 const postMenu = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
@@ -34,6 +36,18 @@ const postMenu = catchAsync(async (req: Request, res: Response) => {
 
 const uploadMenuFileController = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
+  const user: any = req.user;
+
+
+
+
+  const owner = await OwnerModel.findOne({ user: user._id });
+
+
+  if (!owner) {
+    throw new AppError(404, "Owner not found. Please register as an owner first.");
+  }
+
 
   if (!file?.path) {
     throw new Error("File not found");
@@ -50,7 +64,7 @@ const uploadMenuFileController = catchAsync(async (req: Request, res: Response) 
     const modifiedData = await Promise.all(
       data.map(async (item: any) => {
         // Check restaurant
-        const isExistRestaurant = await RestaurantModel.findOne({ restaurantName: item.restaurant });
+        const isExistRestaurant = await RestaurantModel.findOne({ owner: owner._id, restaurantName: item.restaurant });
         if (!isExistRestaurant) {
           throw new Error(`Restaurant "${item.restaurant}" was not found`);
         }
@@ -141,22 +155,50 @@ const getSingleMenu = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// const updateMenu = catchAsync(async (req: Request, res: Response) => {
+//   const data = req.body.data;
+//   const file = req.file;
+
+//   console.log("ddd", file)
+//   const parseData = JSON.parse(data);
+//   const user: any = req.user;
+//   const restaurantData = await UserModel.findOne({ _id: user._id });
+
+//   const restaurant = restaurantData?.selectedRestaurant;
+
+
+//   const id = req.params.id;
+//   const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurant as unknown as string);
+//   sendResponse(res, {
+//     statusCode: status.OK,
+//     success: true,
+//     message: "Menu Updated successfully",
+//     data: result,
+//   });
+// });
+
+
 const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const data = req.body.data;
-  const file = req.file;
-  const parseData = JSON.parse(data);
+  let parsedData;
+  if (data) {
+    parsedData = JSON.parse(data);
+  }
   const user: any = req.user;
-  const restaurantData = await UserModel.findOne({ _id: user._id });
 
+  const file = (req.files as { [fieldname: string]: Express.Multer.File[] })?.image?.[0];
+
+  const restaurantData = await UserModel.findOne({ _id: user._id });
   const restaurant = restaurantData?.selectedRestaurant;
 
-
   const id = req.params.id;
-  const result = await menuService.updateMenuIntoDB(parseData, file as Express.Multer.File, id, restaurant as unknown as string);
+
+  const result = await menuService.updateMenuIntoDB(parsedData, file, id, restaurant as unknown as string);
+
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "Menu Updated successfully",
+    message: "Menu updated successfully",
     data: result,
   });
 });

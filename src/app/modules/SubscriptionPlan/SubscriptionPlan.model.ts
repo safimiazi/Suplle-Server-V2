@@ -20,8 +20,8 @@ const SubscriptionPlanSchema = new mongoose.Schema<ISubscriptionPlan>(
     isEccessSubUser: { type: Boolean }, // dine in , takeaway
     features: [{ type: String }],
     maxUsers: { type: Number, required: true },
-    maxQRCodes: { type: Number, required: true },
-    maxMenuItems: { type: Number, required: true },
+    // maxQRCodes: { type: Number, required: true },
+    // maxMenuItems: { type: Number, required: true },
     billingCycle: {
       type: String,
       enum: ['monthly', 'yearly'],

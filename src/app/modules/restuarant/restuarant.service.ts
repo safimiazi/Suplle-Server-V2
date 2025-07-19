@@ -13,8 +13,8 @@ export const postRestaurant = async (data: any, ownerId: string, userId: string)
   try {
     session.startTransaction();
 
-    // 1. Create restaurant document
-    const restaurant = await RestaurantModel.create([data], { session });
+    // 1. Create restaurant document and inject owner into restaurant data
+    const restaurant = await RestaurantModel.create([{...data, owner: ownerId , status: "active"}], { session });
     const newRestaurant = restaurant[0];
 
     // 2. Add restaurant reference to Owner's restaurants array

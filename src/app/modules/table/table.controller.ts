@@ -4,10 +4,20 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { UserModel } from "../users/user/users.model";
+import AppError from "../../errors/AppError";
 
 const postTable = catchAsync(async (req: Request, res: Response) => {
   const user: any = req.user;
   const restaurantData = await UserModel.findOne({ _id: user._id });
+  if (
+    req.activeSubscription.plan.maxTables !== null &&
+    req.body.numTables > req.activeSubscription.plan.maxTables
+  ) {
+    throw new AppError(
+      403,
+      `You have exceeded the maximum table limit (${req.activeSubscription.plan.maxTables}). Please upgrade your plan.`
+    );
+  }
 
 
   // return

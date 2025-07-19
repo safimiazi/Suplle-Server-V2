@@ -12,8 +12,8 @@ export interface ISubscriptionPlan extends Document {
   isMenuUploadViaExcel: boolean;
   isEccessSubUser: boolean;
   maxUsers: number;
-  maxQRCodes: number;
-  maxMenuItems: number;
+  // maxQRCodes: number;
+  // maxMenuItems: number;
   billingCycle: "monthly" | "yearly";
   isDeleted: boolean;
   mostPopular: boolean;
